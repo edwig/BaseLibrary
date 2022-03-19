@@ -60,7 +60,7 @@
 // for more info about .ZIP format, see ftp://ftp.cdrom.com/pub/infozip/doc/appnote-970311-iz.zip
 //   PkWare has also a specification at ftp://ftp.pkware.com/probdesc.zip
 
-#include <windows.h>
+#include "pch.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

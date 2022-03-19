@@ -26,18 +26,20 @@
 //
 //////////////////////////////////////////////////////////////////////////
 #pragma once
-
-// Are we using MFC (AFX)
-#ifdef _AFX
-// If we are using the BaseLibrary within a MFC project
-// The string definition is purely the MFC XString class
-#define XString CString
-#else
 #include <wtypes.h>
 #include <string>
 
 using std::string;
 using std::wstring;
+
+// Are we using MFC (AFX)
+#ifdef _AFX
+// If we are using the BaseLibrary within a MFC project
+// The string definition is purely the MFC XString class
+typedef CString XString;
+#pragma message("XString is now defined as MFC::CString")
+#else
+#pragma message("XString is now defined as std::string in the form of MSX_String")
 
 class SMX_String : public std::string
 {

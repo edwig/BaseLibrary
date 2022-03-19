@@ -25,7 +25,6 @@
 //
 #pragma once
 #include "DefuseBOM.h"
-#include <windows.h>
 
 typedef unsigned char uchar;
 
@@ -47,7 +46,7 @@ typedef enum _fflag
  ,open_shared_write   = 0x00080   // Open in write mode, shared with other shared writers
   // Transformations
  ,open_trans_text     = 0x00100   // "\n" to "CR-LF" translations
- ,open_trans_binary   = 0x00200   // Binary access only, no string access
+ ,open_trans_binary   = 0x00200   // Binary access only, no XString access
   // Special modes
  ,open_random_access  = 0x01000   // both read-and-write random access and file-repositioning
  ,open_sequential     = 0x02000   // sequential access in read or in write mode, but not both
@@ -66,9 +65,9 @@ FFlag;
 #define fflag_filter_tempfile   0x0F0000
 
 // Most used open modes
-#define winfile_read   ((FFlag)((int)FFlag::open_if_exists  | (int)FFlag::open_read  ))
-#define winfile_write  ((FFlag)((int)FFlag::open_and_create | (int)FFlag::open_write ))
-#define winfile_append ((FFlag)((int)FFlag::open_and_append | (int)FFlag::open_write | (int)FFlag::open_shared_write ))
+#define winfile_read   ((FFlag)(open_if_exists  | open_read  ))
+#define winfile_write  ((FFlag)(open_and_create | open_write ))
+#define winfile_append ((FFlag)(open_and_append | open_write | open_shared_write ))
 
 typedef enum _fattrib
 {
@@ -91,12 +90,13 @@ typedef enum _fattrib
 FAttributes;
 
 // Flag for the seek operations in a file
-enum class FSeek
+typedef enum _fseek
 {
   file_begin    = 1   // Set position relative to the beginning
  ,file_current  = 2   // Set position relative to the current position
  ,file_end      = 3   // Set at the end (position is ignored)
-};
+}
+FSeek;
 
 // Flag for copying files
 typedef enum _copyFile
@@ -155,7 +155,7 @@ public:
   bool      DeleteToTrashcan(bool p_show = false, bool p_confirm = false);
   bool      CopyFile(XString p_destination,FCopy p_how = winfile_copy);
   bool      MoveFile(XString p_destination,FMove p_how = winfile_move);
-  bool      CreateTempFileName(XString p_pattern,XString p_extension = "");
+  bool      CreateTempFileName(XString p_pattern, XString p_extension = "");
   bool      GrantFullAccess();
   void      ForgetFile(); // BEWARE!
 
@@ -229,7 +229,7 @@ public:
   // FUNCTIONS
 
   // Check for a Byte-Order-Mark (BOM)
-  BOMOpenResult  DefuseBOM(const uchar*  p_pointer            // First gotten string in the file
+  BOMOpenResult  DefuseBOM(const uchar*  p_pointer            // First gotten XString in the file
                           ,BOMType&      p_type               // Return: type of BOM (if any)
                           ,unsigned int& p_skip);             // Return: number of chars to skip
   // Check for Unicode UTF-16 in the buffer
@@ -250,7 +250,7 @@ public:
                               ,bool     p_local     = true   // Standard on your local session, otherwise global
                               ,bool     p_trycreate = false  // Create with m_filename if not exists
                               ,size_t   p_size      = 0);    // Size of memory if we create it
-  XString   LegalDirectoryName(XString  p_name,bool p_extensionAllowed = true);
+  XString    LegalDirectoryName(XString p_name,bool p_extensionAllowed = true);
 
   // OPERATORS
 

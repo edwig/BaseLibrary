@@ -25,17 +25,17 @@
 //
 #include "pch.h"
 #include "WinFile.h"
+#include <shellapi.h>
 #include <iostream>
 #include <fileapi.h>
 #include <handleapi.h>
-#include <shellapi.h>
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <winnt.h>
+#include <commdlg.h>
 #include <AclAPI.h>
 #include <filesystem>
 #include <algorithm>
-#include <commdlg.h>
 #include <io.h>
 
 // Do not complain about enum classes
@@ -106,7 +106,7 @@ WinFile::Open(DWORD p_flags /*= winfile_read*/,FAttributes p_attribs /*= FAttrib
     m_error = ERROR_ALREADY_EXISTS;
     return result;
   }
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return result;
@@ -277,7 +277,7 @@ WinFile::CreateDirectory()
   m_error = 0;
 
   // Make sure we have a filename
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     m_error = ERROR_NOT_FOUND;
     return false;
@@ -288,11 +288,10 @@ WinFile::CreateDirectory()
   XString dirToBeOpened(drive);
   XString path(directory);
   XString part = GetBaseDirectory(path);
-  while(!part.empty())
+  while(!part.IsEmpty())
   {
-    dirToBeOpened += "\\";
-    dirToBeOpened += part;
-    if (!::CreateDirectory(dirToBeOpened.c_str(),nullptr))
+    dirToBeOpened += "\\" + part;
+    if (!::CreateDirectory(dirToBeOpened.GetString(),nullptr))
     {
       m_error = ::GetLastError();
       if(m_error != ERROR_ALREADY_EXISTS)
@@ -315,7 +314,7 @@ WinFile::Exists()
     return true;
   }
   // If not filename given it obviously does not exists
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     return false;
   }
@@ -371,7 +370,7 @@ WinFile::DeleteFile()
     return false;
   }
 
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return false;
@@ -403,7 +402,7 @@ WinFile::DeleteDirectory(bool p_recursive /*= false*/)
     return 0;
   }
 
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return 0;
@@ -446,7 +445,7 @@ WinFile::DeleteToTrashcan(bool p_show /*= false*/,bool p_confirm /*= false*/)
   }
 
   // Check that we have a valid filename
-  if(m_filename.empty() || _access(m_filename.c_str(),0) != 0)
+  if(m_filename.IsEmpty() || _access(m_filename.GetString(),0) != 0)
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return false;
@@ -456,7 +455,7 @@ WinFile::DeleteToTrashcan(bool p_show /*= false*/,bool p_confirm /*= false*/)
   // so it becomes a list of just one (1) filename
   char   filelist  [MAX_PATH + 2];
   memset(filelist,0,MAX_PATH + 2);
-  strcpy_s(filelist,MAX_PATH,m_filename.c_str());
+  strcpy_s(filelist,MAX_PATH,m_filename.GetString());
 
   SHFILEOPSTRUCT file;
   memset(&file,0,sizeof(SHFILEOPSTRUCT));
@@ -493,7 +492,7 @@ WinFile::CopyFile(XString p_destination,FCopy p_how /*= winfile_copy*/)
   m_error = 0;
 
   // Check if we have both names
-  if(m_filename.empty() || p_destination.empty())
+  if(m_filename.IsEmpty() || p_destination.IsEmpty())
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return false;
@@ -507,7 +506,7 @@ WinFile::CopyFile(XString p_destination,FCopy p_how /*= winfile_copy*/)
   }
 
   // Copy the file
-  if(::CopyFileEx(m_filename.c_str(),p_destination.c_str(),nullptr,nullptr,FALSE,p_how) == 0)
+  if(::CopyFileEx(m_filename.GetString(),p_destination.GetString(),nullptr,nullptr,FALSE,p_how) == 0)
   {
     m_error = ::GetLastError();
     return false;
@@ -523,7 +522,7 @@ WinFile::MoveFile(XString p_destination,FMove p_how /*= winfile_move*/)
   m_error = 0;
 
   // Check if we have both names
-  if(m_filename.empty() || p_destination.empty())
+  if(m_filename.IsEmpty() || p_destination.IsEmpty())
   {
     m_error = ERROR_FILE_NOT_FOUND;
     return false;
@@ -537,7 +536,7 @@ WinFile::MoveFile(XString p_destination,FMove p_how /*= winfile_move*/)
   }
 
   // Copy the file
-  if(::MoveFileEx(m_filename.c_str(),p_destination.c_str(),p_how) == 0)
+  if(::MoveFileEx(m_filename.GetString(),p_destination.GetString(),p_how) == 0)
   {
     m_error = ::GetLastError();
     return false;
@@ -560,7 +559,7 @@ WinFile::CreateTempFileName(XString p_pattern,XString p_extension /*= ""*/)
   // Getting the temp filename
   char tempfilename[MAX_PATH + 1];
   UINT unique = 0; // Use auto numbering and creation of the temporary file!
-  if(::GetTempFileName(tempdirectory,p_pattern.c_str(),unique,tempfilename) == 0)
+  if(::GetTempFileName(tempdirectory,p_pattern.GetString(),unique,tempfilename) == 0)
   {
     m_error = ::GetLastError();
     return false;
@@ -570,13 +569,13 @@ WinFile::CreateTempFileName(XString p_pattern,XString p_extension /*= ""*/)
   m_filename = tempfilename;
 
   // Add the optional extension
-  if(!p_extension.empty())
+  if(!p_extension.IsEmpty())
   {
-    ::DeleteFile(m_filename.c_str());
-    size_t pos = m_filename.find_last_of('.');
+    ::DeleteFile(m_filename.GetString());
+    int pos = m_filename.ReverseFind('.');
     if(pos > 0)
     {
-      m_filename = m_filename.substr(0,pos);
+      m_filename = m_filename.Left(pos);
     }
     if(p_extension[0] != '.')
     {
@@ -604,7 +603,7 @@ WinFile::OpenAsSharedMemory(XString   p_name
   }
 
   // Check that name does NOT have a '\' in it
-  if(p_name.find('\\') >= 0)
+  if(p_name.Find('\\') >= 0)
   {
     m_error = ERROR_INVALID_FUNCTION;
     return nullptr;
@@ -627,7 +626,7 @@ WinFile::OpenAsSharedMemory(XString   p_name
     DWORD protect  = PAGE_READWRITE;
     DWORD sizeLow  = p_size & 0x0FFFFFFF;
     DWORD sizeHigh = p_size >> 32;
-    m_file = CreateFileMapping(m_file,nullptr,protect,sizeLow,sizeHigh,p_name.c_str());
+    m_file = CreateFileMapping(m_file,nullptr,protect,sizeLow,sizeHigh,p_name.GetString());
     if(m_file == NULL)
     {
       m_error = ::GetLastError();
@@ -637,7 +636,7 @@ WinFile::OpenAsSharedMemory(XString   p_name
   else
   {
     // Try to open for read-write access. Child processes can NOT inherit the handle
-    m_file = OpenFileMapping(FILE_MAP_ALL_ACCESS,FALSE,p_name.c_str());
+    m_file = OpenFileMapping(FILE_MAP_ALL_ACCESS,FALSE,p_name.GetString());
     if(m_file == NULL)
     {
       m_error = ::GetLastError();
@@ -664,7 +663,7 @@ bool
 WinFile::GrantFullAccess()
 {
   // Check if we have a filename to work on
-  if(m_filename.empty())
+  if(m_filename.IsEmpty())
   {
     return false;
   }
@@ -700,7 +699,7 @@ WinFile::GrantFullAccess()
       __leave;
     }
     // Try to modify the object's DACL.
-    if(ERROR_SUCCESS != SetNamedSecurityInfo((LPSTR)m_filename.c_str()     // name of the object
+    if(ERROR_SUCCESS != SetNamedSecurityInfo((LPSTR)m_filename.GetString()     // name of the object
                                              ,SE_FILE_OBJECT               // type of object: file or directory
                                              ,DACL_SECURITY_INFORMATION    // change only the object's DACL
                                              ,nullptr,nullptr              // do not change owner or group
@@ -731,7 +730,7 @@ WinFile::GrantFullAccess()
 void
 WinFile::ForgetFile()
 {
-  m_filename.clear();
+  m_filename.Empty();
   m_file         = NULL;
   m_openMode     = FFlag::no_mode;
   m_sharedMemory = 0L;
@@ -794,8 +793,8 @@ WinFile::Read(XString& p_string)
       }
       if(crstate && ch == '\n')
       {
-        result[result.size()-2] = ch;
-        result.erase(result.size()-1);
+        result.SetAt(result.GetLength() - 2,ch);
+        result = result.Left(result.GetLength()-1);
       }
     }
     crstate = false;
@@ -865,8 +864,9 @@ WinFile::Write(const XString& p_string)
 
   bool doText = (m_openMode & FFlag::open_trans_text) > 0;
 
-  for(auto& ch : p_string)
+  for(int index = 0;index < p_string.GetLength();++index)
   {
+    int ch = p_string.GetAt(index);
     if(doText && ch == '\n')
     {
       if(PageBufferWrite('\r') == false)
@@ -920,7 +920,7 @@ WinFile::Write(void* p_buffer,size_t p_bufsize)
 }
 
 bool
-WinFile::Format(LPCSTR p_format,...)
+WinFile::Format(LPCSTR p_format, ...)
 {
   va_list argList;
   va_start(argList, p_format);
@@ -930,15 +930,15 @@ WinFile::Format(LPCSTR p_format,...)
 }
 
 bool
-WinFile::FormatV(LPCSTR p_format,va_list p_list)
+WinFile::FormatV(LPCSTR p_format, va_list p_list)
 {
   // Getting a buffer of the correct length
-  int len = _vscprintf(p_format,p_list) + 1;
+  int len = _vscprintf(p_format, p_list) + 1;
   char* buffer = new char[len];
   // Formatting the parameters
-  vsprintf_s(buffer,len,p_format,p_list);
+  vsprintf_s(buffer, len, p_format, p_list);
   // Adding to the string
-  bool result = Write(buffer,len - 1);
+  bool result = Write(buffer, len - 1);
   delete[] buffer;
   return result;
 }
@@ -1559,9 +1559,9 @@ WinFile::SetFileAttribute(FAttributes p_attribute, bool p_set)
     }
     m_error = ::GetLastError();
   }
-  else if (!m_filename.empty())
+  else if (!m_filename.IsEmpty())
   {
-    DWORD attrib = ::GetFileAttributes(m_filename.c_str());
+    DWORD attrib = ::GetFileAttributes(m_filename.GetString());
     if (attrib != INVALID_FILE_ATTRIBUTES)
     {
       if(p_set)
@@ -1572,7 +1572,7 @@ WinFile::SetFileAttribute(FAttributes p_attribute, bool p_set)
       {
         attrib &= ~p_attribute;
       }
-      if(::SetFileAttributes(m_filename.c_str(), attrib))
+      if(::SetFileAttributes(m_filename.GetString(), attrib))
       {
         return true;
       }
@@ -1870,11 +1870,11 @@ WinFile::GetFileSize()
     m_error = ::GetLastError();
   }
   // Try by filename
-  else if(!m_filename.empty())
+  else if(!m_filename.IsEmpty())
   {
     WIN32_FILE_ATTRIBUTE_DATA data;
     memset(&data,0,sizeof(data));
-    if(::GetFileAttributesEx(m_filename.c_str(),GetFileExInfoStandard,&data))
+    if(::GetFileAttributesEx(m_filename.GetString(),GetFileExInfoStandard,&data))
     {
       LARGE_INTEGER size = { 0,0 };
       size.LowPart  = data.nFileSizeLow;
@@ -1907,14 +1907,14 @@ WinFile::GetSharedMemorySize()
 XString
 WinFile::GetNamePercentEncoded()
 {
-  XString      encoded;
+  XString     encoded;
   bool        queryValue = false;
   static char unsafeString[]   = " \"<>#{}|^~[]`";
   static char reservedString[] = "$&/;?@-!*()'";
 
   // Re-encode the XString. 
   // Watch out: strange code ahead!
-  for(size_t ind = 0;ind < m_filename.size(); ++ind)
+  for(int ind = 0;ind < m_filename.GetLength(); ++ind)
   {
     unsigned char ch = m_filename[ind];
     if(ch == '?')
@@ -2128,9 +2128,9 @@ WinFile::GetFileAttribute(FAttributes p_attribute)
     }
     m_error = ::GetLastError();
   }
-  else if(!m_filename.empty())
+  else if(!m_filename.IsEmpty())
   {
-    DWORD attrib = ::GetFileAttributes(m_filename.c_str());
+    DWORD attrib = ::GetFileAttributes(m_filename.GetString());
     if(attrib != INVALID_FILE_ATTRIBUTES)
     {
       return (attrib & p_attribute) != 0;
@@ -2214,7 +2214,7 @@ WinFile::SetFilenameByDialog(HWND   p_parent      // Parent window (if any)
   char    filename[MAX_PATH + 1];
   XString  filter;
 
-  if (p_filter.empty())
+  if (p_filter.IsEmpty())
   {
     filter = "All files (*.*)|*.*|";
   }
@@ -2222,25 +2222,28 @@ WinFile::SetFilenameByDialog(HWND   p_parent      // Parent window (if any)
 
   // Register original CWD (Current Working Directory)
   GetCurrentDirectory(MAX_PATH,original);
-  if(!p_direct.empty())
+  if(!p_direct.IsEmpty())
   {
     // Change to starting directory // VISTA
-    SetCurrentDirectory(p_direct.c_str());
+    SetCurrentDirectory(p_direct.GetString());
   }
 
   // Check sizes for OPENFILENAME
-  if(  filter.size() > 1024) filter  .resize(1024);
-  if(p_defext.size() >  100) p_defext.resize(100);
-  if( p_title.size() >  100) p_title .resize(100);
+  if(  filter.GetLength() > 1024) filter   = filter  .Left(1024);
+  if(p_defext.GetLength() >  100) p_defext = p_defext.Left(100);
+  if( p_title.GetLength() >  100) p_title  = p_title .Left(100);
 
   // Prepare the filename buffer: size for a new name!
-  strncpy_s(filename,MAX_PATH,p_filename.c_str(),MAX_PATH);
+  strncpy_s(filename,MAX_PATH,p_filename.GetString(),MAX_PATH);
 
   // Prepare the filter
   filter += "||";
-  for(int index = 0; index < filter.size(); ++index)
+  for(int index = 0; index < filter.GetLength(); ++index)
   {
-    if(filter[index] == '|') filter[index] = 0;
+    if(filter[index] == '|')
+    {
+      filter.SetAt(index,0);
+    }
   }
 
   // Fill in the filename structure
@@ -2251,9 +2254,9 @@ WinFile::SetFilenameByDialog(HWND   p_parent      // Parent window (if any)
   ofn.hwndOwner         = p_parent;
   ofn.hInstance         = (HINSTANCE)GetWindowLongPtr(p_parent,GWLP_HINSTANCE);
   ofn.lpstrFile         = (LPSTR)filename;
-  ofn.lpstrDefExt       = (LPSTR)p_defext.c_str();
-  ofn.lpstrTitle        = (LPSTR)p_title.c_str();
-  ofn.lpstrFilter       = (LPSTR)filter.c_str();
+  ofn.lpstrDefExt       = (LPSTR)p_defext.GetString();
+  ofn.lpstrTitle        = (LPSTR)p_title.GetString();
+  ofn.lpstrFilter       = (LPSTR)filter.GetString();
   ofn.Flags             = p_flags;
   ofn.nFilterIndex      = 1;    // Use lpstrFilter
   ofn.nMaxFile          = MAX_PATH;
@@ -2261,7 +2264,7 @@ WinFile::SetFilenameByDialog(HWND   p_parent      // Parent window (if any)
   ofn.nMaxCustFilter    = 0;
   ofn.lpstrFileTitle    = nullptr;
   ofn.nMaxFileTitle     = 0;
-  ofn.lpstrInitialDir   = (LPCSTR)p_direct.c_str();
+  ofn.lpstrInitialDir   = (LPCSTR)p_direct.GetString();
   ofn.nFileOffset       = 0;
   ofn.lCustData         = 0;
   ofn.lpfnHook          = nullptr;
@@ -2314,13 +2317,13 @@ WinFile::operator==(const WinFile& p_other)
     return false;
   }
   // If both names empty, than both are NIL and thus equal
-  if(m_filename.empty() && p_other.m_filename.empty())
+  if(m_filename.IsEmpty() && p_other.m_filename.IsEmpty())
   {
     return true;
   }
   // If both names are equal
   // files are equal: non opened, pointing to the same file name
-  return _stricmp(m_filename.c_str(), p_other.m_filename.c_str()) == 0;
+  return _stricmp(m_filename.GetString(), p_other.m_filename.GetString()) == 0;
 }
 
 bool
@@ -2360,7 +2363,7 @@ XString
 WinFile::LegalDirectoryName(XString p_name,bool p_extensionAllowed /*= true*/)
 {
   // Check on non-empty
-  if(p_name.empty())
+  if(p_name.IsEmpty())
   {
     return "NewDirectory";
   }
@@ -2379,51 +2382,51 @@ WinFile::LegalDirectoryName(XString p_name,bool p_extensionAllowed /*= true*/)
   const char* forbidden = p_extensionAllowed ? forbidden_all : forbidden_ext;
 
   // Replace forbidden characters by an '_'
-  for(XString::iterator it = name.begin();it != name.end();++it)
+  for(int index = 0;index < name.GetLength();++index)
   {
     // Replace interpunction
-    if(strchr(forbidden,*it) != nullptr)
+    if(strchr(forbidden,name.GetAt(index)) != nullptr)
     {
-      *it = '_';
+      name.SetAt(index,'_');
     }
     // Replace non-printable characters
-    if(*it < ' ')
+    if(name.GetAt(index) < ' ')
     {
-      *it = '=';
+      name.SetAt(index,'=');
     }
   }
 
   // Construct uppercase name
   XString upper(name);
-  std::transform(upper.begin(),upper.end(),upper.begin(),::toupper);
+  upper.MakeUpper();
 
   // Scan for reserved names
   for(unsigned index = 0;index < (sizeof(reserved) / sizeof(const char*)); ++index)
   {
     // Direct transformation of the reserved name
-    if(strcmp(reserved[index],upper.c_str()) == 0)
+    if(strcmp(reserved[index],upper.GetString()) == 0)
     {
       name = "Directory_" + name;
       break;
     }
     // No extension allowed after a reserved name (e.g. "LPT3.txt")
-    size_t pos = upper.find(reserved[index]);
-    if(pos == 0 && name.size() > strlen(reserved[index]))
+    int pos = upper.Find(reserved[index]);
+    if(pos == 0 && name.GetLength() > (int)strlen(reserved[index]))
     {
-      pos += strlen(reserved[index]);
+      pos += (int)strlen(reserved[index]);
       if(name[pos] == '.')
       {
-        name[pos] = '_';
+        name.SetAt(pos,'_');
         break;
       }
     }
   }
 
   // Check on the ending on a space or dot
-  char ch = name.back();
-  if(ch == '.' || ch == ' ')
+  XString ending = name.Right(1);
+  if(ending[0] == '.' || ending[0] == ' ')
   {
-    name.pop_back();
+    name = name.Left(name.GetLength()-1);
   }
 
   // Legal directory name
@@ -2445,7 +2448,7 @@ WinFile::FilenameParts(XString p_fullpath,XString& p_drive,XString& p_directory,
   char extens[_MAX_EXT   + 1];
 
   p_fullpath = StripFileProtocol(p_fullpath);
-  _splitpath_s(p_fullpath.c_str(),drive,direct,fname,extens);
+  _splitpath_s(p_fullpath.GetString(),drive,direct,fname,extens);
   p_drive     = drive;
   p_directory = direct;
   p_filename  = fname;
@@ -2458,18 +2461,18 @@ WinFile::FilenameParts(XString p_fullpath,XString& p_drive,XString& p_directory,
 XString
 WinFile::StripFileProtocol(XString p_fileref)
 {
-  if(p_fileref.size() > 8)
+  if(p_fileref.GetLength() > 8)
   {
-    if(_stricmp(p_fileref.substr(0,8).c_str(),"file:///") == 0)
+    if(_stricmp(p_fileref.Mid(0,8).GetString(),"file:///") == 0)
     {
-      p_fileref = &(p_fileref[8]);
+      p_fileref = p_fileref.Mid(8);
     }
   }
   // Create a filename separator char name
-  for(size_t index = 0; index < p_fileref.size(); ++index)
+  for(int index = 0; index < p_fileref.GetLength(); ++index)
   {
-    if(p_fileref[index] == '/') p_fileref[index] = '\\';
-    if(p_fileref[index] == '|') p_fileref[index] = ':';
+    if(p_fileref[index] == '/') p_fileref.SetAt(index,'\\');
+    if(p_fileref[index] == '|') p_fileref.SetAt(index,':');
   }
 
   // Resolve the '%' chars in the filename
@@ -2484,14 +2487,14 @@ WinFile::ResolveSpecialChars(XString& p_value)
 {
   int total = 0;
 
-  size_t pos = p_value.find('%');
+  int pos = p_value.Find('%');
   while (pos >= 0)
   {
     ++total;
     int num = 0;
-    XString hexstring = p_value.substr(pos+1,2);
-    hexstring[0] = toupper(hexstring[0]);
-    hexstring[1] = toupper(hexstring[1]);
+    XString hexstring = p_value.Mid(pos+1,2);
+    hexstring.SetAt(0,toupper(hexstring[0]));
+    hexstring.SetAt(1,toupper(hexstring[1]));
 
     if(isdigit(hexstring[0]))
     {
@@ -2510,9 +2513,9 @@ WinFile::ResolveSpecialChars(XString& p_value)
     {
       num += hexstring[1] - 'A' + 10;
     }
-    p_value[pos] = (char)num;
-    p_value = p_value.substr(0,pos+1) + p_value.substr(pos+3);
-    pos = p_value.find('%');
+    p_value.SetAt(pos,(char)num);
+    p_value = p_value.Mid(0,pos+1) + p_value.Mid(pos+3);
+    pos = p_value.Find('%');
   }
   return total;
 }
@@ -2526,22 +2529,22 @@ WinFile::GetBaseDirectory(XString& p_path)
   // Strip of an extra path separator
   while (p_path[0] == '\\')
   {
-    p_path = p_path.substr(1);
+    p_path = p_path.Mid(1);
   }
 
   // Find first separator
-  size_t pos = p_path.find('\\');
+  int pos = p_path.Find('\\');
   if (pos >= 0)
   {
     // Return first subdirectory
-    result = p_path.substr(0,pos);
-    p_path = p_path.substr(pos);
+    result = p_path.Mid(0,pos);
+    p_path = p_path.Mid(pos);
   }
   else
   {
     // Last directory in the line
     result = p_path;
-    p_path.clear();
+    p_path.Empty();
   }
   return result;
 }

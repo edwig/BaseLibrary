@@ -10,12 +10,6 @@
 #include "pch.h"
 #include "StdException.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 // Macro to help with the display switch in GetErrorMessage()
 #define CASE(seCode,errorstring) case EXCEPTION_##seCode: \
 										errorstring.Format(_T("Exception %s (0x%.8X) at address 0x%.8X."),_T(#seCode),EXCEPTION_##seCode,m_exceptionPointers->ExceptionRecord->ExceptionAddress); \
@@ -153,18 +147,19 @@ StdException::GetErrorMessage()
 // The CException way of getting an error message
 // By copying it out of the object through a string pointer
 bool
-StdException::GetErrorMessage(char* p_error,unsigned p_maxSize,unsigned* p_helpContext /*= NULL*/)
+StdException::GetErrorMessage(char* p_error, unsigned p_maxSize, unsigned* p_helpContext /*= NULL*/)
 {
   // Reset help context
-  if(p_helpContext)
+  if (p_helpContext)
   {
     *p_helpContext = 0;
   }
   // Get compound error message
   XString error = GetErrorMessage();
   // Copy it out
-  strncpy_s(p_error,p_maxSize,error.GetString(),error.GetLength() + 1);
+  strncpy_s(p_error, p_maxSize, error.GetString(), error.GetLength() + 1);
   return true;
+}
 
 #ifdef _ATL
 XString
@@ -175,4 +170,4 @@ MessageFromException(CException& p_exception)
   return XString(buffer);
 }
 #endif
-}
+

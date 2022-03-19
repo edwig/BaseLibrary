@@ -29,6 +29,9 @@
 #include "FileBuffer.h"
 #include "gzip.h"
 
+unsigned long g_streaming_limit = STREAMING_LIMIT;
+unsigned long g_compress_limit  = COMPRESS_LIMIT;
+
 //////////////////////////////////////////////////////////////////////////
 //
 // The FileBuffer class

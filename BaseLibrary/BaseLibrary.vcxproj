@@ -131,6 +131,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalIncludeDirectories>ZIP</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -151,6 +152,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalIncludeDirectories>ZIP</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -208,6 +210,7 @@
     <ClInclude Include="StdException.h" />
     <ClInclude Include="StoreMessage.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="unzip.h" />
     <ClInclude Include="WinFile.h" />
     <ClInclude Include="WinINETError.h" />
     <ClInclude Include="WinPing.h" />
@@ -229,7 +232,6 @@
     <ClInclude Include="ZIP\inflate.h" />
     <ClInclude Include="ZIP\inftrees.h" />
     <ClInclude Include="ZIP\trees.h" />
-    <ClInclude Include="ZIP\unzip.h" />
     <ClInclude Include="ZIP\zconf.h" />
     <ClInclude Include="ZIP\zipcrc32.h" />
     <ClInclude Include="ZIP\zlib.h" />
@@ -282,6 +284,7 @@
     <ClCompile Include="StackTrace.cpp" />
     <ClCompile Include="StdException.cpp" />
     <ClCompile Include="StoreMessage.cpp" />
+    <ClCompile Include="unzip.cpp" />
     <ClCompile Include="WinFile.cpp" />
     <ClCompile Include="WinPing.cpp" />
     <ClCompile Include="xmem.cpp">
@@ -321,10 +324,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ZIP\trees.c">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="ZIP\unzip.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>

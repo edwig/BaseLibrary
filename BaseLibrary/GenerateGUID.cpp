@@ -27,12 +27,13 @@
 //
 #include "pch.h"
 #include "GenerateGUID.h"
+#include <combaseapi.h>
 
 // Caller **MUST** do the COM+ (un)initialize with
 // CoInitialize
 // CoUninitialize
 
-_Check_return_ STDAPI CoCreateGuid(_Out_ GUID  FAR* pguid);
+_Check_return_ WINOLEAPI CoCreateGuid(_Out_ GUID* pguid);
 
 XString GenerateGUID()
 {

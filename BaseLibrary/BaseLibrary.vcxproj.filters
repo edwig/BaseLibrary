@@ -31,17 +31,11 @@
     <Filter Include="ZIP\Header Files">
       <UniqueIdentifier>{4acdfd34-203c-4885-8007-1c1015bf365d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Configuration">
+      <UniqueIdentifier>{05ebcef2-ddb3-44bd-8cae-36137d11d808}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="bcd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -237,9 +231,6 @@
     <ClInclude Include="ProcInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ZIP\unzip.h">
-      <Filter>ZIP\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="xmem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -249,7 +240,21 @@
     <ClInclude Include="RunRedirect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseLibrary.h" />
+    <ClInclude Include="unzip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseLibrary.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -426,9 +431,6 @@
     <ClCompile Include="ProcInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZIP\unzip.cpp">
-      <Filter>ZIP</Filter>
-    </ClCompile>
     <ClCompile Include="xmem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -436,6 +438,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RunRedirect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unzip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

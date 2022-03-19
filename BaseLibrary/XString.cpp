@@ -33,6 +33,8 @@
 #include "XString.h"
 #include <atlbase.h>
 
+#ifndef _ATL
+
 SMX_String::SMX_String()
 {
 }
@@ -849,3 +851,5 @@ SMX_String::operator+=(const char p_char)
 //     }
 //   }
 // }
+
+#endif
