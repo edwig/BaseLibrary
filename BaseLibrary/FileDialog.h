@@ -235,7 +235,7 @@ public:
 private:
   void FilterString(char *filter);
 
-  bool          m_open;  // open of save-as
+  bool          m_open;  // open of saveas
   char          m_original[MAX_PATH+1];
   char          m_filename[MAX_PATH+1];
   char          m_filter[1024];
