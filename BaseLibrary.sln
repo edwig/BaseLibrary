@@ -10,19 +10,35 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		LICENSE = LICENSE
 		README.md = README.md
+		Documentation\Releasenotes.txt = Documentation\Releasenotes.txt
 		sourceclean.cmd = sourceclean.cmd
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\UnitTests.vcxproj", "{0D712016-6A8E-4CBF-B252-C0771ECB03FE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2364C44B-2E4D-4631-A050-B47509AFBC82} = {2364C44B-2E4D-4631-A050-B47509AFBC82}
 	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Debug|x64.ActiveCfg = Debug|x64
 		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Debug|x64.Build.0 = Debug|x64
+		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Debug|x86.ActiveCfg = Debug|x64
 		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Release|x64.ActiveCfg = Release|x64
 		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Release|x64.Build.0 = Release|x64
+		{2364C44B-2E4D-4631-A050-B47509AFBC82}.Release|x86.ActiveCfg = Release|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Debug|x64.ActiveCfg = Debug|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Debug|x64.Build.0 = Debug|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Debug|x86.ActiveCfg = Debug|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Release|x64.ActiveCfg = Release|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Release|x64.Build.0 = Release|x64
+		{0D712016-6A8E-4CBF-B252-C0771ECB03FE}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -355,6 +355,8 @@ public:
 
   // Complete the message (members to XML)
   void            CompleteTheMessage();
+  // Clean up the empty elements in the message
+  bool            CleanUp();
 
 protected:
   // Encrypt the whole message: yielding a new message

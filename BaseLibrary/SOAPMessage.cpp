@@ -1218,6 +1218,26 @@ SOAPMessage::SetSoapEnvelope()
   }
 }
 
+// Clean up the empty elements in the message
+bool
+SOAPMessage::CleanUp()
+{
+  bool result = false;
+
+  if(m_body && m_paramObject)
+  {
+    result = true;
+    for(int num = (int)m_paramObject->GetChildren().size() - 1; num >= 0; --num)
+    {
+      if(!CleanUpElement(m_paramObject->GetChildren()[num],true))
+      {
+        result = false;
+      }
+    }
+  }
+  return result;
+}
+
 #pragma endregion XMLOutput
 
 #pragma region WS-Header_Output

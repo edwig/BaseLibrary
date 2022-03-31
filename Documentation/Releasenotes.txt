@@ -1,0 +1,11 @@
+RELEASENOTES BASELIBRARY
+========================
+
+Version 1.0.1
+-------------
+1) Added method "XMLMessage::CleanUpElement". This cleans up elements that are empty.
+   That is; elements that have no payload value AND no child elements.
+   Returns 'true' if element is removed, otherwise 'false'
+2) Added method "SOAPMessage::CleanUp". This cleans up elements that are empty below 
+   the parameters-node (first node in the soap "Body"). This method uses the 
+   XMLMessage::CleanUpElement method mentioned above.
