@@ -9,3 +9,5 @@ Version 1.0.1
 2) Added method "SOAPMessage::CleanUp". This cleans up elements that are empty below 
    the parameters-node (first node in the soap "Body"). This method uses the 
    XMLMessage::CleanUpElement method mentioned above.
+3) In case of an invalid soapAction name, the first node within the body of a SOAPMessge
+   will now be generated as 'SoapAction'.
