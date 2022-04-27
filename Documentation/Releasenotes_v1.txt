@@ -1,0 +1,34 @@
+RELEASENOTES BASE LIBARY
+========================
+
+This base library has been created out of common classes from the Marlin, SQLComponents,
+StyleFramework, bcd, StringIntegration and other projects on https://github.com/edwig
+By doing so, the maintenancae of these libraries is strongly simplified.
+Source project directories can be replaced in target projects bij simply replacing the
+whole directory including the VS project files. 
+Target projects are at least "Kwatta", "OpenODBCQuerytool", "Marlin", "CXHibernate".
+But many more open source and commercial projects exist that use this base library.
+
+Version 1.0.0 of 18-03-2022
+---------------------------
+Initial version of this library
+
+Version 1.0.1 of 08-04-2022
+---------------------------
+1) Added method "XMLMessage::CleanUpElement". This cleans up elements that are empty.
+   That is; elements that have no payload value AND no child elements.
+   Returns 'true' if element is removed, otherwise 'false'
+2) Added method "SOAPMessage::CleanUp". This cleans up elements that are empty below 
+   the parameters-node (first node in the soap "Body"). This method uses the 
+   XMLMessage::CleanUpElement method mentioned above.
+3) In case of an invalid soapAction name, the first node within the body of a SOAPMessge
+   will now be generated as 'SoapAction'.
+
+Version 1.0.2 of 27-04-2022
+---------------------------
+1)  Verious additions to MultiPartBuffer to accomodate OData 4.0 "$batch" mechanisms
+    of cascading multipart/mixed buffers for changesets of data
+2)  Assignment operator for a JSON message to a HTMLMessage
+3)  Small memory fixes for FileBuffer1
+4)  Additions to SOAPMessage to support WS-Security UsernameTokenProfile.
+
