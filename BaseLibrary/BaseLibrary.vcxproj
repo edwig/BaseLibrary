@@ -112,6 +112,7 @@
     <ClInclude Include="DefuseBOM.h" />
     <ClInclude Include="EventLogRegistration.h" />
     <ClInclude Include="ExecuteProcess.h" />
+    <ClInclude Include="ExecuteShell.h" />
     <ClInclude Include="FileBuffer.h" />
     <ClInclude Include="FileDialog.h" />
     <ClInclude Include="framework.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="DefuseBOM.cpp" />
     <ClCompile Include="EventLogRegistration.cpp" />
     <ClCompile Include="ExecuteProcess.cpp" />
+    <ClCompile Include="ExecuteShell.cpp" />
     <ClCompile Include="FileBuffer.cpp" />
     <ClCompile Include="FileDialog.cpp" />
     <ClCompile Include="GenerateGUID.cpp" />
