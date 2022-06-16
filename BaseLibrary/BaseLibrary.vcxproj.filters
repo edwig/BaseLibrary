@@ -132,9 +132,6 @@
     <ClInclude Include="WinINETError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HTTPError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Routing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -263,6 +260,9 @@
     </ClInclude>
     <ClInclude Include="ExecuteShell.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTTPError.h">
+      <Filter>Header Files\HTTP_JSON</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
