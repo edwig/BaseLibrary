@@ -32,3 +32,8 @@ Version 1.0.2 of 27-04-2022
 3)  Small memory fixes for FileBuffer1
 4)  Additions to SOAPMessage to support WS-Security UsernameTokenProfile.
 
+Version 1.0.3 of 16-06-2022
+---------------------------
+1) Added Max-Age attribute to Cookies for the HTTPSite.
+2) Added an extra SetCookie() method for HTTPMessage containing ALL the cookie attriutes
+3) Added the "AddSecondsToSystemTime" function for calculating the expiration time of cookies
