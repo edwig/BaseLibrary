@@ -231,7 +231,7 @@ bool
 XMLMessage::LoadFile(const XString& p_fileName)
 {
   FILE* file = nullptr;
-  if(fopen_s(&file,p_fileName,"rb") == 0 && file)
+  if(fopen_s(&file,p_fileName,"r") == 0 && file)
   {
     // Find the length of a file
     fseek(file,0,SEEK_END);
@@ -250,15 +250,17 @@ XMLMessage::LoadFile(const XString& p_fileName)
     // so shut up the warning about stack overflow
     XString inhoud;
     char* buffer = inhoud.GetBufferSetLength(length + 1);
-
-    // Read the buffer
-    if(fread(buffer,1,length,file) < length)
+    if(buffer)
     {
-      fclose(file);
-      return false;
+      // Read the buffer
+      fread(buffer,1,length,file);
+      if(ferror(file))
+      {
+        fclose(file);
+        return false;
+      }
+      buffer[length] = 0;
     }
-    buffer[length] = 0;
-
     // Buffer unlock
     inhoud.ReleaseBuffer(length);
 
