@@ -253,13 +253,13 @@ XMLMessage::LoadFile(const XString& p_fileName)
     if(buffer)
     {
       // Read the buffer
-      fread(buffer,1,length,file);
-      if(ferror(file))
+      size_t count = fread(buffer,1,length,file);
+      if(ferror(file) || count > length)
       {
         fclose(file);
         return false;
       }
-      buffer[length] = 0;
+      buffer[count] = 0;
     }
     // Buffer unlock
     inhoud.ReleaseBuffer(length);
