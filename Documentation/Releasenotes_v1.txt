@@ -37,3 +37,10 @@ Version 1.0.3 of 16-06-2022
 1) Added Max-Age attribute to Cookies for the HTTPSite.
 2) Added an extra SetCookie() method for HTTPMessage containing ALL the cookie attriutes
 3) Added the "AddSecondsToSystemTime" function for calculating the expiration time of cookies
+4) Added extra HTTP status codes from the MDN network to the HTTPError system
+
+Version 1.0.4 of 24-07-2022
+---------------------------
+1) Changed all *.c files to *.cpp to stop the linker from complaining about PDB symbols
+2) Fixed HTTPMessage reading bug. Now reading always in 'text' mode for XML files
+3) Support for headers inside the Multpart/Mixed buffers
