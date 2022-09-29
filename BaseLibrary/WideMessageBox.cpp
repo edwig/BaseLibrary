@@ -25,6 +25,7 @@
 //
 #include "pch.h"
 #include "WideMessageBox.h"
+#include "ConvertWideString.h"
 #include <VersionHelpers.h>
 
 #ifndef MB_CANCELTRYCONTINUE
@@ -167,7 +168,6 @@ WideMessageBox(HWND        p_hwnd
     // or foreground function not provided in TaskDialog
     return ::MessageBox(p_hwnd,p_message,p_title,p_buttons);
   }
-  USES_CONVERSION; // For title and message
   TASKDIALOGCONFIG config;
   int pressed = 0;
 
@@ -267,8 +267,8 @@ WideMessageBox(HWND        p_hwnd
     TRACE("WideMessageBox: Cannot get an off-screen measure of the text: %s",text.GetString());
     return ::MessageBox(p_hwnd,p_message,p_title,p_buttons);
   }
-  CComBSTR mess  = CT2CW(text);
-  config.pszContent = mess;
+  std::wstring mess = StringToWString(text);
+  config.pszContent = mess.c_str();
 
   // Set callback for server programs
   if(p_buttons & MB_SETFOREGROUND)

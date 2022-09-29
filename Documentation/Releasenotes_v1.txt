@@ -44,3 +44,11 @@ Version 1.0.4 of 24-07-2022
 1) Changed all *.c files to *.cpp to stop the linker from complaining about PDB symbols
 2) Fixed HTTPMessage reading bug. Now reading always in 'text' mode for XML files
 3) Support for headers inside the Multpart/Mixed buffers
+
+Version 1.0.5 of 29-09-2022
+---------------------------
+1) Added the WideMessageBox, to be able to display standard MessageBox in a wider format
+   than was allowed since Windows-Vista
+2) Ran Code-Analyze with the standard "Microsoft Native code rule" set, and corrected
+   a lot of little bugs and quirks. Now compiles with "Code analysis" without errors or 
+   warnings in this extended ruleset.
