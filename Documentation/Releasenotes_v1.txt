@@ -53,3 +53,9 @@ Version 1.0.5 of 29-09-2022
    a lot of little bugs and quirks. Now compiles with "Code analysis" without errors or 
    warnings in this extended ruleset.
 3) Dynamic version of the alert files registration of paths to create the alertfiles on.
+
+Version 1.0.6 of 13-10-2022
+---------------------------
+1) Eventlog registration has changed to make it more robust. No pre-start and cleanup code
+   needs to be called any more in your application. Just make calls to a service log request.
+2) Small fix for "GetAlertlogPath".
