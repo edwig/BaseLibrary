@@ -51,7 +51,7 @@ RegisterMessagesDllForService(XString p_serviceName,XString p_messageDLL,XString
   // Record our service name for service reporting purposes, if not already set
   if(!g_svcname[0])
   {
-  StringCchCopy(g_svcname,SERVICE_NAME_LENGTH,p_serviceName);
+    StringCchCopy(g_svcname,SERVICE_NAME_LENGTH,p_serviceName);
   }
 
   // Construct absolute filename of the DLL
@@ -81,27 +81,27 @@ RegisterMessagesDllForService(XString p_serviceName,XString p_messageDLL,XString
   // Create the event source as a subkey of the log. 
   StringCchPrintf(szBuf,cchSize,"SYSTEM\\CurrentControlSet\\Services\\EventLog\\%s\\%s",eventLogCategory,p_serviceName.GetString()); 
 
-  if (RegCreateKeyEx(HKEY_LOCAL_MACHINE
-                    ,szBuf
-                    ,0
-                    ,NULL
-                    ,REG_OPTION_NON_VOLATILE
-                    ,KEY_WRITE
-                    ,NULL
-                    ,&hk
-                    ,&dwDisp)) 
+  if(RegCreateKeyEx(HKEY_LOCAL_MACHINE
+                   ,szBuf
+                   ,0
+                   ,NULL
+                   ,REG_OPTION_NON_VOLATILE
+                   ,KEY_WRITE
+                   ,NULL
+                   ,&hk
+                   ,&dwDisp)) 
   {
     p_error.Format("Could not create the registry key for the %s.\n",p_messageDLL.GetString()); 
     return 0;
   }
 
   // Set the name of the message file. 
-  if (RegSetValueEx(hk,                             // subkey handle 
-                   "EventMessageFile",              // value name 
-                    0,                              // must be zero 
-                    REG_EXPAND_SZ,                  // value type 
-                    (LPBYTE) pathname.GetString(),  // pointer to value data 
-                    (DWORD)  pathname.GetLength())) // data size
+  if(RegSetValueEx(hk,                             // subkey handle 
+                  "EventMessageFile",              // value name 
+                   0,                              // must be zero 
+                   REG_EXPAND_SZ,                  // value type 
+                   (LPBYTE) pathname.GetString(),  // pointer to value data 
+                   (DWORD)  pathname.GetLength())) // data size
   {
     p_error = "Could not set the logging \"EventMessageFile\" value.\n"; 
     RegCloseKey(hk); 
@@ -112,12 +112,12 @@ RegisterMessagesDllForService(XString p_serviceName,XString p_messageDLL,XString
   DWORD dwData = EVENTLOG_SUCCESS          | EVENTLOG_ERROR_TYPE    | EVENTLOG_WARNING_TYPE | 
                  EVENTLOG_INFORMATION_TYPE | EVENTLOG_AUDIT_SUCCESS | EVENTLOG_AUDIT_FAILURE;
 
-  if (RegSetValueEx(hk,                // subkey handle 
-                   "TypesSupported",   // value name 
-                    0,                 // must be zero 
-                    REG_DWORD,         // value type 
-                    (LPBYTE)&dwData,   // pointer to value data 
-                    sizeof(DWORD)))    // length of value data 
+  if(RegSetValueEx(hk,                // subkey handle 
+                  "TypesSupported",   // value name 
+                   0,                 // must be zero 
+                   REG_DWORD,         // value type 
+                   (LPBYTE)&dwData,   // pointer to value data 
+                   sizeof(DWORD)))    // length of value data 
   {
     p_error.Format("Could not set the supported types for the %s.\n",p_messageDLL.GetString()); 
     RegCloseKey(hk); 
