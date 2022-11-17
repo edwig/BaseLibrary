@@ -47,6 +47,8 @@ const char* tokens[] =
   ,"//"
   ,"("
   ,")"
+  ,"+"
+  ,"||"
   ," "
   ,"\t"
   ,"\r"
@@ -73,6 +75,12 @@ SchemaReWriter::SchemaReWriter(XString p_schema)
 
 }
 
+void
+SchemaReWriter::SetOption(SROption p_option)
+{
+  m_options |= (int) p_option;
+}
+
 XString 
 SchemaReWriter::Parse(XString p_input)
 {
@@ -81,7 +89,7 @@ SchemaReWriter::Parse(XString p_input)
 
   if(m_level != 0)
   {
-    MessageBox(NULL,"Oneven aantal '(' en ')' tekens in het statement","Waarschuwing",MB_OK|MB_ICONERROR);
+    MessageBox(NULL,"Odd number of '(' and ')' tokens in the statement","Warning",MB_OK|MB_ICONERROR);
   }
   return m_output;
 }
@@ -220,6 +228,10 @@ SchemaReWriter::PrintToken()
                               break;
     case Token::TK_PAR_CLOSE: m_output += ')';
                               break;
+    case Token::TK_PAR_ADD:   m_output += (m_options & (int)SROption::SRO_ADD_TO_CONCAT) ? "||" : "+";
+                              break;
+    case Token::TK_PAR_CONCAT:m_output += (m_options & (int)SROption::SRO_CONCAT_TO_ADD) ? "+" : "||";
+                              break;
     case Token::TK_SPACE:     m_output += ' ';
                               break;
     case Token::TK_TAB:       m_output += '\t';
@@ -278,7 +290,7 @@ SchemaReWriter::AppendSchema()
 
   if(m_token == Token::TK_POINT)
   {
-    // Er was al een schema naam
+    // There already was a schema name
     m_output += temp2;
   }
   else
@@ -348,10 +360,12 @@ SchemaReWriter::GetToken()
                   return Token::TK_DQUOTE;
       case '-':   return CommentSQL();
       case '/':   return CommentCPP();
+      case '|':   return Concat();
       case '.':   return Token::TK_POINT;
       case ',':   return Token::TK_COMMA;
       case '(':   return Token::TK_PAR_OPEN;
       case ')':   return Token::TK_PAR_CLOSE;
+      case '+':   return Token::TK_PAR_ADD;
       case ' ':   return Token::TK_SPACE;
       case '\t':  return Token::TK_TAB;
       case '\r':  return Token::TK_CR;
@@ -454,6 +468,18 @@ SchemaReWriter::CommentCPP()
     UnGetChar();
     return Token::TK_PLAIN;
   }
+}
+
+Token
+SchemaReWriter::Concat()
+{
+  int ch = GetChar();
+  if(ch == '|')
+  {
+    return Token::TK_PAR_CONCAT;
+  }
+  UnGetChar();
+  return Token::TK_PLAIN;
 }
 
 void

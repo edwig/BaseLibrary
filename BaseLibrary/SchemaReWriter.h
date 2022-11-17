@@ -40,6 +40,8 @@ enum class Token
  ,TK_COMM_CPP       // //
  ,TK_PAR_OPEN       // (
  ,TK_PAR_CLOSE      // )
+ ,TK_PAR_ADD        // +
+ ,TK_PAR_CONCAT     // ||
  ,TK_SPACE 
  ,TK_TAB
  ,TK_CR
@@ -58,17 +60,25 @@ enum class Token
  ,TK_UNION
 };
 
+enum class SROption
+{
+  SRO_NO_OPTION      = 0x0000
+ ,SRO_CONCAT_TO_ADD  = 0x0001   // ISO SQL || to MS-SQL + for two strings
+ ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
+};
 
 class SchemaReWriter
 {
 public:
   SchemaReWriter(XString p_schema);
-
+  // Our primary function
   XString Parse(XString p_input);
+  // Settings and results
+  void    SetOption(SROption p_option);
   int     GetReplaced() { return m_replaced; };
+  int     GetOptions()  { return m_options;  };
 private:
   void    ParseStatement();
-
   // Token parsing
   Token   GetToken();
   void    PrintToken();
@@ -79,20 +89,20 @@ private:
   void    SkipSpaceAndComment();
   Token   CommentSQL();
   Token   CommentCPP();
+  Token   Concat();
   void    QuoteString(int p_ending);
   void    UnGetChar();
   int     GetChar();
-
 
   // Primary data
   XString m_schema;
   XString m_input;
   XString m_output;
-
   // Processing data
-  int     m_position { 0 };
+  int     m_position    { 0      };
   Token   m_token       { Token::TK_EOS };
   XString m_tokenString;
+  int     m_options     { 0      };
   int     m_level       { 0      };
   Token   m_inStatement { Token::TK_EOS };
   bool    m_inFrom      { false  };
