@@ -81,6 +81,12 @@ SchemaReWriter::SetOption(SROption p_option)
   m_options |= (int) p_option;
 }
 
+void
+SchemaReWriter::SetRewriteCode(FCodes* p_codes)
+{
+  m_codes = p_codes;
+}
+
 XString 
 SchemaReWriter::Parse(XString p_input)
 {
@@ -102,7 +108,6 @@ SchemaReWriter::ParseStatement()
   ++m_level;
   while(true)
   {
-
     m_token = GetToken();
     if(m_token == Token::TK_EOS)
     {
@@ -284,21 +289,18 @@ SchemaReWriter::AppendSchema()
 {
   SkipSpaceAndComment();
 
-  Token   temp1 = m_token;
-  XString temp2 = m_tokenString;
-  m_token = GetToken();
+  int ch = GetChar();
 
-  if(m_token == Token::TK_POINT)
+  if(ch == '.')
   {
     // There already was a schema name
-    m_output += temp2;
+    m_output += m_tokenString;
+    m_token   = GetToken();
   }
   else
   {
     // Reset token
-    UnGetChar();
-    m_token = temp1;
-    m_tokenString = temp2;
+    UnGetChar(ch);
 
     if(!m_schema.IsEmpty())
     {
@@ -343,11 +345,6 @@ Token
 SchemaReWriter::GetToken()
 {
   m_tokenString.Empty();
-  if(m_input.GetLength() < m_position)
-  {
-    return Token::TK_EOS;
-  }
-
   int ch = 0;
 
   if((ch = GetChar()) != (int)Token::TK_EOS)
@@ -387,7 +384,7 @@ SchemaReWriter::GetToken()
       }
       if(ch)
       {
-        UnGetChar();
+        UnGetChar(ch);
       }
       return FindToken();
     }
@@ -407,17 +404,27 @@ SchemaReWriter::FindToken()
       return (Token) ind;
     }
   }
+  // Replacement code
+  if(m_codes)
+  {
+    FCodes::iterator it = m_codes->find(m_tokenString);
+    if(it != m_codes->end())
+    {
+      m_tokenString = it->second;
+    }
+  }
   return Token::TK_PLAIN;
 }
 
 Token
 SchemaReWriter::CommentSQL()
 {
-  if(GetChar() == '-')
+  int ch = GetChar();
+  if(ch == '-')
   {
     while(true)
     {
-      int ch = GetChar();
+      ch = GetChar();
       if(ch == 0 || ch == '\n')
       {
         break;
@@ -426,7 +433,7 @@ SchemaReWriter::CommentSQL()
     }
     return Token::TK_COMM_SQL;
   }
-  UnGetChar();
+  UnGetChar(ch);
   return Token::TK_PLAIN;
 }
 
@@ -434,7 +441,6 @@ Token
 SchemaReWriter::CommentCPP()
 {
   int ch = GetChar();
-
   if(ch == '/')
   {
     while(true)
@@ -465,7 +471,7 @@ SchemaReWriter::CommentCPP()
   }
   else
   {
-    UnGetChar();
+    UnGetChar(ch);
     return Token::TK_PLAIN;
   }
 }
@@ -478,7 +484,7 @@ SchemaReWriter::Concat()
   {
     return Token::TK_PAR_CONCAT;
   }
-  UnGetChar();
+  UnGetChar(ch);
   return Token::TK_PLAIN;
 }
 
@@ -499,17 +505,23 @@ SchemaReWriter::QuoteString(int p_ending)
 }
 
 void
-SchemaReWriter::UnGetChar()
+SchemaReWriter::UnGetChar(int p_char)
 {
-  if(m_position > 0)
+  if(m_ungetch == 0)
   {
-    --m_position;
+    m_ungetch = p_char;
   }
 }
 
 int
 SchemaReWriter::GetChar()
 {
+  if(m_ungetch)
+  {
+    int ch = m_ungetch;
+    m_ungetch = 0;
+    return ch;
+  }
   if(m_position < m_input.GetLength())
   {
     return m_input.GetAt(m_position++);

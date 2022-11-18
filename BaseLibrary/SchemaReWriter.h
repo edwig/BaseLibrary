@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 //
 #pragma once
+#include <map>
 
 enum class Token
 {
@@ -67,6 +68,15 @@ enum class SROption
  ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
 };
 
+struct StringICompare
+{
+  bool operator()(const XString lhs,const XString rhs) const
+  {
+    return lhs.CompareNoCase(rhs) < 0;
+  }
+};
+using FCodes = std::map<XString,XString,StringICompare>;
+
 class SchemaReWriter
 {
 public:
@@ -75,6 +85,7 @@ public:
   XString Parse(XString p_input);
   // Settings and results
   void    SetOption(SROption p_option);
+  void    SetRewriteCode(FCodes* p_codes);
   int     GetReplaced() { return m_replaced; };
   int     GetOptions()  { return m_options;  };
 private:
@@ -91,21 +102,24 @@ private:
   Token   CommentCPP();
   Token   Concat();
   void    QuoteString(int p_ending);
-  void    UnGetChar();
+  void    UnGetChar(int p_char);
   int     GetChar();
 
   // Primary data
-  XString m_schema;
-  XString m_input;
-  XString m_output;
+  XString   m_schema;
+  XString   m_input;
+  XString   m_output;
+  // Options for processing
+  int       m_options     { 0       };
+  FCodes*   m_codes       { nullptr };
   // Processing data
-  int     m_position    { 0      };
-  Token   m_token       { Token::TK_EOS };
-  XString m_tokenString;
-  int     m_options     { 0      };
-  int     m_level       { 0      };
-  Token   m_inStatement { Token::TK_EOS };
-  bool    m_inFrom      { false  };
-  bool    m_nextTable   { false  };
-  int     m_replaced    { 0      };
+  int       m_position    { 0       };
+  Token     m_token       { Token::TK_EOS };
+  XString   m_tokenString;
+  int       m_level       { 0       };
+  int       m_ungetch     { 0       };
+  Token     m_inStatement { Token::TK_EOS };
+  bool      m_inFrom      { false   };
+  bool      m_nextTable   { false   };
+  int       m_replaced    { 0       };
 };
