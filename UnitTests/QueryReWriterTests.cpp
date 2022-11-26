@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include <SchemaReWriter.h>
+#include <QueryReWriter.h>
 #include <map>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -8,19 +8,55 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace BaseLibraryUnitTests
 {
 
+static FCodes g_specials;
 static FCodes g_codes;
-
+static FCodes g_odbc;
 
 void FillCodes()
 {
+  if(!g_codes.empty())
+  {
+    return;
+  }
+
   g_codes["NVL"]     = "ISNULL";
   g_codes["UPPER"]   = "UCASE";
   g_codes["LOWER"]   = "LCASE";
   g_codes["SYSDATE"] = "CURRENT_TIMESTAMP";
 }
 
+void FillODBCEscapes()
+{
+  if(!g_odbc.empty())
+  {
+    return;
+  }
+  g_odbc["LOWER"]    = "LCASE";
+  g_odbc["UPPER"]    = "UCASE";
+  g_odbc["NVL"]      = "ISNULL";
+  g_odbc["DATABASE"] = "DATABASE";
 
-TEST_CLASS(SchemaRewriterTests)
+  for(auto& odbc : g_odbc)
+  {
+    XString trans = odbc.second;
+    FCodes::iterator it = g_odbc.find(trans);
+    if(it == g_odbc.end())
+    {
+      g_odbc[trans] = trans;
+    }
+  }
+}
+
+void FillSpecials()
+{
+  if(!g_specials.empty())
+  {
+    return;
+  }
+  g_specials["BRIEF_EW"] = "metaschema";
+}
+
+TEST_CLASS(QueryReWriterTests)
 {
 public:
 
@@ -28,7 +64,7 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema");
 
-    SchemaReWriter re("other");
+    QueryReWriter re("other");
 
     XString input = "SELECT t.one\n"
                     "      ,t.two\n"
@@ -49,7 +85,7 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema in a condition");
 
-    SchemaReWriter re("other");
+    QueryReWriter re("other");
 
     XString input = "SELECT one\n"
                     "      ,two\n"
@@ -70,7 +106,7 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema with comments");
 
-    SchemaReWriter re("other");
+    QueryReWriter re("other");
 
     XString input = "SELECT one\n"
                     "      ,two\n"
@@ -95,7 +131,7 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter with meta characters in table name");
 
-    SchemaReWriter re("other");
+    QueryReWriter re("other");
 
     XString input = "SELECT one || two\n"
                     "      ,'Strings are allowed'\n"
@@ -118,7 +154,7 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter strings concatenation");
 
-    SchemaReWriter re("other");
+    QueryReWriter re("other");
     re.SetOption(SROption::SRO_CONCAT_TO_ADD);
 
     XString input = "SELECT one || two\n"
@@ -143,8 +179,8 @@ public:
     Logger::WriteMessage("Testing Schema Rewriter code words conversion");
 
     FillCodes();
-    SchemaReWriter re("other");
-    re.SetRewriteCode(&g_codes);
+    QueryReWriter re("other");
+    re.SetRewriteCodes(&g_codes);
 
     XString input = "SELECT lower(nvl(one,'')) FROM dual;";
     XString output = re.Parse(input);
@@ -159,12 +195,60 @@ public:
     Logger::WriteMessage("Testing Schema Rewriter end-of-statement without delimeter");
 
     FillCodes();
-    SchemaReWriter re("other");
-    re.SetRewriteCode(&g_codes);
+    QueryReWriter re("other");
+    re.SetRewriteCodes(&g_codes);
 
     XString input = "SELECT sysdate FROM dual";
     XString output = re.Parse(input);
     XString expect = "SELECT CURRENT_TIMESTAMP FROM other.dual";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }
+
+  TEST_METHOD(RewriterTestODBCEscapes1)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
+
+    FillODBCEscapes();
+    QueryReWriter re("other");
+    re.SetODBCFunctions(&g_odbc);
+
+    XString input = "SELECT lower(nvl(one,'')) FROM dual;";
+    XString output = re.Parse(input);
+    XString expect = "SELECT {fn LCASE({fn ISNULL(one,'')})} FROM other.dual;";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }
+
+  TEST_METHOD(RewriterTestODBCEscapes2)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
+
+    FillODBCEscapes();
+    QueryReWriter re("other");
+    re.SetODBCFunctions(&g_odbc);
+
+    XString input = "SELECT lower(instr(name,'some')) FROM dual;";
+    XString output = re.Parse(input);
+    XString expect = "SELECT {fn LCASE(instr(name,'some'))} FROM other.dual;";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }
+
+  TEST_METHOD(RewriterTestSpecials)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter special schema treatment");
+
+    FillSpecials();
+    QueryReWriter re("myschema");
+    re.SetSchemaSpecial(&g_specials);
+
+    XString input = "SELECT brief_ew(name,12345) FROM mytable";
+    XString output = re.Parse(input);
+    XString expect = "SELECT metaschema.brief_ew(name,12345) FROM myschema.mytable";
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));

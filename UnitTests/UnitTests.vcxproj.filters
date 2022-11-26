@@ -27,7 +27,10 @@
     <ClCompile Include="JSONTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SchemaRewriterTests.cpp">
+    <ClCompile Include="TestXStringBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryReWriterTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

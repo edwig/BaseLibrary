@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////////
 //
-// SourceFile: SchemaReWriter.cpp
+// SourceFile: QueryReWriter.cpp
 //
 // BaseLibrary: Indispensable general objects and functions
 // 
@@ -26,7 +26,7 @@
 // THE SOFTWARE.
 //
 #include "pch.h"
-#include "SchemaReWriter.h"
+#include "QueryReWriter.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +37,7 @@ static char THIS_FILE[] = __FILE__;
 const char* tokens[] =
 {
    ""
+  ,""
   ,""
   ,"'"
   ,"\""
@@ -69,26 +70,38 @@ const char* tokens[] =
 
 ///////////////////////////////////////////////////////////////////////////
 
-SchemaReWriter::SchemaReWriter(XString p_schema)
+QueryReWriter::QueryReWriter(XString p_schema)
                :m_schema(p_schema)
 {
 
 }
 
 void
-SchemaReWriter::SetOption(SROption p_option)
+QueryReWriter::SetOption(SROption p_option)
 {
   m_options |= (int) p_option;
 }
 
 void
-SchemaReWriter::SetRewriteCode(FCodes* p_codes)
+QueryReWriter::SetSchemaSpecial(FCodes* p_specials)
+{
+  m_specials = p_specials;
+}
+
+void
+QueryReWriter::SetRewriteCodes(FCodes* p_codes)
 {
   m_codes = p_codes;
 }
 
+void
+QueryReWriter::SetODBCFunctions(FCodes* p_odbcfuncs)
+{
+  m_odbcfuncs = p_odbcfuncs;
+}
+
 XString 
-SchemaReWriter::Parse(XString p_input)
+QueryReWriter::Parse(XString p_input)
 {
   m_input = p_input;
   ParseStatement();
@@ -101,9 +114,10 @@ SchemaReWriter::Parse(XString p_input)
 }
 
 void
-SchemaReWriter::ParseStatement()
+QueryReWriter::ParseStatement(bool p_closingEscape /*= false*/)
 {
   bool begin = true;
+  bool odbc  = false;
 
   ++m_level;
   while(true)
@@ -132,11 +146,15 @@ SchemaReWriter::ParseStatement()
       PrintToken();
       Token oldStatement = m_inStatement;
       bool  oldFrom      = m_inFrom;
-      m_inStatement = Token::TK_EOS;
-      ParseStatement();
-      m_inStatement = oldStatement;
-      m_inFrom      = oldFrom;
+      m_inStatement      = Token::TK_EOS;
+      ParseStatement(odbc);
+      m_inStatement      = oldStatement;
+      m_inFrom           = oldFrom;
       continue;
+    }
+    else if(m_token == Token::TK_PLAIN_ODBC)
+    {
+      odbc = true;
     }
 
     // Append schema
@@ -171,7 +189,7 @@ SchemaReWriter::ParseStatement()
       m_nextTable = true;
     }
 
-    // Einde van next table
+    // End of next table
     if(m_token == Token::TK_WHERE || m_token == Token::TK_GROUP || m_token == Token::TK_ORDER || m_token == Token::TK_HAVING)
     {
       m_inFrom    = false;
@@ -192,6 +210,10 @@ SchemaReWriter::ParseStatement()
     // End of level
     if(m_token == Token::TK_PAR_CLOSE)
     {
+      if(p_closingEscape)
+      {
+        m_output += "}";
+      }
       break;
     }
   }
@@ -199,11 +221,13 @@ SchemaReWriter::ParseStatement()
 }
 
 void
-SchemaReWriter::PrintToken()
+QueryReWriter::PrintToken()
 {
   switch(m_token)
   {
     case Token::TK_PLAIN:     PrintSpecials();
+                              break;
+    case Token::TK_PLAIN_ODBC:m_output += m_tokenString;
                               break;
     case Token::TK_SQUOTE:    m_output += '\'';
                               m_output += m_tokenString;
@@ -212,10 +236,6 @@ SchemaReWriter::PrintToken()
     case Token::TK_DQUOTE:    m_output += '\"';
                               m_output += m_tokenString;
                               m_output += '\"';
-                              break;
-    case Token::TK_POINT:     m_output += '.';
-                              break;
-    case Token::TK_COMMA:     m_output += ',';
                               break;
     case Token::TK_COMM_SQL:  m_output += "--";
                               m_output += m_tokenString;
@@ -229,63 +249,55 @@ SchemaReWriter::PrintToken()
                               m_output += m_tokenString;
                               m_output += '\n';
                               break;
-    case Token::TK_PAR_OPEN:  m_output += '(';
-                              break;
-    case Token::TK_PAR_CLOSE: m_output += ')';
-                              break;
     case Token::TK_PAR_ADD:   m_output += (m_options & (int)SROption::SRO_ADD_TO_CONCAT) ? "||" : "+";
                               break;
     case Token::TK_PAR_CONCAT:m_output += (m_options & (int)SROption::SRO_CONCAT_TO_ADD) ? "+" : "||";
                               break;
-    case Token::TK_SPACE:     m_output += ' ';
-                              break;
-    case Token::TK_TAB:       m_output += '\t';
-                              break;
-    case Token::TK_CR:        m_output += '\r';
-                              break;
-    case Token::TK_NEWLINE:   m_output += '\n';
-                              break;
-    case Token::TK_SELECT:    m_output += "SELECT";
-                              break;
-    case Token::TK_INSERT:    m_output += "INSERT";
-                              break;
-    case Token::TK_UPDATE:    m_output += "UPDATE";
-                              break;
-    case Token::TK_DELETE:    m_output += "DELETE";
-                              break;
-    case Token::TK_FROM:      m_output += "FROM";
-                              break;
-    case Token::TK_JOIN:      m_output += "JOIN";
-                              break;
-    case Token::TK_WHERE:     m_output += "WHERE";
-                              break;
-    case Token::TK_GROUP:     m_output += "GROUP";
-                              break;
-    case Token::TK_ORDER:     m_output += "ORDER";
-                              break;
-    case Token::TK_HAVING:    m_output += "HAVING";
-                              break;
-    case Token::TK_INTO:      m_output += "INTO";
-                              break;
-    case Token::TK_UNION:     m_output += "UNION";
+    case Token::TK_POINT:     [[fallthrough]];
+    case Token::TK_COMMA:     [[fallthrough]];
+    case Token::TK_PAR_OPEN:  [[fallthrough]];
+    case Token::TK_PAR_CLOSE: [[fallthrough]];
+    case Token::TK_SPACE:     [[fallthrough]];
+    case Token::TK_TAB:       [[fallthrough]];
+    case Token::TK_CR:        [[fallthrough]];
+    case Token::TK_NEWLINE:   [[fallthrough]];
+    case Token::TK_SELECT:    [[fallthrough]];
+    case Token::TK_INSERT:    [[fallthrough]];
+    case Token::TK_UPDATE:    [[fallthrough]];
+    case Token::TK_DELETE:    [[fallthrough]];
+    case Token::TK_FROM:      [[fallthrough]];
+    case Token::TK_JOIN:      [[fallthrough]];
+    case Token::TK_WHERE:     [[fallthrough]];
+    case Token::TK_GROUP:     [[fallthrough]];
+    case Token::TK_ORDER:     [[fallthrough]];
+    case Token::TK_HAVING:    [[fallthrough]];
+    case Token::TK_INTO:      [[fallthrough]];
+    case Token::TK_UNION:     m_output += tokens[(int)m_token];
                               break;
   }
 }
 
+// Some tokens or functions require a special treatment
+// to get the schema prepended
 void
-SchemaReWriter::PrintSpecials()
+QueryReWriter::PrintSpecials()
 {
-  if(m_tokenString.CompareNoCase("brief_ew") == 0)
+  if(m_specials)
   {
-    m_output += m_schema;
-    m_output += '.';
+    FCodes::iterator it = m_specials->find(m_tokenString);
+    if(it != m_specials->end())
+    {
+      ++m_replaced;
+      m_output += it->second;
+      m_output += '.';
+    }
   }
   m_output += m_tokenString; 
 }
 
 // THIS IS WHY WE ARE HERE IN THIS CLASS!
 void
-SchemaReWriter::AppendSchema()
+QueryReWriter::AppendSchema()
 {
   SkipSpaceAndComment();
 
@@ -320,7 +332,7 @@ SchemaReWriter::AppendSchema()
 }
 
 void
-SchemaReWriter::SkipSpaceAndComment()
+QueryReWriter::SkipSpaceAndComment()
 {
   while(true)
   {
@@ -342,7 +354,7 @@ SchemaReWriter::SkipSpaceAndComment()
 
 
 Token
-SchemaReWriter::GetToken()
+QueryReWriter::GetToken()
 {
   m_tokenString.Empty();
   int ch = 0;
@@ -357,7 +369,7 @@ SchemaReWriter::GetToken()
                   return Token::TK_DQUOTE;
       case '-':   return CommentSQL();
       case '/':   return CommentCPP();
-      case '|':   return Concat();
+      case '|':   return StringConcatenate();
       case '.':   return Token::TK_POINT;
       case ',':   return Token::TK_COMMA;
       case '(':   return Token::TK_PAR_OPEN;
@@ -395,7 +407,7 @@ SchemaReWriter::GetToken()
 }
 
 Token
-SchemaReWriter::FindToken()
+QueryReWriter::FindToken()
 {
   for(int ind = 0;ind < sizeof(tokens) / sizeof(const char*); ++ind)
   {
@@ -405,7 +417,16 @@ SchemaReWriter::FindToken()
     }
   }
   // Replacement code
-  if(m_codes)
+  if(m_odbcfuncs)
+  {
+    FCodes::iterator it = m_odbcfuncs->find(m_tokenString);
+    if(it != m_odbcfuncs->end())
+    {
+      m_tokenString = "{fn " + it->second;
+      return Token::TK_PLAIN_ODBC;
+    }
+  }
+  else if(m_codes)
   {
     FCodes::iterator it = m_codes->find(m_tokenString);
     if(it != m_codes->end())
@@ -417,7 +438,7 @@ SchemaReWriter::FindToken()
 }
 
 Token
-SchemaReWriter::CommentSQL()
+QueryReWriter::CommentSQL()
 {
   int ch = GetChar();
   if(ch == '-')
@@ -438,7 +459,7 @@ SchemaReWriter::CommentSQL()
 }
 
 Token
-SchemaReWriter::CommentCPP()
+QueryReWriter::CommentCPP()
 {
   int ch = GetChar();
   if(ch == '/')
@@ -477,7 +498,7 @@ SchemaReWriter::CommentCPP()
 }
 
 Token
-SchemaReWriter::Concat()
+QueryReWriter::StringConcatenate()
 {
   int ch = GetChar();
   if(ch == '|')
@@ -489,7 +510,7 @@ SchemaReWriter::Concat()
 }
 
 void
-SchemaReWriter::QuoteString(int p_ending)
+QueryReWriter::QuoteString(int p_ending)
 {
   int ch = 0;
 
@@ -505,7 +526,7 @@ SchemaReWriter::QuoteString(int p_ending)
 }
 
 void
-SchemaReWriter::UnGetChar(int p_char)
+QueryReWriter::UnGetChar(int p_char)
 {
   if(m_ungetch == 0)
   {
@@ -514,7 +535,7 @@ SchemaReWriter::UnGetChar(int p_char)
 }
 
 int
-SchemaReWriter::GetChar()
+QueryReWriter::GetChar()
 {
   if(m_ungetch)
   {
