@@ -307,6 +307,7 @@ QueryReWriter::AppendSchema()
   {
     // There already was a schema name
     m_output += m_tokenString;
+    m_output += '.';
     m_token   = GetToken();
   }
   else

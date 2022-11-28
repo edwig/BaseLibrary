@@ -281,5 +281,25 @@ public:
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
   }
-};
+
+  TEST_METHOD(RewriterTestNotRewriting)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter add schema");
+
+    QueryReWriter re("other");
+
+    XString input = "SELECT t.one\n"
+                    "      ,t.two\n"
+                    "  FROM other.table t\n"
+                    " WHERE t.three = 3";
+    XString output = re.Parse(input);
+
+    XString expect = "SELECT t.one\n"
+                     "      ,t.two\n"
+                     "  FROM other.table t\n"
+                     " WHERE t.three = 3";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }};
 }
