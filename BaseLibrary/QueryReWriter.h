@@ -37,6 +37,8 @@ enum class Token
  ,TK_DQUOTE         // Double quote string
  ,TK_POINT          // .
  ,TK_COMMA          // ,
+ ,TK_MINUS          // -
+ ,TK_DIVIDE         // /
  ,TK_COMM_SQL       // --
  ,TK_COMM_C         // /*
  ,TK_COMM_CPP       // //

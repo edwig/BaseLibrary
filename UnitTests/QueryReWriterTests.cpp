@@ -301,5 +301,32 @@ public:
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
-  }};
+  }
+
+  TEST_METHOD(RewriterTestMinusDivide)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter minus divide");
+
+    QueryReWriter re("other");
+
+    XString input = "SELECT t.one - t.two\n"
+                    "      ,three / four\n"
+                    "       /* C like comments\n"
+                    "          More than 1 line! */\n"
+                    "  FROM table t\n"
+                    " WHERE t.three = 3";
+    XString output = re.Parse(input);
+
+    XString expect = "SELECT t.one - t.two\n"
+                     "      ,three / four\n"
+                     "       /* C like comments\n"
+                     "          More than 1 line! */\n"
+                     "  FROM other.table t\n"
+                     " WHERE t.three = 3";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }
+
+};
 }

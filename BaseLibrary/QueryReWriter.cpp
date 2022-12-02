@@ -43,6 +43,8 @@ const char* tokens[] =
   ,"\""
   ,"."
   ,","
+  ,"-"
+  ,"/"
   ,"--"
   ,"/*"
   ,"//"
@@ -255,6 +257,8 @@ QueryReWriter::PrintToken()
                               break;
     case Token::TK_POINT:     [[fallthrough]];
     case Token::TK_COMMA:     [[fallthrough]];
+    case Token::TK_MINUS:     [[fallthrough]];
+    case Token::TK_DIVIDE:    [[fallthrough]];
     case Token::TK_PAR_OPEN:  [[fallthrough]];
     case Token::TK_PAR_CLOSE: [[fallthrough]];
     case Token::TK_SPACE:     [[fallthrough]];
@@ -456,7 +460,7 @@ QueryReWriter::CommentSQL()
     return Token::TK_COMM_SQL;
   }
   UnGetChar(ch);
-  return Token::TK_PLAIN;
+  return Token::TK_MINUS;
 }
 
 Token
@@ -494,7 +498,7 @@ QueryReWriter::CommentCPP()
   else
   {
     UnGetChar(ch);
-    return Token::TK_PLAIN;
+    return Token::TK_DIVIDE;
   }
 }
 
