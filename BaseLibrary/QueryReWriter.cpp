@@ -105,7 +105,9 @@ QueryReWriter::SetODBCFunctions(FCodes* p_odbcfuncs)
 XString 
 QueryReWriter::Parse(XString p_input)
 {
+  Reset();
   m_input = p_input;
+
   ParseStatement();
 
   if(m_level != 0)
@@ -113,6 +115,35 @@ QueryReWriter::Parse(XString p_input)
     MessageBox(NULL,"Odd number of '(' and ')' tokens in the statement","Warning",MB_OK|MB_ICONERROR);
   }
   return m_output;
+}
+
+//////////////////////////////////////////////////////////////////////////
+//
+// PRIVATE
+//
+//////////////////////////////////////////////////////////////////////////
+
+void
+QueryReWriter::Reset()
+{
+  // Primary in- and output
+  m_input.Empty();
+  m_output.Empty();
+  // Processing data
+  m_tokenString.Empty();
+  m_token       = Token::TK_EOS;
+  m_inStatement = Token::TK_EOS;
+  m_inFrom      = false;
+  m_nextTable   = false;
+  m_position    = 0;
+  m_level       = 0;
+  m_ungetch     = 0;
+  m_replaced    = 0;
+
+  // Leave the following members untouched!
+  // m_schema
+  // m_options
+  // m_codes / m_odbcfuncs / m_specials
 }
 
 void

@@ -95,6 +95,7 @@ public:
   int     GetReplaced() { return m_replaced; };
   int     GetOptions()  { return m_options;  };
 private:
+  void    Reset();
   void    ParseStatement(bool p_closingEscape = false);
   // Token parsing
   Token   GetToken();
