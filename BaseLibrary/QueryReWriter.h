@@ -32,7 +32,7 @@ enum class Token
 {
   TK_EOS    = 0     // END-OF-STRING
  ,TK_PLAIN          // Plain character string
- ,TK_PLAIN_ODBC     // Plain token with ODBC escape
+ ,TK_PLAIN_ODBC     // Plain ODBC replacement function
  ,TK_SQUOTE         // Single quote string
  ,TK_DQUOTE         // Double quote string
  ,TK_POINT          // .
@@ -66,10 +66,28 @@ enum class Token
 
 enum class SROption
 {
-  SRO_NO_OPTION      = 0x0000
- ,SRO_CONCAT_TO_ADD  = 0x0001   // ISO SQL || to MS-SQL + for two strings
- ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
+   SRO_NO_OPTION      = 0x0000
+  ,SRO_CONCAT_TO_ADD  = 0x0001   // ISO SQL || to MS-SQL + for two strings
+  ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
 };
+
+enum class OdbcEsc
+{
+   ODBCESC_None      = 0
+  ,ODBCESC_Function  = 1
+  ,ODBCESC_Date      = 2
+  ,ODBCESC_Timestamp = 3
+};
+
+typedef struct _sqlwords
+{
+  XString m_word;         // Word to recognize in the SQL statement
+  Token   m_token;        // Possibly a token
+  XString m_replacement;  // Replacement word/function
+  XString m_schema;       // Possibly prefix with this schema
+  OdbcEsc m_odbcEscape;   // Possibly an ODBC escape sequence
+}
+SQLWord;
 
 // Map with case-insensitive string compare
 struct StringICompare
@@ -79,7 +97,7 @@ struct StringICompare
     return lhs.CompareNoCase(rhs) < 0;
   }
 };
-using FCodes = std::map<XString,XString,StringICompare>;
+using SQLWords = std::map<XString,SQLWord,StringICompare>;
 
 class QueryReWriter
 {
@@ -89,18 +107,18 @@ public:
   XString Parse(XString p_input);
   // Settings and results
   void    SetOption(SROption p_option);
-  void    SetSchemaSpecial(FCodes* p_specials);
-  void    SetRewriteCodes (FCodes* p_codes);
-  void    SetODBCFunctions(FCodes* p_odbcfuncs);
+  bool    AddSQLWord(XString p_word,XString p_replacement,XString p_schema = "",Token p_token = Token::TK_EOS,OdbcEsc p_odbc = OdbcEsc::ODBCESC_None);
+  bool    AddSQLWord(SQLWord& p_word);
+  bool    AddSQLWords(SQLWords& p_words);
   int     GetReplaced() { return m_replaced; };
   int     GetOptions()  { return m_options;  };
 private:
   void    Reset();
+  void    Initialization();
   void    ParseStatement(bool p_closingEscape = false);
   // Token parsing
   Token   GetToken();
   void    PrintToken();
-  void    PrintSpecials();
   Token   FindToken();
   void    AppendSchema();
 
@@ -117,10 +135,8 @@ private:
   XString   m_input;
   XString   m_output;
   // Options for processing
+  SQLWords  m_words;
   int       m_options     { 0       };
-  FCodes*   m_codes       { nullptr };
-  FCodes*   m_odbcfuncs   { nullptr };
-  FCodes*   m_specials    { nullptr };
   // Processing data
   int       m_position    { 0       };
   Token     m_token       { Token::TK_EOS };

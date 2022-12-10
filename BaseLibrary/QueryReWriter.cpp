@@ -34,7 +34,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-const char* tokens[] =
+static const char* all_tokens[] =
 {
    ""
   ,""
@@ -70,36 +70,20 @@ const char* tokens[] =
   ,"UNION"
 };
 
+// All registered SQL words including tokens and special registrations
+static SQLWords g_allWords;
+
+// Remove all words at the closing of the process
+void QueryRewriterRemoveAllWords()
+{
+  g_allWords.clear();
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 QueryReWriter::QueryReWriter(XString p_schema)
                :m_schema(p_schema)
 {
-
-}
-
-void
-QueryReWriter::SetOption(SROption p_option)
-{
-  m_options |= (int) p_option;
-}
-
-void
-QueryReWriter::SetSchemaSpecial(FCodes* p_specials)
-{
-  m_specials = p_specials;
-}
-
-void
-QueryReWriter::SetRewriteCodes(FCodes* p_codes)
-{
-  m_codes = p_codes;
-}
-
-void
-QueryReWriter::SetODBCFunctions(FCodes* p_odbcfuncs)
-{
-  m_odbcfuncs = p_odbcfuncs;
 }
 
 XString 
@@ -112,9 +96,73 @@ QueryReWriter::Parse(XString p_input)
 
   if(m_level != 0)
   {
-    MessageBox(NULL,"Odd number of '(' and ')' tokens in the statement","Warning",MB_OK|MB_ICONERROR);
+    throw StdException("Odd number of '(' and ')' tokens in the statement");
   }
   return m_output;
+}
+
+void
+QueryReWriter::SetOption(SROption p_option)
+{
+  m_options |= (int) p_option;
+}
+
+bool
+QueryReWriter::AddSQLWord(XString p_word
+                         ,XString p_replacement
+                         ,XString p_schema /*= ""*/
+                         ,Token   p_token  /*= Token::TK_EOS*/
+                         ,OdbcEsc p_odbc   /*= OdbcEsc::ODBCESC_None*/)
+{
+  // Must be sure we have the tokens beforehand
+  Initialization();
+
+  SQLWord word;
+  word.m_word        = p_word;
+  word.m_replacement = p_replacement;
+  word.m_schema      = p_schema;
+  word.m_token       = p_token;
+  word.m_odbcEscape  = p_odbc;
+
+  if(g_allWords.find(p_word) != g_allWords.end())
+  {
+    return false;
+  }
+  g_allWords.insert(std::make_pair(p_word,word));
+  return true;
+}
+
+bool
+QueryReWriter::AddSQLWord(SQLWord& p_word)
+{
+  // Must be sure we have the tokens beforehand
+  Initialization();
+
+  if(g_allWords.find(p_word.m_word) != g_allWords.end())
+  {
+    return false;
+  }
+  g_allWords.insert(std::make_pair(p_word.m_word,p_word));
+  return true;
+}
+
+// Returns true if ALL words in parameter are added successfully
+bool
+QueryReWriter::AddSQLWords(SQLWords& p_words)
+{
+  // Must be sure we have the tokens beforehand
+  Initialization();
+
+  bool status(true);
+  for(auto& word : p_words)
+  {
+    if(g_allWords.find(word.first) != g_allWords.end())
+    {
+      status = false;
+    }
+    g_allWords.insert(std::make_pair(word.first,word.second));
+  }
+  return status;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -144,6 +192,33 @@ QueryReWriter::Reset()
   // m_schema
   // m_options
   // m_codes / m_odbcfuncs / m_specials
+  Initialization();
+}
+
+// Be carefully when called from outside that you call it 
+// only once with the 'force' option
+void
+QueryReWriter::Initialization()
+{
+  // Only do the initialization once
+  if(!g_allWords.empty())
+  {
+    return;
+  }
+
+  // At a minimum, we need all tokens
+  for(int ind = 0; ind < sizeof(all_tokens) / sizeof(const char*); ++ind)
+  {
+    SQLWord word;
+    word.m_word = all_tokens[ind];
+    word.m_token = (Token) ind;
+    word.m_odbcEscape = OdbcEsc::ODBCESC_None;
+
+    g_allWords.insert(std::make_pair(all_tokens[ind],word));
+  }
+
+  // Remove when process dies
+  atexit(QueryRewriterRemoveAllWords);
 }
 
 void
@@ -223,7 +298,8 @@ QueryReWriter::ParseStatement(bool p_closingEscape /*= false*/)
     }
 
     // End of next table
-    if(m_token == Token::TK_WHERE || m_token == Token::TK_GROUP || m_token == Token::TK_ORDER || m_token == Token::TK_HAVING)
+    if(m_token == Token::TK_WHERE || m_token == Token::TK_GROUP || 
+       m_token == Token::TK_ORDER || m_token == Token::TK_HAVING )
     {
       m_inFrom    = false;
       m_nextTable = false;
@@ -258,8 +334,7 @@ QueryReWriter::PrintToken()
 {
   switch(m_token)
   {
-    case Token::TK_PLAIN:     PrintSpecials();
-                              break;
+    case Token::TK_PLAIN:     [[fallthrough]];
     case Token::TK_PLAIN_ODBC:m_output += m_tokenString;
                               break;
     case Token::TK_SQUOTE:    m_output += '\'';
@@ -307,27 +382,9 @@ QueryReWriter::PrintToken()
     case Token::TK_ORDER:     [[fallthrough]];
     case Token::TK_HAVING:    [[fallthrough]];
     case Token::TK_INTO:      [[fallthrough]];
-    case Token::TK_UNION:     m_output += tokens[(int)m_token];
+    case Token::TK_UNION:     m_output += all_tokens[(int)m_token];
                               break;
   }
-}
-
-// Some tokens or functions require a special treatment
-// to get the schema prepended
-void
-QueryReWriter::PrintSpecials()
-{
-  if(m_specials)
-  {
-    FCodes::iterator it = m_specials->find(m_tokenString);
-    if(it != m_specials->end())
-    {
-      ++m_replaced;
-      m_output += it->second;
-      m_output += '.';
-    }
-  }
-  m_output += m_tokenString; 
 }
 
 // THIS IS WHY WE ARE HERE IN THIS CLASS!
@@ -445,30 +502,38 @@ QueryReWriter::GetToken()
 Token
 QueryReWriter::FindToken()
 {
-  for(int ind = 0;ind < sizeof(tokens) / sizeof(const char*); ++ind)
+  // The one-and-only lookup for a token
+  SQLWords::iterator tok = g_allWords.find(m_tokenString);
+  if(tok == g_allWords.end())
   {
-    if(m_tokenString.CompareNoCase(tokens[ind]) == 0)
+    return Token::TK_PLAIN;
+  }
+
+  if(tok->second.m_odbcEscape != OdbcEsc::ODBCESC_None)
+  {
+    if(tok->second.m_odbcEscape == OdbcEsc::ODBCESC_Function)
     {
-      return (Token) ind;
+      m_tokenString = "{fn " + tok->second.m_replacement;
+    }
+    return Token::TK_PLAIN_ODBC;
+  }
+  else
+  {
+    // Possibly a replacement token and schema
+    if(!tok->second.m_replacement.IsEmpty())
+    {
+      m_tokenString = tok->second.m_replacement;
+    }
+    if(!tok->second.m_schema.IsEmpty())
+    {
+      m_tokenString = tok->second.m_schema + "." + m_tokenString;
     }
   }
-  // Replacement code
-  if(m_odbcfuncs)
+
+  // Return as a specific token or just a plain word
+  if(tok->second.m_token != Token::TK_EOS)
   {
-    FCodes::iterator it = m_odbcfuncs->find(m_tokenString);
-    if(it != m_odbcfuncs->end())
-    {
-      m_tokenString = "{fn " + it->second;
-      return Token::TK_PLAIN_ODBC;
-    }
-  }
-  else if(m_codes)
-  {
-    FCodes::iterator it = m_codes->find(m_tokenString);
-    if(it != m_codes->end())
-    {
-      m_tokenString = it->second;
-    }
+    return tok->second.m_token;
   }
   return Token::TK_PLAIN;
 }

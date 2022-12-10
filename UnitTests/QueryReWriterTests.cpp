@@ -36,52 +36,27 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace BaseLibraryUnitTests
 {
 
-static FCodes g_specials;
-static FCodes g_codes;
-static FCodes g_odbc;
+static bool init = false;
 
-void FillCodes()
+void FillCodes(QueryReWriter& p_rewriter)
 {
-  if(!g_codes.empty())
+  if(init)
   {
     return;
   }
+  // Replacements
+  p_rewriter.AddSQLWord("UPPER",  "UCASE");
+  p_rewriter.AddSQLWord("LOWER",  "LCASE");
+  p_rewriter.AddSQLWord("LENGTH", "LEN");
+  p_rewriter.AddSQLWord("SYSDATE","CURRENT_TIMESTAMP");
+  // Special schema's
+  p_rewriter.AddSQLWord("BRIEF_EW","","metaschema");
+  // ODBC function escapes
+  p_rewriter.AddSQLWord("NVL",     "ISNULL",   "",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
+  p_rewriter.AddSQLWord("SUBSTR",  "SUBSTRING","",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
+  p_rewriter.AddSQLWord("DATABASE","DATABASE", "",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
 
-  g_codes["NVL"]     = "ISNULL";
-  g_codes["UPPER"]   = "UCASE";
-  g_codes["LOWER"]   = "LCASE";
-  g_codes["SYSDATE"] = "CURRENT_TIMESTAMP";
-}
-
-void FillODBCEscapes()
-{
-  if(!g_odbc.empty())
-  {
-    return;
-  }
-  g_odbc["LOWER"]    = "LCASE";
-  g_odbc["UPPER"]    = "UCASE";
-  g_odbc["NVL"]      = "ISNULL";
-  g_odbc["DATABASE"] = "DATABASE";
-
-  for(auto& odbc : g_odbc)
-  {
-    XString trans = odbc.second;
-    FCodes::iterator it = g_odbc.find(trans);
-    if(it == g_odbc.end())
-    {
-      g_odbc[trans] = trans;
-    }
-  }
-}
-
-void FillSpecials()
-{
-  if(!g_specials.empty())
-  {
-    return;
-  }
-  g_specials["BRIEF_EW"] = "metaschema";
+  init = true;
 }
 
 TEST_CLASS(QueryReWriterTests)
@@ -206,13 +181,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter code words conversion");
 
-    FillCodes();
     QueryReWriter re("other");
-    re.SetRewriteCodes(&g_codes);
+    FillCodes(re);
 
-    XString input = "SELECT lower(nvl(one,'')) FROM dual;";
+    XString input = "SELECT LENGTH(one) FROM dual;";
     XString output = re.Parse(input);
-    XString expect = "SELECT LCASE(ISNULL(one,'')) FROM other.dual;";
+    XString expect = "SELECT LEN(one) FROM other.dual;";
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -220,11 +194,10 @@ public:
 
   TEST_METHOD(RewriterTestEndOfStatement)
   {
-    Logger::WriteMessage("Testing Schema Rewriter end-of-statement without delimeter");
+    Logger::WriteMessage("Testing Schema Rewriter end-of-statement without delimiter");
 
-    FillCodes();
     QueryReWriter re("other");
-    re.SetRewriteCodes(&g_codes);
+    FillCodes(re);
 
     XString input = "SELECT sysdate FROM dual";
     XString output = re.Parse(input);
@@ -238,13 +211,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
 
-    FillODBCEscapes();
     QueryReWriter re("other");
-    re.SetODBCFunctions(&g_odbc);
+    FillCodes(re);
 
-    XString input = "SELECT lower(nvl(one,'')) FROM dual;";
+    XString input = "SELECT substr(nvl(one,''),1,3) FROM dual;";
     XString output = re.Parse(input);
-    XString expect = "SELECT {fn LCASE({fn ISNULL(one,'')})} FROM other.dual;";
+    XString expect = "SELECT {fn SUBSTRING({fn ISNULL(one,'')},1,3)} FROM other.dual;";
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -254,13 +226,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
 
-    FillODBCEscapes();
     QueryReWriter re("other");
-    re.SetODBCFunctions(&g_odbc);
+    FillCodes(re);
 
-    XString input = "SELECT lower(instr(name,'some')) FROM dual;";
+    XString input = "SELECT nvl(instr(name,'some'),'x') FROM dual;";
     XString output = re.Parse(input);
-    XString expect = "SELECT {fn LCASE(instr(name,'some'))} FROM other.dual;";
+    XString expect = "SELECT {fn ISNULL(instr(name,'some'),'x')} FROM other.dual;";
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -270,9 +241,8 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter special schema treatment");
 
-    FillSpecials();
     QueryReWriter re("myschema");
-    re.SetSchemaSpecial(&g_specials);
+    FillCodes(re);
 
     XString input = "SELECT brief_ew(name,12345) FROM mytable";
     XString output = re.Parse(input);
