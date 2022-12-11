@@ -39,17 +39,19 @@ enum class Token
  ,TK_COMMA          // ,
  ,TK_MINUS          // -
  ,TK_DIVIDE         // /
- ,TK_COMM_SQL       // --
- ,TK_COMM_C         // /*
- ,TK_COMM_CPP       // //
+ ,TK_COMM_SQL       // --    Comments SQL wise
+ ,TK_COMM_C         // /*    Comments C   wise
+ ,TK_COMM_CPP       // //    Comments C++ wise
  ,TK_PAR_OPEN       // (
  ,TK_PAR_CLOSE      // )
+ ,TK_PAR_OUTER      // (+)   Oracle outer join
  ,TK_PAR_ADD        // +
- ,TK_PAR_CONCAT     // ||
- ,TK_SPACE 
- ,TK_TAB
- ,TK_CR
- ,TK_NEWLINE
+ ,TK_PAR_CONCAT     // ||    SQL String concatenation
+ ,TK_SPACE          // ' '   Single space
+ ,TK_TAB            // '\t'  Tabulate character
+ ,TK_CR             // '\r'  Carriage return
+ ,TK_NEWLINE        // '\n'  Newline
+  // Complete SQL words
  ,TK_SELECT
  ,TK_INSERT
  ,TK_UPDATE
@@ -69,6 +71,7 @@ enum class SROption
    SRO_NO_OPTION      = 0x0000
   ,SRO_CONCAT_TO_ADD  = 0x0001   // ISO SQL || to MS-SQL + for two strings
   ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
+  ,SRO_WARN_OUTER     = 0x0004   // Warn for Oracle (+) Outer joins
 };
 
 enum class OdbcEsc
@@ -105,13 +108,16 @@ public:
   QueryReWriter(XString p_schema);
   // Our primary function
   XString Parse(XString p_input);
-  // Settings and results
+
+  // Settings 
   void    SetOption(SROption p_option);
   bool    AddSQLWord(XString p_word,XString p_replacement,XString p_schema = "",Token p_token = Token::TK_EOS,OdbcEsc p_odbc = OdbcEsc::ODBCESC_None);
   bool    AddSQLWord(SQLWord& p_word);
   bool    AddSQLWords(SQLWords& p_words);
+  // Getters
   int     GetReplaced() { return m_replaced; };
   int     GetOptions()  { return m_options;  };
+
 private:
   void    Reset();
   void    Initialization();
@@ -119,13 +125,14 @@ private:
   // Token parsing
   Token   GetToken();
   void    PrintToken();
+  void    PrintOuterJoin();
   Token   FindToken();
   void    AppendSchema();
-
   void    SkipSpaceAndComment();
   Token   CommentSQL();
   Token   CommentCPP();
   Token   StringConcatenate();
+  Token   Parenthesis();
   void    QuoteString(int p_ending);
   void    UnGetChar(int p_char);
   int     GetChar();

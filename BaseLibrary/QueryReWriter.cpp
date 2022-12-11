@@ -34,6 +34,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// All tokens that must be recognized
+// for the logic to work correctly
 static const char* all_tokens[] =
 {
    ""
@@ -50,12 +52,14 @@ static const char* all_tokens[] =
   ,"//"
   ,"("
   ,")"
+  ,"(+)"
   ,"+"
   ,"||"
   ," "
   ,"\t"
   ,"\r"
   ,"\n"
+  // Complete SQL words
   ,"SELECT"
   ,"INSERT"
   ,"UPDATE"
@@ -221,6 +225,8 @@ QueryReWriter::Initialization()
   atexit(QueryRewriterRemoveAllWords);
 }
 
+// Completely parsing the statement
+// possibly recurse for parenthesis
 void
 QueryReWriter::ParseStatement(bool p_closingEscape /*= false*/)
 {
@@ -329,6 +335,7 @@ QueryReWriter::ParseStatement(bool p_closingEscape /*= false*/)
   --m_level;
 }
 
+// Printing a token to the output buffer
 void
 QueryReWriter::PrintToken()
 {
@@ -361,6 +368,8 @@ QueryReWriter::PrintToken()
                               break;
     case Token::TK_PAR_CONCAT:m_output += (m_options & (int)SROption::SRO_CONCAT_TO_ADD) ? "+" : "||";
                               break;
+    case Token::TK_PAR_OUTER: PrintOuterJoin();
+                              break;
     case Token::TK_POINT:     [[fallthrough]];
     case Token::TK_COMMA:     [[fallthrough]];
     case Token::TK_MINUS:     [[fallthrough]];
@@ -384,6 +393,18 @@ QueryReWriter::PrintToken()
     case Token::TK_INTO:      [[fallthrough]];
     case Token::TK_UNION:     m_output += all_tokens[(int)m_token];
                               break;
+  }
+}
+
+void
+QueryReWriter::PrintOuterJoin()
+{
+  m_output += all_tokens[(int) Token::TK_PAR_OUTER];
+  if(m_options & (int) SROption::SRO_WARN_OUTER)
+  {
+    m_output += "\n";
+    m_output += "-- BEWARE: Oracle old style (+). Rewrite the SQL query with LEFT OUTER JOIN syntaxis!";
+    m_output += "\n";
   }
 }
 
@@ -424,6 +445,7 @@ QueryReWriter::AppendSchema()
   }
 }
 
+// Skipping spaces and comments
 void
 QueryReWriter::SkipSpaceAndComment()
 {
@@ -445,7 +467,7 @@ QueryReWriter::SkipSpaceAndComment()
   }
 }
 
-
+// Getting the next token/tokenstring
 Token
 QueryReWriter::GetToken()
 {
@@ -465,7 +487,7 @@ QueryReWriter::GetToken()
       case '|':   return StringConcatenate();
       case '.':   return Token::TK_POINT;
       case ',':   return Token::TK_COMMA;
-      case '(':   return Token::TK_PAR_OPEN;
+      case '(':   return Parenthesis();
       case ')':   return Token::TK_PAR_CLOSE;
       case '+':   return Token::TK_PAR_ADD;
       case ' ':   return Token::TK_SPACE;
@@ -499,6 +521,7 @@ QueryReWriter::GetToken()
   return Token::TK_EOS;
 }
 
+// Discover the next tokenstring to be a 'real'token
 Token
 QueryReWriter::FindToken()
 {
@@ -538,6 +561,7 @@ QueryReWriter::FindToken()
   return Token::TK_PLAIN;
 }
 
+// Parse standard SQL comment in the -- like way
 Token
 QueryReWriter::CommentSQL()
 {
@@ -559,6 +583,7 @@ QueryReWriter::CommentSQL()
   return Token::TK_MINUS;
 }
 
+// Found a forward slash. Is it any form of comment?
 Token
 QueryReWriter::CommentCPP()
 {
@@ -598,6 +623,7 @@ QueryReWriter::CommentCPP()
   }
 }
 
+// Found a '|'. Is it a SQL string concatenation?
 Token
 QueryReWriter::StringConcatenate()
 {
@@ -610,6 +636,25 @@ QueryReWriter::StringConcatenate()
   return Token::TK_PLAIN;
 }
 
+// Found a parenthesis. Is it a Oracle left-outer-join?
+Token 
+QueryReWriter::Parenthesis()
+{
+  int ch = GetChar();
+  if(ch == '+')
+  {
+    // One extra look-ahead
+    if(m_input[m_position] == ')')
+    {
+      GetChar();
+      return Token::TK_PAR_OUTER;
+    }
+  }
+  UnGetChar(ch);
+  return Token::TK_PAR_OPEN;
+}
+
+// Parse single or double quoted string
 void
 QueryReWriter::QuoteString(int p_ending)
 {
@@ -626,6 +671,7 @@ QueryReWriter::QuoteString(int p_ending)
   } 
 }
 
+// Restore last character
 void
 QueryReWriter::UnGetChar(int p_char)
 {
@@ -635,6 +681,7 @@ QueryReWriter::UnGetChar(int p_char)
   }
 }
 
+// Getting next character and possible the restored unget
 int
 QueryReWriter::GetChar()
 {

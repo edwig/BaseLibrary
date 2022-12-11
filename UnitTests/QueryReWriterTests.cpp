@@ -298,5 +298,35 @@ public:
     Assert::IsFalse(expect.Compare(output));
   }
 
+  TEST_METHOD(RewriterOracleOuter)
+  {
+    Logger::WriteMessage("Testing Schema Rewriter Detect old style outer join");
+
+    QueryReWriter re("other");
+    FillCodes(re);
+    re.SetOption(SROption::SRO_WARN_OUTER);
+
+    XString input = "SELECT t1.one\n"
+                    "      ,t1.two\n"
+                    "      ,t2.one as two_one\n"
+                    "      ,t2.two as two_two\n"
+                    "  FROM table_one t1\n"
+                    "      ,table_two t2 (+)\n"
+                    " WHERE t1.one = t2.one";
+    XString output = re.Parse(input);
+    XString expect = "SELECT t1.one\n"
+                     "      ,t1.two\n"
+                     "      ,t2.one as two_one\n"
+                     "      ,t2.two as two_two\n"
+                     "  FROM other.table_one t1\n"
+                     "      ,other.table_two t2 (+)\n"
+                     "-- BEWARE: Oracle old style (+). Rewrite the SQL query with LEFT OUTER JOIN syntaxis!\n"
+                     "\n"
+                     " WHERE t1.one = t2.one";
+
+    // Compare MUST be zero
+    Assert::IsFalse(expect.Compare(output));
+  }
+
 };
 }
