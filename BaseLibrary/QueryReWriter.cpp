@@ -27,6 +27,7 @@
 //
 #include "pch.h"
 #include "QueryReWriter.h"
+#include "WiNFile.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -105,10 +106,16 @@ QueryReWriter::Parse(XString p_input)
   return m_output;
 }
 
-void
+bool
 QueryReWriter::SetOption(SROption p_option)
 {
-  m_options |= (int) p_option;
+  if(p_option > SROption::SRO_NO_OPTION &&
+     p_option < SROption::SRO_LAST_OPTION)
+  {
+    m_options |= (int) p_option;
+    return true;
+  }
+  return false;
 }
 
 bool
@@ -169,6 +176,62 @@ QueryReWriter::AddSQLWords(SQLWords& p_words)
   return status;
 }
 
+bool
+QueryReWriter::AddSQLWordsFromFile(XString p_filename)
+{
+  // Must be sure we have the tokens beforehand
+  Initialization();
+
+  bool result(true);
+  WinFile file(p_filename);
+  if(file.Open(winfile_read))
+  {
+    XString line;
+    while(file.Read(line))
+    {
+      line = line.TrimRight("\n");
+      if(!line.GetLength() || line[0] == '#')
+      {
+        // Empty line or comment line
+        continue;
+      }
+      // Syntax example
+      // Word,[schema],replacement,[fn]
+      int pos1 = line.Find(',');
+      int pos2 = line.Find(',',pos1 + 1);
+      int pos3 = line.Find(',',pos2 + 1);
+      // All three delimiters must be present
+      if(pos1 > 0 && pos2 > pos1 && pos3 > pos2)
+      {
+        SQLWord word;
+        word.m_word        = line.Left(pos1).Trim();
+        word.m_schema      = line.Mid(pos1 + 1,pos2 - pos1 - 1).Trim();
+        word.m_replacement = line.Mid(pos2 + 1,pos3 - pos2 - 1).Trim();
+        XString odbc       = line.Mid(pos3 + 1).Trim();
+        if(!odbc.IsEmpty())
+        {
+          if(odbc.CompareNoCase("function")  == 0) word.m_odbcEscape = OdbcEsc::Function;
+          if(odbc.CompareNoCase("procedure") == 0) word.m_odbcEscape = OdbcEsc::Procedure;
+          if(odbc.CompareNoCase("date")      == 0) word.m_odbcEscape = OdbcEsc::Date;
+          if(odbc.CompareNoCase("time")      == 0) word.m_odbcEscape = OdbcEsc::Time;
+          if(odbc.CompareNoCase("timestamp") == 0) word.m_odbcEscape = OdbcEsc::Timestamp;
+          if(odbc.CompareNoCase("guid")      == 0) word.m_odbcEscape = OdbcEsc::Guid;
+          if(odbc.CompareNoCase("like")      == 0) word.m_odbcEscape = OdbcEsc::LikeEsc;
+          if(odbc.CompareNoCase("interval")  == 0) word.m_odbcEscape = OdbcEsc::Interval;
+          if(odbc.CompareNoCase("outerjoin") == 0) word.m_odbcEscape = OdbcEsc::OuterJoin;
+        }
+        // Remember this word
+        if(!AddSQLWord(word))
+        {
+          result = false;
+        }
+      }
+    }
+    file.Close();
+  }
+  return result;
+}
+
 //////////////////////////////////////////////////////////////////////////
 //
 // PRIVATE
@@ -216,7 +279,7 @@ QueryReWriter::Initialization()
     SQLWord word;
     word.m_word = all_tokens[ind];
     word.m_token = (Token) ind;
-    word.m_odbcEscape = OdbcEsc::ODBCESC_None;
+    word.m_odbcEscape = OdbcEsc::None;
 
     g_allWords.insert(std::make_pair(all_tokens[ind],word));
   }
@@ -393,6 +456,7 @@ QueryReWriter::PrintToken()
     case Token::TK_INTO:      [[fallthrough]];
     case Token::TK_UNION:     m_output += all_tokens[(int)m_token];
                               break;
+    default:                  m_output += "\nINTERNAL ERROR: Unknown SQL token!\n";
   }
 }
 
@@ -532,12 +596,30 @@ QueryReWriter::FindToken()
     return Token::TK_PLAIN;
   }
 
-  if(tok->second.m_odbcEscape != OdbcEsc::ODBCESC_None)
+  if(tok->second.m_odbcEscape != OdbcEsc::None)
   {
-    if(tok->second.m_odbcEscape == OdbcEsc::ODBCESC_Function)
+    switch(tok->second.m_odbcEscape)
     {
-      m_tokenString = "{fn " + tok->second.m_replacement;
+      case OdbcEsc::Function:   m_tokenString = "{fn " + tok->second.m_replacement;
+                                break;
+      case OdbcEsc::Procedure:  m_tokenString = "{[?=]call " + tok->second.m_replacement;
+                                break;
+      case OdbcEsc::Date:       m_tokenString = "{d ";
+                                break;
+      case OdbcEsc::Time:       m_tokenString = "{t "; 
+                                break;
+      case OdbcEsc::Timestamp:  m_tokenString = "{ts ";
+                                break;
+      case OdbcEsc::Guid:       m_tokenString = "{guid ";
+                                break;
+      case OdbcEsc::LikeEsc:    m_tokenString = "{";
+                                break;
+      case OdbcEsc::Interval:   m_tokenString = "{INTERVAL ";
+                                break;
+      case OdbcEsc::OuterJoin:  m_tokenString = "{oj ";
+                                break;
     }
+    // TK_PLAIN_ODBC will provide for the closing '}' escape sequence!
     return Token::TK_PLAIN_ODBC;
   }
   else

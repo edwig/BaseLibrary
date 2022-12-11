@@ -52,9 +52,9 @@ void FillCodes(QueryReWriter& p_rewriter)
   // Special schema's
   p_rewriter.AddSQLWord("BRIEF_EW","","metaschema");
   // ODBC function escapes
-  p_rewriter.AddSQLWord("NVL",     "ISNULL",   "",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
-  p_rewriter.AddSQLWord("SUBSTR",  "SUBSTRING","",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
-  p_rewriter.AddSQLWord("DATABASE","DATABASE", "",Token::TK_EOS,OdbcEsc::ODBCESC_Function);
+  p_rewriter.AddSQLWord("NVL",     "ISNULL",   "",Token::TK_EOS,OdbcEsc::Function);
+  p_rewriter.AddSQLWord("SUBSTR",  "SUBSTRING","",Token::TK_EOS,OdbcEsc::Function);
+  p_rewriter.AddSQLWord("DATABASE","DATABASE", "",Token::TK_EOS,OdbcEsc::Function);
 
   init = true;
 }

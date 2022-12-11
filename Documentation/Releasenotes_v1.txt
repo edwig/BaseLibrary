@@ -65,3 +65,16 @@ Version 1.0.7 of 01-11-2022
 ---------------------------
 1) Added filter capabilities to JSONPath. You can now use the "$.(?<filter>)" form with the
    following operators: &&, ||, ==, !=, <, >, <= and >=
+
+Version 1.0.8 of 11-12-2022
+---------------------------
+1) QueryReWriter now can warn against old-style Oracle outer joins with the (+) syntax
+   by setting the SROption::SRO_WARN_OUTER options
+2) QueryReWriter is made MUCH faster by combining all the caches into one cache,
+   so just only one std::map lookup needs to be made to parse a token
+3) QueryReWriter is made re-entrant, so we can parse more queries against one
+   instance of the class
+4) QueryReWriter now can parse standard ISO SQL '||' string concatenation to the 
+   '+' syntax of other database engines (MS SQLServer!)
+5) Added ODBC escapes to the QueryReWriter class with the "{fn function()}" syntax.
+6) Added all ODBC escapes 
