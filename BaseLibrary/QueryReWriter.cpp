@@ -456,7 +456,9 @@ QueryReWriter::PrintToken()
     case Token::TK_INTO:      [[fallthrough]];
     case Token::TK_UNION:     m_output += all_tokens[(int)m_token];
                               break;
+    case Token::TK_EOS:       break;
     default:                  m_output += "\nINTERNAL ERROR: Unknown SQL token!\n";
+                              break;
   }
 }
 

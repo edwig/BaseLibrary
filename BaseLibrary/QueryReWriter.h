@@ -124,9 +124,9 @@ public:
   bool    AddSQLWords(SQLWords& p_words);
   bool    AddSQLWordsFromFile(XString p_filename);
   // Getters
-  int     GetReplaced() { return m_replaced; };
-  int     GetOptions()  { return m_options;  };
-
+  int     GetReplaced() { return m_replaced; }
+  int     GetOptions()  { return m_options;  }
+  CString GetSchema()   { return m_schema;   }
 private:
   void    Reset();
   void    Initialization();
