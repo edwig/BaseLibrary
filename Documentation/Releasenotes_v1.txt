@@ -78,3 +78,4 @@ Version 1.0.8 of 11-12-2022
    '+' syntax of other database engines (MS SQLServer!)
 5) Added ODBC escapes to the QueryReWriter class with the "{fn function()}" syntax.
 6) Added all ODBC escapes 
+7) Added StringUtilities with various support functions for XString
