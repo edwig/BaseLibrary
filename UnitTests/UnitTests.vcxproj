@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BcdTests.cpp" />
     <ClCompile Include="InteractiveTests.cpp" />
     <ClCompile Include="JSONTests.cpp" />
     <ClCompile Include="pch.cpp">
