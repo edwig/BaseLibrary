@@ -104,6 +104,7 @@
     </ClCompile>
     <ClCompile Include="QueryReWriterTests.cpp" />
     <ClCompile Include="SOAPTests.cpp" />
+    <ClCompile Include="TestAuthenticate.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
