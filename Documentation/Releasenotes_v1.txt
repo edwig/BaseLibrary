@@ -79,3 +79,12 @@ Version 1.0.8 of 11-12-2022
 5) Added ODBC escapes to the QueryReWriter class with the "{fn function()}" syntax.
 6) Added all ODBC escapes 
 7) Added StringUtilities with various support functions for XString
+
+Version 1.0.9 of 19-03-2023
+---------------------------
+1)  ReWrite of the bcd code. It now has a silent failure mode to support
+    IEEE-745 INF (infinity), -INF (negative inifinity) and NaN 
+    (Not a Number) statusses as well as the database NULL status
+2)  ReWrite of the bcd code. It no longer needs the precision and scale
+    These will be calculated automatically when converting a bcd to a 
+    database SQL_NUMERCIC_STRUCT.

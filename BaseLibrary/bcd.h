@@ -466,6 +466,8 @@ private:
   bcd     SplitMantissa() const;
   // Compare two mantissa
   int     CompareMantissa(const bcd& p_value) const;
+  // Calculate the precision and scale for a SQL_NUMERIC
+  void    CalculatePrecisionAndScale(SQLCHAR& p_precision,SQLCHAR& p_scale) const;
   // Stopping criterion for internal iterations
   bcd&    Epsilon(long p_fraction) const;
 
@@ -501,6 +503,4 @@ private:
   Sign          m_sign;                // 0 = Positive, 1 = Negative (INF, NaN)
   short         m_exponent;            // +/- 10E32767
   long          m_mantissa[bcdLength]; // Up to (bcdDigits * bcdLength) digits
-  unsigned char m_precision;
-  unsigned char m_scale; 
 };
