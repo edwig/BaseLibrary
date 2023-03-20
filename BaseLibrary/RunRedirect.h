@@ -29,7 +29,7 @@
 #include "Redirect.h"
 
 // Milliseconds wait loop
-#define WAITTIME_STATUS 25
+#define WAITTIME_STATUS 50
 
 #define WM_CONSOLE_TITLE (WM_USER + 1)
 #define WM_CONSOLE_TEXT  (WM_USER + 2)
@@ -78,9 +78,5 @@ public:
   XString m_output;
   XString m_error;
 private:
-  void    Acquire();
-  void    Release();
   void    FlushStdIn();
-
-  CRITICAL_SECTION  m_criticalSection;
 };

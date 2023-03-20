@@ -88,3 +88,8 @@ Version 1.0.9 of 19-03-2023
 2)  ReWrite of the bcd code. It no longer needs the precision and scale
     These will be calculated automatically when converting a bcd to a 
     database SQL_NUMERCIC_STRUCT.
+3)  Fix for unstable RunRedirect and Redirect. 
+    When starting a program in the background with re-directed input/output
+    we must wait for the stdout to drain completely, before we shutdown
+    the child process.
+    Programs TestFilter and TestRedirect are meant to test this.

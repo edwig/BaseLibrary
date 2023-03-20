@@ -27,6 +27,7 @@
 //
 #include "pch.h"
 #include "Redirect.h"
+#include "AutoCritical.h"
 #include <process.h>
 #include <assert.h>
 #include <time.h>
@@ -69,11 +70,14 @@ Redirect::Redirect()
   m_timeoutChild    = INFINITE;
   m_timeoutIdle     = MAXWAIT_FOR_INPUT_IDLE;
   m_terminated      = false;
+
+  InitializeCriticalSection((LPCRITICAL_SECTION)&m_critical);
 }
 
 Redirect::~Redirect()
 {
   TerminateChildProcess();
+  DeleteCriticalSection(&m_critical);
 }
 
 // Max waiting time for input-idle status of the child process
@@ -175,6 +179,7 @@ Redirect::StartChildProcess(LPCSTR lpszCmdLine,UINT uShowChildWindow /*=SW_HIDE*
   verify(m_hProcessThread != NULL);
 
   // Virtual function to notify derived class that the child is started.
+  // Does things like flushing the standard input stream
   OnChildStarted(lpszCmdLine);
 
   return TRUE;
@@ -185,6 +190,8 @@ Redirect::StartChildProcess(LPCSTR lpszCmdLine,UINT uShowChildWindow /*=SW_HIDE*
 BOOL 
 Redirect::IsChildRunning() const
 {
+  AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
+
   DWORD dwExitCode;
   if(m_hChildProcess == NULL)
   {
@@ -206,60 +213,77 @@ Redirect::TerminateChildProcess()
   }
   m_terminated = true;
 
-  // Tell the threads to exit and wait for process thread to die.
-  m_bRunThread = FALSE;
-  ::SetEvent(m_hExitEvent);
-
   // Check the process thread.
-  if (m_hProcessThread != NULL)
+  if(m_hProcessThread != NULL)
   {
-    verify(::WaitForSingleObject(m_hProcessThread, 1000) != WAIT_TIMEOUT);
+    // Tell the threads to exit and wait for process thread to die.
+    m_bRunThread = FALSE;
+    ::SetEvent(m_hExitEvent);
+
+    WaitForSingleObject(m_hProcessThread,3000);
     m_hProcessThread = NULL;
   }
 
   // Close all child handles first.
-  if (m_hStdIn != NULL)
   {
-    verify(::CloseHandle(m_hStdIn));
-    m_hStdIn = NULL;
+    AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
+    if(m_hStdIn != NULL)
+    {
+      CloseHandle(m_hStdIn);
+      m_hStdIn = NULL;
+    }
+    if(m_hStdOut != NULL)
+    {
+      CloseHandle(m_hStdOut);
+      m_hStdOut = NULL;
+    }
+    if(m_hStdErr != NULL)
+    {
+      CloseHandle(m_hStdErr);
+      m_hStdErr = NULL;
+    }
+
+    // Close all parent handles.
+    if(m_hStdInWrite != NULL)
+    {
+      CloseHandle(m_hStdInWrite);
+      m_hStdInWrite = NULL;
+    }
+    if(m_hStdOutRead != NULL)
+    {
+      CloseHandle(m_hStdOutRead);
+      m_hStdOutRead = NULL;
+    }
+    if(m_hStdErrRead != NULL)
+    {
+      CloseHandle(m_hStdErrRead);
+      m_hStdErrRead = NULL;
+    }
   }
-  if (m_hStdOut != NULL)
+
+  // Wait for the stdout to drain
+  int maxWaittime = DRAIN_STDOUT_MAXWAIT;
+  while(maxWaittime >= 0)
   {
-    verify(::CloseHandle(m_hStdOut));
-    m_hStdOut = NULL;
+    Sleep(DRAIN_STDOUT_INTERVAL);
+    if(!m_hStdOutRead)
+    {
+      break;
+    }
+    maxWaittime -= DRAIN_STDOUT_INTERVAL;
   }
-  if (m_hStdErr != NULL)
-  {
-    verify(::CloseHandle(m_hStdErr));
-    m_hStdErr = NULL;
-  }
-  // Close all parent handles.
-  if (m_hStdInWrite != NULL)
-  {
-    verify(::CloseHandle(m_hStdInWrite));
-    m_hStdInWrite = NULL;
-  }
-  if (m_hStdOutRead != NULL)
-  {
-    verify(::CloseHandle(m_hStdOutRead));
-    m_hStdOutRead = NULL;
-  }
-  if (m_hStdErrRead != NULL)
-  {
-    verify(::CloseHandle(m_hStdErrRead));
-    m_hStdErrRead = NULL;
-  }
+
   // Stop the stdout read thread.
-  if (m_hStdOutThread != NULL)
+  if(m_hStdOutThread != NULL)
   {
-    verify(::WaitForSingleObject(m_hStdOutThread, 1000) != WAIT_TIMEOUT);
+    WaitForSingleObject(m_hStdOutThread, 1000);
     m_hStdOutThread = NULL;
   }
 
   // Stop the stderr read thread.
-  if (m_hStdErrThread != NULL)
+  if(m_hStdErrThread != NULL)
   {
-    verify(::WaitForSingleObject(m_hStdErrThread, 1000) != WAIT_TIMEOUT);
+    WaitForSingleObject(m_hStdErrThread, 1000);
     m_hStdErrThread = NULL;
   }
   // Stop the child process if not already stopped.
@@ -269,16 +293,19 @@ Redirect::TerminateChildProcess()
 
   if (IsChildRunning())
   {
-    verify(::TerminateProcess   (m_hChildProcess, 1));
-    verify(::WaitForSingleObject(m_hChildProcess, 1000) != WAIT_TIMEOUT);
+    TerminateProcess   (m_hChildProcess, 1);
+    WaitForSingleObject(m_hChildProcess, 1000);
   }
   m_hChildProcess = NULL;
 
   // cleanup the exit event
-  if (m_hExitEvent != NULL)
   {
-    verify(::CloseHandle(m_hExitEvent));
-    m_hExitEvent = NULL;
+    AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
+    if(m_hExitEvent != NULL)
+    {
+      CloseHandle(m_hExitEvent);
+      m_hExitEvent = NULL;
+    }
   }
 }
 
@@ -385,24 +412,23 @@ Redirect::StdOutThread(HANDLE hStdOutRead)
     nBytesRead = 0;
     if(!::ReadFile(hStdOutRead, lpszBuffer, 1, &nBytesRead, NULL) || !nBytesRead)
     {
-      // pipe done - normal exit path.
-      // Partial input line left hanging?
-      if(linePointer != lineBuffer)
+      if(::GetLastError() != ERROR_IO_PENDING)
       {
-        *linePointer = 0;
-        OnChildStdOutWrite(lineBuffer);
+        // pipe done - normal exit path.
+        // Partial input line left hanging?
+        if(linePointer != lineBuffer)
+        {
+          *linePointer = 0;
+          OnChildStdOutWrite(lineBuffer);
+        }
+        m_eof_input = 1;
+        break;
       }
-      m_eof_input = 1;
-      break;			
     }
-    if(lpszBuffer[0] == '\004')
-    {
-      // EOT encountered: End of transmission channel
-      // from redirected child
-      m_eof_input = 1;
-      break;
-    }
+    // Add to line
     *linePointer++ = lpszBuffer[0];
+
+    // Add end-of-line or line overflow, write to listener
     if(lpszBuffer[0] == '\n' || ((linePointer - lineBuffer) > BUFFER_SIZE))
     {
       // Virtual function to notify derived class that
@@ -412,8 +438,8 @@ Redirect::StdOutThread(HANDLE hStdOutRead)
       linePointer = lineBuffer;
     }
   }
+  m_hStdOutThread = NULL;
   return 0;
-
 }
 
 // Thread to read the child stderr.
@@ -430,22 +456,22 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
   {
     if(!::ReadFile(hStdErrRead,lpszBuffer,1,&nBytesRead,NULL) || !nBytesRead)
     {
-      // pipe done - normal exit path.
-      // Partial input line left hanging?
-      if(linePointer != lineBuffer)
+      if(::GetLastError() != ERROR_IO_PENDING)
       {
-        *linePointer = 0;
-        OnChildStdErrWrite(lineBuffer);
+        // pipe done - normal exit path.
+        // Partial input line left hanging?
+        if(linePointer != lineBuffer)
+        {
+          *linePointer = 0;
+          OnChildStdErrWrite(lineBuffer);
+        }
+        break;
       }
-      break;
     }
-    if(lpszBuffer[0] == '\004')
-    {
-      // EOT encountered: End of transmission channel
-      // from redirected child
-      break;
-    }
+    // Add to line: caller sees stdout AND stderr alike
     *linePointer++ = lpszBuffer[0];
+
+    // Add end-of-line or line overflow, write to listener
     if(lpszBuffer[0] == '\n' || ((linePointer - lineBuffer) > BUFFER_SIZE))
     {
       // Virtual function to notify derived class that
@@ -455,6 +481,7 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
       linePointer = lineBuffer;
     }
   }
+  m_hStdErrThread = NULL;
   return 0;
 }
 
@@ -504,21 +531,13 @@ Redirect::ProcessThread()
   // Virtual function to notify derived class that child process is terminated.
   // Application must call TerminateChildProcess() but not direcly from this thread!
   OnChildTerminate();
-
-  // Close the stdout stream, so stdout thread can finish
-  if (m_hStdOut != NULL)
-  {
-    verify(::CloseHandle(m_hStdOut));
-    m_hStdOut = NULL;
-  }
-  if(returnValue == -1)
-  {
-    TerminateChildProcess();
-  }
+  
+  // We are ready running
+  m_bRunThread = NULL;
   return returnValue;
 }
 
-// Function that write to the child stdin.
+// Function that writes to the child stdin.
 
 int
 Redirect::WriteChildStdIn(LPCSTR lpszInput)
@@ -547,10 +566,11 @@ Redirect::WriteChildStdIn(LPCSTR lpszInput)
 void
 Redirect::CloseChildStdIn()
 {
+  AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
+
   if(m_hStdInWrite != NULL)
   {
-    verify(::CloseHandle(m_hStdInWrite));
+    CloseHandle(m_hStdInWrite);
     m_hStdInWrite = NULL;
   }
 }
-

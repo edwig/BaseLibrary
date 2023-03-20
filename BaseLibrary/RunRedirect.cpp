@@ -27,6 +27,7 @@
 //
 #include "pch.h"
 #include "RunRedirect.h"
+#include "AutoCritical.h"
 #include <time.h>
 
 #ifdef _DEBUG
@@ -44,109 +45,88 @@ RunRedirect::RunRedirect(ULONG p_maxTime /*=INFINITE*/)
   {
     m_timeoutChild = p_maxTime;
   }
-  InitializeCriticalSection((LPCRITICAL_SECTION)&m_criticalSection);
 }
 
 RunRedirect::~RunRedirect()
 {
-  DeleteCriticalSection(&m_criticalSection);
 }
 
 void 
 RunRedirect::RunCommand(LPCSTR p_commandLine)
 {
-  Acquire();
+  AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
   StartChildProcess(p_commandLine,FALSE);
-  Release();
 }
 
 void 
 RunRedirect::RunCommand(LPCSTR p_commandLine,LPCSTR p_stdInput)
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_input = p_stdInput;
-  StartChildProcess(p_commandLine,FALSE);
-  Release();
+  StartChildProcess(p_commandLine,FALSE,TRUE);
 }
 
 void 
 RunRedirect::RunCommand(LPCSTR p_commandLine,HWND p_console,UINT p_showWindow,BOOL p_waitForInputIdle)
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_console = p_console;
   if(StartChildProcess(p_commandLine,p_showWindow,p_waitForInputIdle) == FALSE)
   {
     // Do not continue waiting on the process
     m_ready = true;
   }
-  Release();
 }
 
 void RunRedirect::OnChildStarted(LPCSTR /*lpszCmdLine*/) 
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_output.Empty();
   m_error.Empty();
   m_ready = false;
   FlushStdIn();
-  Release();
 }
+
 void RunRedirect::OnChildStdOutWrite(LPCSTR lpszOutput) 
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_output += lpszOutput;
   if(m_console)
   {
     ::SendMessage(m_console,WM_CONSOLE_TEXT,0,(LPARAM)lpszOutput);
   }
-  Release();
 }
 
 void 
 RunRedirect::OnChildStdErrWrite(LPCSTR lpszOutput)
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_error += lpszOutput;
   if(m_console)
   {
     ::SendMessage(m_console,WM_CONSOLE_TEXT,1,(LPARAM)lpszOutput);
   }
-  Release();
 }
 
 void RunRedirect::OnChildTerminate()
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   m_ready = true;
-  Release();
 }
 
 bool RunRedirect::IsReady()
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
+
   bool res = m_ready;
-  Release();
   return res;
 }
 
 bool RunRedirect::IsEOF()
 {
-  Acquire();
+  AutoCritSec lock(&m_critical);
   bool eof = m_eof_input > 0;
-  Release();
   return eof;
-}
-
-void    
-RunRedirect::Acquire()
-{
-  EnterCriticalSection(&m_criticalSection);
-}
-
-void    
-RunRedirect::Release()
-{
-  LeaveCriticalSection(&m_criticalSection);
 }
 
 // Write to the STDIN after starting the program
@@ -156,16 +136,13 @@ RunRedirect::FlushStdIn()
 {
   if(m_input)
   {
-    if(WriteChildStdIn(m_input) == 0)
-    {
-      // Ready with the input channel
-      CloseChildStdIn();
-    }
-    else
+    if(WriteChildStdIn(m_input) != 0)
     {
       // Error. Stop as soon as possible
       m_ready = true;
     }
+    // Ready with the input channel
+    CloseChildStdIn();
     m_input = nullptr;
   }
 }
@@ -191,8 +168,8 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,XString& p_result)
   {
     Sleep(WAITTIME_STATUS);
   }
-  p_result = run.m_output;
   run.TerminateChildProcess();
+  p_result = run.m_output;
   int exitcode = run.m_exitCode;
   return exitcode;
 }
@@ -226,11 +203,10 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,LPCSTR p_stdInput,X
       break;
     }
   }
-  p_result = run.m_output;
   run.TerminateChildProcess();
+  p_result = run.m_output;
   return run.m_exitCode;
 }
-
 
 int 
 CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,XString& p_result,int p_waittime)
@@ -261,8 +237,8 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,XString& p_result,i
       break;
     }
   }
-  p_result = run.m_output;
   run.TerminateChildProcess();
+  p_result = run.m_output;
   return run.m_exitCode;
 }
 
@@ -283,6 +259,7 @@ CallProgram(LPCSTR p_program, LPCSTR p_commandLine)
   {
     Sleep(WAITTIME_STATUS);
   }
+  run.TerminateChildProcess();
   return run.m_exitCode;
 }
 
@@ -343,6 +320,7 @@ PosixCallProgram(XString  p_directory
   {
     Sleep(WAITTIME_STATUS);
   }
+  run.TerminateChildProcess();
 
   // Reset console title
   if (p_console)
@@ -357,4 +335,3 @@ PosixCallProgram(XString  p_directory
   // And return the exit code
   return run.m_exitCode;
 }
-

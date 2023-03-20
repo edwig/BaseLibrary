@@ -26,11 +26,15 @@
 // THE SOFTWARE.
 //
 #pragma once
+#include "AutoCritical.h"
 
 // Command line length in NT technology
 #define BUFFER_SIZE 8192
 // Maximum wait 1 minute for input idle
 #define MAXWAIT_FOR_INPUT_IDLE 60000
+// After the process we must wait for the stdout to be completely read
+#define DRAIN_STDOUT_MAXWAIT   10000
+#define DRAIN_STDOUT_INTERVAL     50
 
 /////////////////////////////////////////////////////////////////////////////
 // Redirect class
@@ -102,4 +106,7 @@ protected:
   int StdOutThread(HANDLE hStdOutRead);
   int StdErrThread(HANDLE hStdErrRead);
   int ProcessThread();
+
+protected:
+  CRITICAL_SECTION m_critical;
 };
