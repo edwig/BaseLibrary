@@ -55,7 +55,7 @@ void
 RunRedirect::RunCommand(LPCSTR p_commandLine)
 {
   AutoCritSec lock((LPCRITICAL_SECTION)&m_critical);
-  StartChildProcess(p_commandLine,FALSE);
+  m_ready = StartChildProcess(p_commandLine, FALSE) == FALSE;
 }
 
 void 
@@ -63,7 +63,7 @@ RunRedirect::RunCommand(LPCSTR p_commandLine,LPCSTR p_stdInput)
 {
   AutoCritSec lock(&m_critical);
   m_input = p_stdInput;
-  StartChildProcess(p_commandLine,FALSE,TRUE);
+  m_ready = StartChildProcess(p_commandLine,FALSE,TRUE) == FALSE;
 }
 
 void 
@@ -152,6 +152,7 @@ RunRedirect::FlushStdIn()
     {
       // Error. Stop as soon as possible
       m_ready = true;
+      m_eof_input = 1;
     }
     // Ready with the input channel
     CloseChildStdIn();
