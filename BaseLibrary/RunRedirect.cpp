@@ -112,21 +112,33 @@ void RunRedirect::OnChildTerminate()
 {
   AutoCritSec lock(&m_critical);
   m_ready = true;
+  if(m_hStdOut != NULL)
+  {
+    // Write an END-OF-TRANSMISSION after the output, so the
+    // Redirect scanner can stop reading
+    char buf[1] =  { EOT };
+    ::WriteFile(m_hStdOut,&buf,1,NULL,NULL);
+  }
 }
 
 bool RunRedirect::IsReady()
 {
   AutoCritSec lock(&m_critical);
 
-  bool res = m_ready;
-  return res;
+  return m_ready;
 }
 
 bool RunRedirect::IsEOF()
 {
   AutoCritSec lock(&m_critical);
-  bool eof = m_eof_input > 0;
-  return eof;
+  return m_eof_input > 0;
+}
+
+bool RunRedirect::IsReadyAndEOF()
+{
+  AutoCritSec lock(&m_critical);
+
+  return (m_ready && (m_eof_input > 0));
 }
 
 // Write to the STDIN after starting the program
@@ -164,7 +176,7 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,XString& p_result)
   commandLine.Format("\"%s\" %s",p_program,p_commandLine);
 
   run.RunCommand(commandLine.GetString());
-  while((run.IsEOF() == false) && (run.IsReady() == false))
+  while(!run.IsReadyAndEOF())
   {
     Sleep(WAITTIME_STATUS);
   }
@@ -192,7 +204,7 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,LPCSTR p_stdInput,X
 
   clock_t start = clock();
   run.RunCommand(commandLine.GetString(),p_stdInput);
-  while((run.IsEOF() == false) && (run.IsReady() == false))
+  while(!run.IsReadyAndEOF())
   {
     Sleep(WAITTIME_STATUS);
 
@@ -226,7 +238,7 @@ CallProgram_For_String(LPCSTR p_program,LPCSTR p_commandLine,XString& p_result,i
 
   clock_t start = clock();
   run.RunCommand(commandLine.GetString());
-  while((run.IsEOF() == false) && (run.IsReady() == false))
+  while(!run.IsReadyAndEOF())
   {
     Sleep(WAITTIME_STATUS);
 
@@ -255,7 +267,7 @@ CallProgram(LPCSTR p_program, LPCSTR p_commandLine)
   commandLine.Format("\"%s\" %s",p_program,p_commandLine);
 
   run.RunCommand(commandLine.GetString());
-  while ((run.IsEOF() == false) && (run.IsReady() == false))
+  while(!run.IsReadyAndEOF())
   {
     Sleep(WAITTIME_STATUS);
   }
@@ -316,7 +328,7 @@ PosixCallProgram(XString  p_directory
   }
 
   // Wait for the standard output/standard error to drain
-  while((run.IsEOF() == false) && (run.IsReady() == false))
+  while(!run.IsReadyAndEOF())
   {
     Sleep(WAITTIME_STATUS);
   }

@@ -31,6 +31,8 @@
 #include <process.h>
 #include <assert.h>
 #include <time.h>
+#include <corecrt_io.h>
+#include <fcntl.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,6 +72,7 @@ Redirect::Redirect()
   m_timeoutChild    = INFINITE;
   m_timeoutIdle     = MAXWAIT_FOR_INPUT_IDLE;
   m_terminated      = false;
+  m_bRunThread      = TRUE;
 
   InitializeCriticalSection((LPCRITICAL_SECTION)&m_critical);
 }
@@ -220,7 +223,7 @@ Redirect::TerminateChildProcess()
     m_bRunThread = FALSE;
     ::SetEvent(m_hExitEvent);
 
-    WaitForSingleObject(m_hProcessThread,3000);
+    WaitForSingleObject(m_hProcessThread,1000);
     m_hProcessThread = NULL;
   }
 
@@ -396,34 +399,31 @@ Redirect::PrepAndLaunchRedirectedChild(LPCSTR lpszCmdLine
   return pi.hProcess;
 }
 
-BOOL Redirect::m_bRunThread = TRUE;
-
 // Thread to read the child stdout.
 int 
 Redirect::StdOutThread(HANDLE hStdOutRead)
 {
   DWORD nBytesRead;
   CHAR  lpszBuffer[10];
-  CHAR  lineBuffer[BUFFER_SIZE+10];
+  CHAR  lineBuffer[BUFFER_SIZE + 10] = {0} ;
   char* linePointer = lineBuffer;
+  //    FOR DEBUGGING: See below
+  //    int   i = 0;
 
   while(true)
   {
     nBytesRead = 0;
-    if(!::ReadFile(hStdOutRead, lpszBuffer, 1, &nBytesRead, NULL) || !nBytesRead)
+    if(!::ReadFile(hStdOutRead, lpszBuffer, 1, &nBytesRead, NULL) || !nBytesRead || lpszBuffer[0] == EOT)
     {
-      if(::GetLastError() != ERROR_IO_PENDING)
+      // pipe done - normal exit path.
+      // Partial input line left hanging?
+      if(linePointer != lineBuffer)
       {
-        // pipe done - normal exit path.
-        // Partial input line left hanging?
-        if(linePointer != lineBuffer)
-        {
-          *linePointer = 0;
-          OnChildStdOutWrite(lineBuffer);
-        }
-        m_eof_input = 1;
-        break;
+        *linePointer = 0;
+        OnChildStdOutWrite(lineBuffer);
       }
+      m_eof_input = 1;
+      break;
     }
     // Add to line
     *linePointer++ = lpszBuffer[0];
@@ -431,6 +431,13 @@ Redirect::StdOutThread(HANDLE hStdOutRead)
     // Add end-of-line or line overflow, write to listener
     if(lpszBuffer[0] == '\n' || ((linePointer - lineBuffer) > BUFFER_SIZE))
     {
+      // USED FOR DEBUGGING PURPOSES ONLY!!
+      // So we can detect the draining of the standard output from the process
+//       if(i++ % 20 == 0)
+//       {
+//         Sleep(1);
+//       }
+      
       // Virtual function to notify derived class that
       // characters are written to stdout.
       *linePointer = 0;
@@ -456,17 +463,14 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
   {
     if(!::ReadFile(hStdErrRead,lpszBuffer,1,&nBytesRead,NULL) || !nBytesRead)
     {
-      if(::GetLastError() != ERROR_IO_PENDING)
+      // pipe done - normal exit path.
+      // Partial input line left hanging?
+      if(linePointer != lineBuffer)
       {
-        // pipe done - normal exit path.
-        // Partial input line left hanging?
-        if(linePointer != lineBuffer)
-        {
-          *linePointer = 0;
-          OnChildStdErrWrite(lineBuffer);
-        }
-        break;
+        *linePointer = 0;
+        OnChildStdErrWrite(lineBuffer);
       }
+      break;
     }
     // Add to line: caller sees stdout AND stderr alike
     *linePointer++ = lpszBuffer[0];

@@ -71,6 +71,7 @@ public:
   virtual void OnChildTerminate() override;
   bool IsReady();
   bool IsEOF();
+  bool IsReadyAndEOF();
 
   HWND    m_console { NULL };
   bool    m_ready;

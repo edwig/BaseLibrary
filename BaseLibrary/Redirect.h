@@ -35,6 +35,8 @@
 // After the process we must wait for the stdout to be completely read
 #define DRAIN_STDOUT_MAXWAIT   10000
 #define DRAIN_STDOUT_INTERVAL     50
+// END-OF-TRANSMISSION is ASCII 4
+#define EOT '\x4'
 
 /////////////////////////////////////////////////////////////////////////////
 // Redirect class
@@ -87,7 +89,7 @@ protected:
                                      ,UINT   uShowChildWindow  = SW_HIDE
                                      ,BOOL   bWaitForInputIdle = FALSE);
 
-  static BOOL m_bRunThread;
+  BOOL m_bRunThread;
   static unsigned int WINAPI staticStdOutThread(void* pRedirect)
   { 
     Redirect* redir = reinterpret_cast<Redirect*>(pRedirect);

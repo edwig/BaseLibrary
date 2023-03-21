@@ -53,8 +53,12 @@ bool  TestOnce()
   XString message = CreateMessage();
   int lengthbefore = message.GetLength();
 
+  // TO PROPERLY TEST THIS!!
+  // UNCOMMENT THE Sleep(1) statement in the following method:
+  // Redirect::StdOutThread(HANDLE hStdOutRead)
+
   XString result;
-  int waittime = 5000;
+  int waittime = 25000;
   int res = CallProgram_For_String("TestFilter","noparam",message.GetString(),result,waittime);
 
   result.Remove('\r');
