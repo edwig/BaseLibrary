@@ -48,7 +48,7 @@ CString CreateMessage()
   return msg;
 }
 
-bool  TestOnce()
+bool  TestOnce(const char* p_param)
 {
   XString message = CreateMessage();
   int lengthbefore = message.GetLength();
@@ -58,11 +58,13 @@ bool  TestOnce()
   // Redirect::StdOutThread(HANDLE hStdOutRead)
 
   XString result;
+  XString error;
   int waittime = 25000;
-  int res = CallProgram_For_String("TestFilter","noparam",message.GetString(),result,waittime);
+  int res = CallProgram_For_String("TestFilter",p_param,message.GetString(),result,error,waittime);
 
   result.Remove('\r');
-  int lengthafter = result.GetLength();
+  error.Remove('\r');
+  int lengthafter = result.GetLength() + error.GetLength();
 
   lengthbefore *= 2;
   if(lengthafter != lengthbefore)
@@ -73,19 +75,41 @@ bool  TestOnce()
   return true;
 }
 
-int main()
+int main(int argc,char* argv[])
 {
-  int errors = 0;
+  int errors     = 0;
+  int testamount = 10;
 
-  for(int index = 0;index < 10000; ++index)
+  // Different number of tests specified?
+  if(argc >= 2)
   {
-    printf("Testing number: %d\n",index);
-    if(!TestOnce())
+    int amount = atoi(argv[1]);
+    if(amount >= 1)
+    {
+      testamount = amount;
+    }
+  }
+
+  // Test with filter to 'stdout'
+  for(int index = 0;index < testamount; ++index)
+  {
+    printf("Testing stdout number: %d\n",index);
+    if(!TestOnce(""))
     {
       ++errors;
     }
   }
+
+  // Test with filter to 'stderr'
+  for(int index = 0;index < testamount; ++index)
+  {
+    printf("Testing stderr number: %d\n",index);
+    if(!TestOnce("to-error"))
+    {
+      ++errors;
+    }
+  }
+
   printf("Total number of errors: %d\n",errors);
   return errors;
 }
-

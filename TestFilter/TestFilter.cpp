@@ -73,24 +73,34 @@ void ReadStandardInput()
   *bufpointer = 0;
 }
 
-void WriteStandardOutput()
+void WriteStandardOutput(bool p_asError)
 {
   for(int index = 0; index < OUTPUT_TIMES; ++index)
   {
     char* bufpointer = buffer;
     while(*bufpointer)
     {
-      fputc(*bufpointer++,stdout);
+      fputc(*bufpointer++,p_asError ? stderr : stdout);
     }
   }
 }
 
-int main()
+int main(int argc,char* argv[])
 {
+  bool sendToError = false;
+
+  if(argc >= 2)
+  {
+    if(_stricmp(argv[1],"to-error") == 0)
+    {
+      sendToError = true;
+    }
+  }
+
   AllocateBuffer();
 
   ReadStandardInput();
-  WriteStandardOutput();
+  WriteStandardOutput(sendToError);
 
   DeallocateBuffer();
 

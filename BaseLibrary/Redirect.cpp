@@ -69,6 +69,7 @@ Redirect::Redirect()
   m_bRunThread      = FALSE;
   m_exitCode        = 0;
   m_eof_input       = 0;
+  m_eof_error       = 0;
   m_timeoutChild    = INFINITE;
   m_timeoutIdle     = MAXWAIT_FOR_INPUT_IDLE;
   m_terminated      = false;
@@ -97,6 +98,7 @@ Redirect::StartChildProcess(LPCSTR lpszCmdLine,UINT uShowChildWindow /*=SW_HIDE*
   HANDLE hProcess = ::GetCurrentProcess();
 
   m_eof_input = 0;
+  m_eof_error = 0;
   m_exitCode  = 0;
 
   // Set up the security attributes struct.
@@ -158,6 +160,7 @@ Redirect::StartChildProcess(LPCSTR lpszCmdLine,UINT uShowChildWindow /*=SW_HIDE*
 
     m_terminated = 1;
     m_eof_input  = 1;
+    m_eof_error  = 1;
 
     return FALSE;
   }
@@ -268,11 +271,23 @@ Redirect::TerminateChildProcess()
   int maxWaittime = DRAIN_STDOUT_MAXWAIT;
   while(maxWaittime >= 0)
   {
-    Sleep(DRAIN_STDOUT_INTERVAL);
     if(!m_hStdOutRead)
     {
       break;
     }
+    Sleep(DRAIN_STDOUT_INTERVAL);
+    maxWaittime -= DRAIN_STDOUT_INTERVAL;
+  }
+
+  // Wait for the stderr to drain
+  maxWaittime = DRAIN_STDOUT_MAXWAIT;
+  while(maxWaittime >= 0)
+  {
+    if(!m_hStdErrRead)
+    {
+      break;
+    }
+    Sleep(DRAIN_STDOUT_INTERVAL);
     maxWaittime -= DRAIN_STDOUT_INTERVAL;
   }
 
@@ -456,12 +471,14 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
 {
   DWORD nBytesRead;
   CHAR  lpszBuffer[10];
-  CHAR  lineBuffer[BUFFER_SIZE + 1];
+  CHAR  lineBuffer[BUFFER_SIZE + 10] = { 0 };
   char* linePointer = lineBuffer;
+  //    FOR DEBUGGING: See below
+  //    int   i = 0;
 
   while(m_bRunThread)
   {
-    if(!::ReadFile(hStdErrRead,lpszBuffer,1,&nBytesRead,NULL) || !nBytesRead)
+    if(!::ReadFile(hStdErrRead,lpszBuffer,1,&nBytesRead,NULL) || !nBytesRead || lpszBuffer[0] == EOT)
     {
       // pipe done - normal exit path.
       // Partial input line left hanging?
@@ -470,6 +487,7 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
         *linePointer = 0;
         OnChildStdErrWrite(lineBuffer);
       }
+      m_eof_error = 1;
       break;
     }
     // Add to line: caller sees stdout AND stderr alike
@@ -478,10 +496,17 @@ Redirect::StdErrThread(HANDLE hStdErrRead)
     // Add end-of-line or line overflow, write to listener
     if(lpszBuffer[0] == '\n' || ((linePointer - lineBuffer) > BUFFER_SIZE))
     {
+      // USED FOR DEBUGGING PURPOSES ONLY!!
+      // So we can detect the draining of the standard output from the process
+//       if(i++ % 20 == 0)
+//       {
+//         Sleep(1);
+//       }
+
       // Virtual function to notify derived class that
       // characters are written to stdout.
       *linePointer = 0;
-      OnChildStdErrWrite(lpszBuffer);
+      OnChildStdErrWrite(lineBuffer);
       linePointer = lineBuffer;
     }
   }

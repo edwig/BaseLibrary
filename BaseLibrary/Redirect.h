@@ -64,6 +64,7 @@ public:
 
   mutable int m_exitCode;
   mutable int m_eof_input;
+  mutable int m_eof_error;
   mutable int m_terminated;
 protected:
   HANDLE m_hExitEvent;
