@@ -93,3 +93,5 @@ Version 1.0.9 of 19-03-2023
     we must wait for the stdout to drain completely, before we shutdown
     the child process.
     Programs TestFilter and TestRedirect are meant to test this.
+4)  WinPing has been upgraded to never print to 'stderr' any more in case of errors.
+    all error situations now go the the 'errorbuffer' as specified in the function call.
