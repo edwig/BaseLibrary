@@ -106,6 +106,7 @@
     <ClCompile Include="SOAPTests.cpp" />
     <ClCompile Include="TestAuthenticate.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
+    <ClCompile Include="XSDSchemaTests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

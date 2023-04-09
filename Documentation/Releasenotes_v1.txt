@@ -95,3 +95,9 @@ Version 1.0.9 of 19-03-2023
     Programs TestFilter and TestRedirect are meant to test this.
 4)  WinPing has been upgraded to never print to 'stderr' any more in case of errors.
     all error situations now go the the 'errorbuffer' as specified in the function call.
+
+Version 1.1.0 of 09-04-2023
+---------------------------
+1)  Added the XSDSchema class. *.xsd schema's can be read from and written back to file
+    XMLMessages can be validated against this schema. A life test example from the 
+    'ketenstandard' has been added in the unit tests.
