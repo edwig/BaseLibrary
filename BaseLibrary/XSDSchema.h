@@ -62,6 +62,7 @@ enum class XsdError
  ,XSDE_datatype_restriction_violation
  ,XSDE_Missing_element_in_xml
  ,XSDE_only_one_choice_element
+ ,XSDE_element_not_qualified
 };
 
 #define XSDSCHEMA "http://www.w3.org/2001/XMLSchema"

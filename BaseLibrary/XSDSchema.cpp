@@ -737,23 +737,30 @@ XSDSchema::ValidateElement(XMLMessage& p_doc
   XMLRestriction* rest = p_schemaElement->GetRestriction();
   XString  type = rest->GetName();
 
-  // 2) Complex type -> more steps -> Find XSDComplexType
+  // 2) Check for qualified element name
+  if(m_qualified && p_compare->GetNamespace().IsEmpty())
+  {
+    p_error = "Unqualified element: " + p_compare->GetName();
+    return XsdError::XSDE_element_not_qualified;
+  }
+
+  // 3) Complex type -> more steps -> Find XSDComplexType
   XSDComplexType* complex = FindComplexType(type);
 
-  // 3) Simple type -> Validate the element value
+  // 4) Simple type -> Validate the element value
   if(complex == nullptr || p_schemaElement->GetType() > 0)
   {
     return ValidateValue(rest,p_compare,p_schemaElement->GetType(),type,p_error);
   }
 
-  // 4) Validate Wsdl Order in the XSDComplexType
+  // 5) Validate Wsdl Order in the XSDComplexType
   result = ValidateOrder(p_doc,p_compare,complex,p_error);
   if(result != XsdError::XSDE_NoError)
   {
     return result;
   }
 
-  // 5) Validate Elements (recursive calling ourselves)
+  // 6) Validate Elements (recursive calling ourselves)
   XMLElement* child = p_doc.GetElementFirstChild(p_compare);
   while(child)
   {
