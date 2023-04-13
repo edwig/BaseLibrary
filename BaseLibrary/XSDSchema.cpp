@@ -204,9 +204,9 @@ XSDSchema::ValidateXML(XMLMessage& p_document
 //
 //////////////////////////////////////////////////////////////////////////
 
-// <xs:schema     xmlns = "http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
+// <xs:schema     xmlns = "http://www.standard.nl/instruction/SALES/001"
 //             xmlns:xs = "http://www.w3.org/2001/XMLSchema"
-//      targetNamespace = "http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
+//      targetNamespace = "http://www.stanaard.nl/instruction/SALES/001"
 //   elementFormDefault = "qualified">
 
 // Read the schema root node
@@ -472,9 +472,9 @@ XSDSchema::ReadElementDefinition(XMLMessage&  p_doc
 
 //////////////////////////////////////////////////////////////////////////
 
-// <xs:schema     xmlns = "http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
+// <xs:schema     xmlns = "http://www.standard.nl/instruction/SALES/001"
 //             xmlns:xs = "http://www.w3.org/2001/XMLSchema"
-//      targetNamespace = "http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
+//      targetNamespace = "http://www.stanaard.nl/instruction/SALES/001"
 //   elementFormDefault = "qualified">
 
 // Set the root
@@ -738,11 +738,11 @@ XSDSchema::ValidateElement(XMLMessage& p_doc
   XString  type = rest->GetName();
 
   // 2) Check for qualified element name
-  if(m_qualified && p_compare->GetNamespace().IsEmpty())
-  {
-    p_error = "Unqualified element: " + p_compare->GetName();
-    return XsdError::XSDE_element_not_qualified;
-  }
+  //   if(m_qualified && p_compare->GetNamespace().IsEmpty())
+  //   {
+  //     p_error = "Unqualified element: " + p_compare->GetName();
+  //     return XsdError::XSDE_element_not_qualified;
+  //   }
 
   // 3) Complex type -> more steps -> Find XSDComplexType
   XSDComplexType* complex = FindComplexType(type);

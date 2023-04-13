@@ -43,7 +43,7 @@ public:
     Logger::WriteMessage("Reading an XSDSchema");
 
     XSDSchema schema;
-    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_SALES005.xsd");
+    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
 
     Assert::AreEqual((int)XsdError::XSDE_NoError,(int)result);
   }
@@ -53,7 +53,7 @@ public:
     Logger::WriteMessage("Reading an XSDSchema");
 
     XSDSchema schema;
-    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_SALES005.xsd");
+    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result);
 
@@ -66,10 +66,10 @@ public:
     Logger::WriteMessage("Validating minimal XMLMessage with XSDSchema");
 
     XSDSchema schema;
-    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_SALES005.xsd");
+    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
 
     XMLMessage msg;
-    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage1_SALES005.xml");
+    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage_001.xml");
     XmlError result_xml = msg.GetInternalError();
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result_xsd);
@@ -89,10 +89,10 @@ public:
     Logger::WriteMessage("Validating minimal XMLMessage with XSDSchema");
 
     XSDSchema schema;
-    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_SALES005.xsd");
+    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
 
     XMLMessage msg;
-    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage2_SALES005.xml");
+    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage_002.xml");
     XmlError result_xml = msg.GetInternalError();
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result_xsd);
