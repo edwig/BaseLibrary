@@ -139,6 +139,7 @@ private:
   void    PrintOuterJoin();
   Token   FindToken();
   void    AppendSchema();
+
   void    SkipSpaceAndComment();
   Token   CommentSQL();
   Token   CommentCPP();
