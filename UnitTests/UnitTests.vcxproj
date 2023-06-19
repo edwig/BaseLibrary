@@ -69,6 +69,9 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)Environment.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -105,6 +108,7 @@
     <ClCompile Include="QueryReWriterTests.cpp" />
     <ClCompile Include="SOAPTests.cpp" />
     <ClCompile Include="TestAuthenticate.cpp" />
+    <ClCompile Include="TestEnvironment.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
     <ClCompile Include="XSDSchemaTests.cpp" />
   </ItemGroup>
@@ -112,6 +116,9 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Environment.env" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
