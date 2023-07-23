@@ -72,10 +72,11 @@ bool  TestOnce(const char* p_param)
     printf("We did NOT read the entire output!\n");
     return false;
   }
-  return true;
+  // Check that the return value came through
+  return (res == 1234);
 }
 
-int main(int argc,char* argv[])
+int main(const int argc,const char* argv[])
 {
   int errors     = 0;
   int testamount = 10;

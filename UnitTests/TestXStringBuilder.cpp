@@ -56,6 +56,7 @@ public:
     }
     size_t size = total.GetLength();
     count.Stop();
+    Assert::IsTrue(size == 11699883);
 
     XString msg;
     msg.Format("Adding all XStrings took: %8.6f ms",count.GetCounter());
@@ -76,6 +77,8 @@ public:
 
     msg.Format("XStringBuilder took: %8.6f ms",count2.GetCounter());
     Logger::WriteMessage(msg);
+
+    Assert::IsTrue(size == 3899961);
   }
 };
 }

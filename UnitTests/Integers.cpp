@@ -19,10 +19,12 @@ public:
     int num1 = 0x7FFFFFFE;
     int num2 = num1 + 2;
 
+    Assert::IsTrue(num2 < 0);
+
     // Cannot work!
     SafeInt<int> number1 { 0x7FFFFFFE };
     SafeInt<int> number2 { 2 };
-    
+
     try
     {
       number2 = number1 + 2;

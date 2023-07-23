@@ -101,3 +101,11 @@ Version 1.1.0 of 09-04-2023
 1)  Added the XSDSchema class. *.xsd schema's can be read from and written back to file
     XMLMessages can be validated against this schema. A life test example from the 
     'ketenstandard' has been added in the unit tests.
+
+Version 1.2.0 of 23-07-2023
+---------------------------
+1)  Fully checked with CPPCheck 2.11
+    As much as possible of all category "errors", "warnings", "style" and "performance"
+    removed from the source code. A 'BaseLibrary.cppcheck' project file is checked in
+2)  As a result of the CCPCheck, many declarations are now 'const reference'
+    Beware as you take this version into production on another project

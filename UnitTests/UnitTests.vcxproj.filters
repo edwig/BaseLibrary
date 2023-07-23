@@ -45,6 +45,9 @@
     <ClCompile Include="TestEnvironment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Integers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

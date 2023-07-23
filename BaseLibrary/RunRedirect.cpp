@@ -389,6 +389,12 @@ PosixCallProgram(XString  p_directory
   p_stdout = run.m_output;
   p_stderr = run.m_error;
 
+  // Reset the RunRedirect pointer for our caller!
+  if(p_run)
+  {
+    *p_run = nullptr;
+  }
+
   // And return the exit code
   return run.m_exitCode;
 }
