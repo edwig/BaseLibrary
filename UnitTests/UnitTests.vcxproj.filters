@@ -48,6 +48,9 @@
     <ClCompile Include="Integers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestToken.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

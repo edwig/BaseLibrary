@@ -50,7 +50,7 @@ PrintSidUse(XString& p_list,SID_NAME_USE p_sidType)
 {
   switch (p_sidType)
   {
-    case SidTypeUser:           p_list += "(user)\n";
+    case SidTypeUser:           p_list += _T("(user)\n");
                                 break;
     case SidTypeGroup:          p_list += "(group)\n";
                                 break;
@@ -230,20 +230,20 @@ BOOL DumpToken(XString& p_list,HANDLE p_token)
   size = 0;
   if (!GetTokenInformation(p_token, TokenSource, &source, sizeof(TOKEN_SOURCE), &size) || !size)
   {
-    text.Format("Error getting token source: error code 0x%lx\n", GetLastError());
+    text.Format("Cannot get the token source: error code 0x%lx\n", GetLastError());
     p_list += text;
-    return FALSE;
   }
-
-  p_list += "Token's source: ";
-  for (i = 0; i < 8 && source.SourceName[i]; i++)
+  else
   {
-    text.Format("%c", source.SourceName[i]);
+    p_list += "Token's source: ";
+    for(i = 0; i < 8 && source.SourceName[i]; i++)
+    {
+      text.Format("%c",source.SourceName[i]);
+      p_list += text;
+    }
+    text.Format(" (0x%lx)\n",source.SourceIdentifier.LowPart);
     p_list += text;
   }
-  text.Format(" (0x%lx)\n", source.SourceIdentifier.LowPart);
-  p_list += text;
-
   /////////////////////////////////////////////////////////////////
   // Dump token user
 
@@ -312,7 +312,7 @@ BOOL DumpToken(XString& p_list,HANDLE p_token)
   delete [] primaryGroup;
 
   /////////////////////////////////////////////////////////////////
-  // Dump default dacl
+  // Dump default DACL
   
   size = 0;
   GetTokenInformation(p_token, TokenDefaultDacl, NULL, 0, &size);
@@ -359,7 +359,7 @@ BOOL DumpToken(XString& p_list,HANDLE p_token)
       assert(size);
       sid = (SID *) new uchar[size];
       CopySid(size, sid, (SID *)explicitEntry->Trustee.ptstrName);
-      userSize = (sizeof userName / sizeof *userName)-1;
+      userSize   = (sizeof userName   / sizeof *userName  ) - 1;
       domainSize = (sizeof domainName / sizeof *domainName) - 1;
       LookupAccountSid(NULL, sid, userName, &userSize, domainName, &domainSize, &sidType);
       delete [] sid;

@@ -110,6 +110,7 @@
     <ClCompile Include="SOAPTests.cpp" />
     <ClCompile Include="TestAuthenticate.cpp" />
     <ClCompile Include="TestEnvironment.cpp" />
+    <ClCompile Include="TestToken.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
     <ClCompile Include="XSDSchemaTests.cpp" />
   </ItemGroup>
