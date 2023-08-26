@@ -43,21 +43,21 @@ namespace BaseLibraryUnitTests
 		{
       Logger::WriteMessage("Testing SOAPMessage Cleanup 1");
 
-      XString namesp("http://docs.hercules.nl/wocas");
-      XString method("NewDocument");
+      XString namesp(_T("http://docs.hercules.nl/wocas"));
+      XString method(_T("NewDocument"));
 
       SOAPMessage msg(namesp,method);
-      msg.SetParameter("One",1);
-      msg.SetParameter("Two",2);
-      msg.SetParameter("Three","");
-      msg.SetParameter("Four","This is four");
-      msg.SetParameter("Five","");
+      msg.SetParameter(_T("One"),1);
+      msg.SetParameter(_T("Two"),2);
+      msg.SetParameter(_T("Three"),_T(""));
+      msg.SetParameter(_T("Four"), _T("This is four"));
+      msg.SetParameter(_T("Five"), _T(""));
 
       msg.CleanUp();
 
       XString total = msg.GetSoapMessage();
 
-      XString expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      XString expected = _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                          "<s:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:a=\"http://www.w3.org/2005/08/addressing\" xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\">\n"
                          "  <s:Header>\n"
                          "    <a:Action s:mustUnderstand=\"true\">http://docs.hercules.nl/wocas/NewDocument</a:Action>\n"
@@ -69,7 +69,7 @@ namespace BaseLibraryUnitTests
                          "      <Four>This is four</Four>\n"
                          "    </NewDocument>\n"
                          "  </s:Body>\n"
-                         "</s:Envelope>\n";
+                         "</s:Envelope>\n");
 
       Assert::AreEqual(expected.GetString(),total.GetString());
 		}
@@ -78,25 +78,25 @@ namespace BaseLibraryUnitTests
     {
       Logger::WriteMessage("Testing SOAPMessage Cleanup 2");
 
-      XString namesp("http://docs.hercules.nl/wocas");
-      XString method("NewDocument");
+      XString namesp(_T("http://docs.hercules.nl/wocas"));
+      XString method(_T("NewDocument"));
 
       SOAPMessage msg(namesp,method);
-      msg.SetParameter("One",1);
-      msg.SetParameter("Two",2);
-      msg.SetParameter("Three","");
-      msg.SetParameter("Four","This is four");
-      msg.SetParameter("Five","");
+      msg.SetParameter(_T("One"),1);
+      msg.SetParameter(_T("Two"),2);
+      msg.SetParameter(_T("Three"),_T(""));
+      msg.SetParameter(_T("Four"), _T("This is four"));
+      msg.SetParameter(_T("Five"), _T(""));
       
       XMLElement* param = msg.GetParameterObjectNode();
-      XMLElement* six   = msg.AddElement(param,"Six",XDT_String,"");
-      XMLElement* six2  = msg.AddElement(six,"Six2",XDT_String,"S2");
+      XMLElement* six   = msg.AddElement(param,_T("Six"), XDT_String,_T(""));
+      XMLElement* six2  = msg.AddElement(six,  _T("Six2"),XDT_String,_T("S2"));
 
       msg.CleanUp();
 
       XString total = msg.GetSoapMessage();
 
-      XString expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      XString expected = _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                          "<s:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:a=\"http://www.w3.org/2005/08/addressing\" xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\">\n"
                          "  <s:Header>\n"
                          "    <a:Action s:mustUnderstand=\"true\">http://docs.hercules.nl/wocas/NewDocument</a:Action>\n"
@@ -111,7 +111,7 @@ namespace BaseLibraryUnitTests
                          "      </Six>\n"
                          "    </NewDocument>\n"
                          "  </s:Body>\n"
-                         "</s:Envelope>\n";
+                         "</s:Envelope>\n");
 
       Assert::AreEqual(expected.GetString(),total.GetString());
     }
@@ -120,29 +120,29 @@ namespace BaseLibraryUnitTests
     {
       Logger::WriteMessage("Testing SOAPMessage Cleanup 3");
 
-      XString namesp("http://docs.hercules.nl/wocas");
-      XString method("NewDocument");
+      XString namesp(_T("http://docs.hercules.nl/wocas"));
+      XString method(_T("NewDocument"));
 
       SOAPMessage msg(namesp,method);
-      msg.SetParameter("One",1);
-      msg.SetParameter("Two",2);
-      msg.SetParameter("Three","");
-      msg.SetParameter("Four","This is four");
-      msg.SetParameter("Five","");
+      msg.SetParameter(_T("One"),1);
+      msg.SetParameter(_T("Two"),2);
+      msg.SetParameter(_T("Three"),_T(""));
+      msg.SetParameter(_T("Four"), _T("This is four"));
+      msg.SetParameter(_T("Five"), _T(""));
       
       XMLElement* param = msg.GetParameterObjectNode();
-      XMLElement* six   = msg.AddElement(param,"Six",XDT_String,"");
-      XMLElement* six2  = msg.AddElement(six,"Six2",XDT_String,"S2");
+      XMLElement* six   = msg.AddElement(param,_T("Six"),XDT_String,_T(""));
+      XMLElement* six2  = msg.AddElement(six, _T("Six2"),XDT_String,_T("S2"));
 
-      XMLElement* seven  = msg.AddElement(param, "Seven", XDT_String,"");
-      XMLElement* seven2 = msg.AddElement(seven, "Seven2",XDT_String,"");
-      XMLElement* seven3 = msg.AddElement(seven2,"Seven3",XDT_String,"");
-      XMLElement* seven4 = msg.AddElement(seven3,"Seven4",XDT_String,"");
+      XMLElement* seven  = msg.AddElement(param, _T("Seven"), XDT_String,_T(""));
+      XMLElement* seven2 = msg.AddElement(seven, _T("Seven2"),XDT_String,_T(""));
+      XMLElement* seven3 = msg.AddElement(seven2,_T("Seven3"),XDT_String,_T(""));
+      XMLElement* seven4 = msg.AddElement(seven3,_T("Seven4"),XDT_String,_T(""));
 
       msg.CleanUp();
       XString total = msg.GetSoapMessage();
 
-      XString expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      XString expected = _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                          "<s:Envelope xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:a=\"http://www.w3.org/2005/08/addressing\" xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\">\n"
                          "  <s:Header>\n"
                          "    <a:Action s:mustUnderstand=\"true\">http://docs.hercules.nl/wocas/NewDocument</a:Action>\n"
@@ -157,7 +157,7 @@ namespace BaseLibraryUnitTests
                          "      </Six>\n"
                          "    </NewDocument>\n"
                          "  </s:Body>\n"
-                         "</s:Envelope>\n";
+                         "</s:Envelope>\n");
 
       Assert::AreEqual(expected.GetString(),total.GetString());
     }

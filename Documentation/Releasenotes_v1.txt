@@ -109,3 +109,8 @@ Version 1.2.0 of 23-07-2023
     removed from the source code. A 'BaseLibrary.cppcheck' project file is checked in
 2)  As a result of the CCPCheck, many declarations are now 'const reference'
     Beware as you take this version into production on another project
+3)  Fully Unicode (UTF-16 and UTF-8) aware
+    Can both be compiled in MBCS mode or in Unicode mode and can process files 
+    in UTF-8, UTF-16-LE and UTF-16-BE mode with according byte-order-marks (BOM)
+    
+    

@@ -42,8 +42,8 @@ public:
   {
     Logger::WriteMessage("Testing AuthenticateHeader");
 
-    XString user("jan.klaassen@organisatie.nl");
-    XString pass("Th1$1$MyP@$$w03dF03T0d@y");
+    XString user(_T("jan.klaassen@organisatie.nl"));
+    XString pass(_T("Th1$1$MyP@$$w03dF03T0d@y"));
 
     XString auth = CreateAuthentication(user,pass);
 
@@ -65,8 +65,8 @@ public:
   {
     Logger::WriteMessage("Testing AuthenticateHeader with diacrits");
 
-    XString user("edwig.huisman@organisatie.nl");
-    XString pass("Thí$ì$MÿPä$wö3dFò3Tôdây");
+    XString user(_T("edwig.huisman@organisatie.nl"));
+    XString pass(_T("Thí$ì$MÿPä$wö3dFò3Tôdây"));
 
     XString auth = CreateAuthentication(user,pass);
 
@@ -86,10 +86,10 @@ public:
 
   TEST_METHOD(TestAuthenticateHeaderSeperator)
   {
-    Logger::WriteMessage("Testing AuthenticateHeader with extra seperators");
+    Logger::WriteMessage("Testing AuthenticateHeader with extra separators");
 
-    XString user("edwig.huisman@organisatie.nl");
-    XString pass("Thí$~ì$~Mÿ~Pä$wö3d~Fò3~Tôdây~");
+    XString user(_T("edwig.huisman@organisatie.nl"));
+    XString pass(_T("Thí$~ì$~Mÿ~Pä$wö3d~Fò3~Tôdây~"));
 
     XString auth = CreateAuthentication(user,pass);
 

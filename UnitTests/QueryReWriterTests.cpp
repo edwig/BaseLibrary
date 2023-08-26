@@ -45,16 +45,16 @@ void FillCodes(QueryReWriter& p_rewriter)
     return;
   }
   // Replacements
-  p_rewriter.AddSQLWord("UPPER",  "UCASE");
-  p_rewriter.AddSQLWord("LOWER",  "LCASE");
-  p_rewriter.AddSQLWord("LENGTH", "LEN");
-  p_rewriter.AddSQLWord("SYSDATE","CURRENT_TIMESTAMP");
+  p_rewriter.AddSQLWord(_T("UPPER"),  _T("UCASE"));
+  p_rewriter.AddSQLWord(_T("LOWER"),  _T("LCASE"));
+  p_rewriter.AddSQLWord(_T("LENGTH"), _T("LEN"));
+  p_rewriter.AddSQLWord(_T("SYSDATE"),_T("CURRENT_TIMESTAMP"));
   // Special schema's
-  p_rewriter.AddSQLWord("BRIEF_EW","","metaschema");
+  p_rewriter.AddSQLWord(_T("BRIEF_EW"),_T(""),_T("metaschema"));
   // ODBC function escapes
-  p_rewriter.AddSQLWord("NVL",     "ISNULL",   "",Token::TK_EOS,OdbcEsc::Function);
-  p_rewriter.AddSQLWord("SUBSTR",  "SUBSTRING","",Token::TK_EOS,OdbcEsc::Function);
-  p_rewriter.AddSQLWord("DATABASE","DATABASE", "",Token::TK_EOS,OdbcEsc::Function);
+  p_rewriter.AddSQLWord(_T("NVL"),     _T("ISNULL"),   _T(""),Token::TK_EOS,OdbcEsc::Function);
+  p_rewriter.AddSQLWord(_T("SUBSTR"),  _T("SUBSTRING"),_T(""),Token::TK_EOS,OdbcEsc::Function);
+  p_rewriter.AddSQLWord(_T("DATABASE"),_T("DATABASE"), _T(""),Token::TK_EOS,OdbcEsc::Function);
 
   init = true;
 }
@@ -67,18 +67,18 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT t.one\n"
-                    "      ,t.two\n"
-                    "  FROM table t\n"
-                    " WHERE t.three = 3";
+    XString input = _T("SELECT t.one\n"
+                       "      ,t.two\n"
+                       "  FROM table t\n"
+                       " WHERE t.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT t.one\n"
-                     "      ,t.two\n"
-                     "  FROM other.table t\n"
-                     " WHERE t.three = 3";
+    XString expect = _T("SELECT t.one\n"
+                        "      ,t.two\n"
+                        "  FROM other.table t\n"
+                        " WHERE t.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -88,18 +88,18 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema in a condition");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT one\n"
-                    "      ,two\n"
-                    "  FROM table\n"
-                    " WHERE table.three = 3";
+    XString input = _T("SELECT one\n"
+                       "      ,two\n"
+                       "  FROM table\n"
+                       " WHERE table.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT one\n"
-                     "      ,two\n"
-                     "  FROM other.table\n"
-                     " WHERE table.three = 3";
+    XString expect = _T("SELECT one\n"
+                        "      ,two\n"
+                        "  FROM other.table\n"
+                        " WHERE table.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -109,22 +109,22 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema with comments");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT one\n"
+    XString input = _T("SELECT one\n"
                     "      ,two\n"
                     "      ,'Strings are allowed'\n"
                     "       -- Added comment\n"
                     "  FROM \"table\"\n"
-                    " WHERE table.three = 3";
+                    " WHERE table.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT one\n"
+    XString expect = _T("SELECT one\n"
                      "      ,two\n"
                      "      ,'Strings are allowed'\n"
                      "       -- Added comment\n"
                      "  FROM other.\"table\"\n"
-                     " WHERE table.three = 3";
+                     " WHERE table.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -134,20 +134,20 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter with meta characters in table name");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT one || two\n"
+    XString input = _T("SELECT one || two\n"
                     "      ,'Strings are allowed'\n"
                     "       -- Added comment\n"
                     "  FROM \"table\"\n"
-                    " WHERE table.three = 3";
+                    " WHERE table.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT one || two\n"
+    XString expect = _T("SELECT one || two\n"
                      "      ,'Strings are allowed'\n"
                      "       -- Added comment\n"
                      "  FROM other.\"table\"\n"
-                     " WHERE table.three = 3";
+                     " WHERE table.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -157,21 +157,21 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter strings concatenation");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     re.SetOption(SROption::SRO_CONCAT_TO_ADD);
 
-    XString input = "SELECT one || two\n"
+    XString input = _T("SELECT one || two\n"
                     "      ,'Strings are allowed'\n"
                     "       -- Added comment\n"
                     "  FROM \"table\"\n"
-                    " WHERE table.three = 3";
+                    " WHERE table.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT one + two\n"
+    XString expect = _T("SELECT one + two\n"
                      "      ,'Strings are allowed'\n"
                      "       -- Added comment\n"
                      "  FROM other.\"table\"\n"
-                     " WHERE table.three = 3";
+                     " WHERE table.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -181,12 +181,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter code words conversion");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     FillCodes(re);
 
-    XString input = "SELECT LENGTH(one) FROM dual;";
+    XString input = _T("SELECT LENGTH(one) FROM dual;");
     XString output = re.Parse(input);
-    XString expect = "SELECT LEN(one) FROM other.dual;";
+    XString expect = _T("SELECT LEN(one) FROM other.dual;");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -196,12 +196,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter end-of-statement without delimiter");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     FillCodes(re);
 
-    XString input = "SELECT sysdate FROM dual";
+    XString input = _T("SELECT sysdate FROM dual");
     XString output = re.Parse(input);
-    XString expect = "SELECT CURRENT_TIMESTAMP FROM other.dual";
+    XString expect = _T("SELECT CURRENT_TIMESTAMP FROM other.dual");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -211,12 +211,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     FillCodes(re);
 
-    XString input = "SELECT substr(nvl(one,''),1,3) FROM dual;";
+    XString input = _T("SELECT substr(nvl(one,''),1,3) FROM dual;");
     XString output = re.Parse(input);
-    XString expect = "SELECT {fn SUBSTRING({fn ISNULL(one,'')},1,3)} FROM other.dual;";
+    XString expect = _T("SELECT {fn SUBSTRING({fn ISNULL(one,'')},1,3)} FROM other.dual;");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -226,12 +226,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter ODBC Escapes conversion");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     FillCodes(re);
 
-    XString input = "SELECT nvl(instr(name,'some'),'x') FROM dual;";
+    XString input = _T("SELECT nvl(instr(name,'some'),'x') FROM dual;");
     XString output = re.Parse(input);
-    XString expect = "SELECT {fn ISNULL(instr(name,'some'),'x')} FROM other.dual;";
+    XString expect = _T("SELECT {fn ISNULL(instr(name,'some'),'x')} FROM other.dual;");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -241,12 +241,12 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter special schema treatment");
 
-    QueryReWriter re("myschema");
+    QueryReWriter re(_T("myschema"));
     FillCodes(re);
 
-    XString input = "SELECT brief_ew(name,12345) FROM mytable";
+    XString input = _T("SELECT brief_ew(name,12345) FROM mytable");
     XString output = re.Parse(input);
-    XString expect = "SELECT metaschema.brief_ew(name,12345) FROM myschema.mytable";
+    XString expect = _T("SELECT metaschema.brief_ew(name,12345) FROM myschema.mytable");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -256,18 +256,18 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter add schema");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT t.one\n"
+    XString input = _T("SELECT t.one\n"
                     "      ,t.two\n"
                     "  FROM other.table t\n"
-                    " WHERE t.three = 3";
+                    " WHERE t.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT t.one\n"
+    XString expect = _T("SELECT t.one\n"
                      "      ,t.two\n"
                      "  FROM other.table t\n"
-                     " WHERE t.three = 3";
+                     " WHERE t.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -277,22 +277,22 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter minus divide");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
 
-    XString input = "SELECT t.one - t.two\n"
+    XString input = _T("SELECT t.one - t.two\n"
                     "      ,three / four\n"
                     "       /* C like comments\n"
                     "          More than 1 line! */\n"
                     "  FROM table t\n"
-                    " WHERE t.three = 3";
+                    " WHERE t.three = 3");
     XString output = re.Parse(input);
 
-    XString expect = "SELECT t.one - t.two\n"
+    XString expect = _T("SELECT t.one - t.two\n"
                      "      ,three / four\n"
                      "       /* C like comments\n"
                      "          More than 1 line! */\n"
                      "  FROM other.table t\n"
-                     " WHERE t.three = 3";
+                     " WHERE t.three = 3");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));
@@ -302,19 +302,19 @@ public:
   {
     Logger::WriteMessage("Testing Schema Rewriter Detect old style outer join");
 
-    QueryReWriter re("other");
+    QueryReWriter re(_T("other"));
     FillCodes(re);
     re.SetOption(SROption::SRO_WARN_OUTER);
 
-    XString input = "SELECT t1.one\n"
+    XString input = _T("SELECT t1.one\n"
                     "      ,t1.two\n"
                     "      ,t2.one as two_one\n"
                     "      ,t2.two as two_two\n"
                     "  FROM table_one t1\n"
                     "      ,table_two t2 (+)\n"
-                    " WHERE t1.one = t2.one";
+                    " WHERE t1.one = t2.one");
     XString output = re.Parse(input);
-    XString expect = "SELECT t1.one\n"
+    XString expect = _T("SELECT t1.one\n"
                      "      ,t1.two\n"
                      "      ,t2.one as two_one\n"
                      "      ,t2.two as two_two\n"
@@ -322,7 +322,7 @@ public:
                      "      ,other.table_two t2 (+)\n"
                      "-- BEWARE: Oracle old style (+). Rewrite the SQL query with LEFT OUTER JOIN syntaxis!\n"
                      "\n"
-                     " WHERE t1.one = t2.one";
+                     " WHERE t1.one = t2.one");
 
     // Compare MUST be zero
     Assert::IsFalse(expect.Compare(output));

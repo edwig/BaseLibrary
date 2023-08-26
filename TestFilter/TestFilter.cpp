@@ -32,16 +32,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <windows.h>
+#include <tchar.h>
+
 
 #define BUFFERSIZE     1
 #define MEGABYTE       (1024 * 1024)
 #define OUTPUT_TIMES   2
 
-char* buffer = nullptr;
+TCHAR* buffer = nullptr;
 
 void AllocateBuffer()
 {
-  buffer = new char[BUFFERSIZE * MEGABYTE];
+  buffer = new TCHAR[BUFFERSIZE * MEGABYTE];
 }
 
 void DeallocateBuffer()
@@ -53,17 +56,17 @@ void DeallocateBuffer()
 
 void ReadStandardInput()
 {
-  char* bufpointer = buffer;
+  TCHAR* bufpointer = buffer;
   long  amount = 0;
 
   while(true)
   {
-    int ch = fgetc(stdin);
-    if(ch == EOF)
+    TCHAR ch = _gettc(stdin);
+    if(ch == (TCHAR) EOF)
     {
       break;
     }
-    *bufpointer++ = (char)ch;
+    *bufpointer++ = (TCHAR)ch;
     if(++amount == (BUFFERSIZE * MEGABYTE))
     {
       break;
@@ -77,27 +80,29 @@ void WriteStandardOutput(bool p_asError)
 {
   for(int index = 0; index < OUTPUT_TIMES; ++index)
   {
-    char* bufpointer = buffer;
+    TCHAR* bufpointer = buffer;
     while(*bufpointer)
     {
-      fputc(*bufpointer++,p_asError ? stderr : stdout);
+      _fputtc(*bufpointer++,p_asError ? stderr : stdout);
     }
   }
 }
 
-int main(const int argc,const char* argv[])
+int main(const int argc,const TCHAR* argv[])
 {
   bool sendToError = false;
 
   if(argc >= 2)
   {
-    if(_stricmp(argv[1],"to-error") == 0)
+    if(_tcsicmp(argv[1],_T("to-error")) == 0)
     {
       sendToError = true;
     }
   }
 
   AllocateBuffer();
+
+  ::MessageBox(NULL,_T("Type something to the standard console!"),_T("TESTING"),MB_OK);
 
   ReadStandardInput();
   WriteStandardOutput(sendToError);

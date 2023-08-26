@@ -45,7 +45,7 @@ public:
     Logger::WriteMessage("Testing XString Builder Performance.");
 
     XString total;
-    XString newstring("This is a new string added to the rest\n");
+    XString newstring(_T("This is a new string added to the rest\n"));
 
     HPFCounter count;
     for(int x = 1;x < NUM_TESTS; ++x)
@@ -59,7 +59,7 @@ public:
     Assert::IsTrue(size == 11699883);
 
     XString msg;
-    msg.Format("Adding all XStrings took: %8.6f ms",count.GetCounter());
+    msg.Format(_T("Adding all XStrings took: %8.6f ms"),count.GetCounter());
     Logger::WriteMessage(msg);
 
     XStringBuilder build;
@@ -75,7 +75,7 @@ public:
     size = total.GetLength();
     count2.Stop();
 
-    msg.Format("XStringBuilder took: %8.6f ms",count2.GetCounter());
+    msg.Format(_T("XStringBuilder took: %8.6f ms"),count2.GetCounter());
     Logger::WriteMessage(msg);
 
     Assert::IsTrue(size == 3899961);

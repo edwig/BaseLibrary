@@ -42,10 +42,10 @@ public:
   {
     Logger::WriteMessage("Testing BCD Rounding");
 
-    bcd value("1.9");
+    bcd value(_T("1.9"));
     value.Round(0);
 
-    XString expected = "2";
+    XString expected = _T("2");
     XString testval = value.AsString(bcd::Format::Bookkeeping,false,0);
 
     Assert::AreEqual(expected.GetString(),testval.GetString());

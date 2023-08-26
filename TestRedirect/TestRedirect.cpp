@@ -28,12 +28,12 @@
 #include "pch.h"
 #include <RunRedirect.h>
 
-CString CreateMessage()
+XString CreateMessage()
 {
-  CString msg;
+  XString msg;
 
-  CString line   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzx0123456789\n";
-  CString stripe = "-------------------------------------------------------------------------\n";
+  XString line   = _T("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyzx0123456789\n");
+  XString stripe = _T("-------------------------------------------------------------------------\n");
 
   msg = stripe;
   for(int index = 0;index < 100; ++index)
@@ -43,12 +43,12 @@ CString CreateMessage()
   // five times
   msg = msg + line + msg + line + msg + line + + msg + line + msg;
   // end marker
-  msg += "*** END ***\n";
+  msg += _T("*** END ***\n");
 
   return msg;
 }
 
-bool  TestOnce(const char* p_param)
+bool  TestOnce(LPCTSTR p_param)
 {
   XString message = CreateMessage();
   int lengthbefore = message.GetLength();
@@ -60,7 +60,7 @@ bool  TestOnce(const char* p_param)
   XString result;
   XString error;
   int waittime = 25000;
-  int res = CallProgram_For_String("TestFilter",p_param,message.GetString(),result,error,waittime);
+  int res = CallProgram_For_String(_T("TestFilter"),p_param,message,result,error,waittime);
 
   result.Remove('\r');
   error.Remove('\r');
@@ -69,7 +69,7 @@ bool  TestOnce(const char* p_param)
   lengthbefore *= 2;
   if(lengthafter != lengthbefore)
   {
-    printf("We did NOT read the entire output!\n");
+    _tprintf(_T("We did NOT read the entire output!\n"));
     return false;
   }
   // Check that the return value came through
@@ -94,8 +94,8 @@ int main(const int argc,const char* argv[])
   // Test with filter to 'stdout'
   for(int index = 0;index < testamount; ++index)
   {
-    printf("Testing stdout number: %d\n",index);
-    if(!TestOnce(""))
+    _tprintf(_T("Testing stdout number: %d\n"),index);
+    if(!TestOnce(_T("")))
     {
       ++errors;
     }
@@ -104,13 +104,13 @@ int main(const int argc,const char* argv[])
   // Test with filter to 'stderr'
   for(int index = 0;index < testamount; ++index)
   {
-    printf("Testing stderr number: %d\n",index);
-    if(!TestOnce("to-error"))
+    _tprintf(_T("Testing stderr number: %d\n"),index);
+    if(!TestOnce(_T("to-error")))
     {
       ++errors;
     }
   }
 
-  printf("Total number of errors: %d\n",errors);
+  _tprintf(_T("Total number of errors: %d\n"),errors);
   return errors;
 }

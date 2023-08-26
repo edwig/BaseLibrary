@@ -32,9 +32,9 @@ public:
     catch(SafeIntException& ex)
     {
       CString message;
-      message.Format("Safe int error code: %d",ex.m_code);
+      message.Format(_T("Safe int error code: %d"),ex.m_code);
       Logger::WriteMessage(message);
-      message.Format("Number 2 still is: %d",*number2.Ptr());
+      message.Format(_T("Number 2 still is: %d"),*number2.Ptr());
       Logger::WriteMessage(message);
 
       Assert::IsTrue(ex.m_code == 1);

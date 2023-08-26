@@ -43,7 +43,7 @@ public:
     Logger::WriteMessage("Reading an XSDSchema");
 
     XSDSchema schema;
-    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
+    XsdError result = schema.ReadXSDSchema(_T("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd"));
 
     Assert::AreEqual((int)XsdError::XSDE_NoError,(int)result);
   }
@@ -53,11 +53,11 @@ public:
     Logger::WriteMessage("Reading an XSDSchema");
 
     XSDSchema schema;
-    XsdError result = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
+    XsdError result = schema.ReadXSDSchema(_T("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd"));
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result);
 
-    bool saved = schema.WriteXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_Copy.xsd");
+    bool saved = schema.WriteXSDSchema(_T("..\\..\\UnitTests\\Schemas\\TestSchema_Copy.xsd"));
     Assert::AreEqual(saved,true);
   }
 
@@ -66,10 +66,10 @@ public:
     Logger::WriteMessage("Validating minimal XMLMessage with XSDSchema");
 
     XSDSchema schema;
-    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
+    XsdError result_xsd = schema.ReadXSDSchema(_T("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd"));
 
     XMLMessage msg;
-    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage_001.xml");
+    msg.LoadFile(_T("..\\..\\UnitTests\\Schemas\\TestMessage_001.xml"));
     XmlError result_xml = msg.GetInternalError();
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result_xsd);
@@ -89,20 +89,20 @@ public:
     Logger::WriteMessage("Validating minimal XMLMessage with XSDSchema");
 
     XSDSchema schema;
-    XsdError result_xsd = schema.ReadXSDSchema("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd");
+    XsdError result_xsd = schema.ReadXSDSchema(_T("..\\..\\UnitTests\\Schemas\\TestSchema_001.xsd"));
 
     XMLMessage msg;
-    msg.LoadFile("..\\..\\UnitTests\\Schemas\\TestMessage_002.xml");
+    msg.LoadFile(_T("..\\..\\UnitTests\\Schemas\\TestMessage_002.xml"));
     XmlError result_xml = msg.GetInternalError();
 
     Assert::AreEqual((int) XsdError::XSDE_NoError,(int) result_xsd);
-    Assert::AreEqual((int) XmlError::XE_NoError,(int) result_xml);
+    Assert::AreEqual((int) XmlError::XE_NoError,  (int) result_xml);
 
     XString errors;
     XsdError validation = schema.ValidateXML(msg,errors);
     if(validation != XsdError::XSDE_NoError)
     {
-      Logger::WriteMessage("ERRORS: " + errors);
+      Logger::WriteMessage(_T("ERRORS: ") + errors);
       Assert::Fail();
     }
   }

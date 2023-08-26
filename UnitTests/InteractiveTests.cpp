@@ -42,7 +42,7 @@ public:
   {
     Logger::WriteMessage("Testing WideMessageBox");
 
-    int res = WideMessageBox(NULL,"This is a test with a very wide message box surpassing the standard MS-Window width","WIDE",MB_OK|MB_SETFOREGROUND|MB_ICONASTERISK);
+    int res = WideMessageBox(NULL,_T("This is a test with a very wide message box surpassing the standard MS-Window width"),_T("WIDE"),MB_OK|MB_SETFOREGROUND|MB_ICONASTERISK);
 
     Assert::AreEqual(res,IDOK);
   }

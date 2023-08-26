@@ -43,14 +43,14 @@ public:
   {
     Logger::WriteMessage("Testing JSONMessage array sorting");
 
-    XString input("{\n"
-                  "\t\"myarray\":[\n"
-                  "\t\"zz\",\n"
-                  "\t\"cc\",\n"
-                  "\t\"bb\",\n"
-                  "\t\"aa\"\n"
-                  "\t]\n"
-                  "}");
+    XString input(_T("{\n"
+                     "\t\"myarray\":[\n"
+                     "\t\"zz\",\n"
+                     "\t\"cc\",\n"
+                     "\t\"bb\",\n"
+                     "\t\"aa\"\n"
+                     "\t]\n"
+                     "}"));
     JSONMessage json;
     json.ParseMessage(input);
 
@@ -64,11 +64,11 @@ public:
   {
     Logger::WriteMessage("Testing JSONMessage object sorting");
 
-    XString input("{\n"
-                  "\t\"myobject\":\"my\",\n"
-                  "\t\"aa\":11,\n"
-                  "\t\"zz\":99\n"
-                  "}");
+    XString input(_T("{\n"
+                     "\t\"myobject\":\"my\",\n"
+                     "\t\"aa\":11,\n"
+                     "\t\"zz\":99\n"
+                     "}"));
     JSONMessage json;
     json.ParseMessage(input);
 
