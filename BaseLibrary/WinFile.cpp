@@ -828,7 +828,7 @@ WinFile::Read(CString& p_string)
                                       crstate = false;
                                     }
                                     break;
-          case Encoding::BE_UTF16:  if(result[result.size() - 3])
+          case Encoding::BE_UTF16:  if(result[result.size() - 2])
                                     {
                                       crstate = false;
                                     }
