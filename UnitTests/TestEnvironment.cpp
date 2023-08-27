@@ -96,7 +96,7 @@ public:
 
   // Beware: Visual Studio must be run in 'admin' mode
   //         for the build and this test to succeed!!!
-  TEST_METHOD(XSDSchema_Reading)
+  TEST_METHOD(TestEnvironmentFile)
   {
     Logger::WriteMessage("Testing automatic 'Environment.env' file");
 

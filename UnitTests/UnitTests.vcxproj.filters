@@ -51,6 +51,9 @@
     <ClCompile Include="TestToken.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestWinFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -65,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Environment.env">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="EnvironmentUTF16.env">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

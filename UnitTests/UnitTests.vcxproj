@@ -221,7 +221,7 @@
       <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)Environment.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform" </Command>
+      <Command>copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugUnicode|Win32'">
@@ -268,6 +268,9 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)Environment.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -316,6 +319,9 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseUnicode|Win32'">
     <ClCompile>
@@ -361,6 +367,7 @@
     <ClCompile Include="TestAuthenticate.cpp" />
     <ClCompile Include="TestEnvironment.cpp" />
     <ClCompile Include="TestToken.cpp" />
+    <ClCompile Include="TestWinFile.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
     <ClCompile Include="XSDSchemaTests.cpp" />
   </ItemGroup>
@@ -371,6 +378,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Environment.env" />
+    <None Include="EnvironmentUTF16.env" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

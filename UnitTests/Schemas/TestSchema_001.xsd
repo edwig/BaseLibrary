@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns="http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     targetNamespace="http://www.ketenstandaard.nl/onderhoudsopdracht/SALES/005"
