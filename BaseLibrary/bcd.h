@@ -432,7 +432,7 @@ private:
   // INTERNALS
 
   // Set infinity for overflows
-  bcd     SetInfinity(XString p_reason = "") const;
+  bcd     SetInfinity(XString p_reason = _T("")) const;
   // Sets one integer in this bcd number
   void    SetValueInt(const int p_value);
   // Sets one or two longs in this bcd number

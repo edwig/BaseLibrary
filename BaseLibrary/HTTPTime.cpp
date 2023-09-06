@@ -138,7 +138,6 @@ CheckYearImplementation(SYSTEMTIME* p_systemtime)
 bool
 HTTPTimeToSystemTime(const XString p_time,SYSTEMTIME* p_systemtime)
 {
-  // const char *pointer = p_time.GetString();
   unsigned index  = 0;
   unsigned length = p_time.GetLength();
   bool     ansic  = false;

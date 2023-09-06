@@ -323,9 +323,6 @@
     <ClCompile Include="CrackURL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DefuseBOM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Namespace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -276,7 +276,7 @@ QueryReWriter::Initialization()
   }
 
   // At a minimum, we need all tokens
-  for(int ind = 0; ind < sizeof(all_tokens) / sizeof(const char*); ++ind)
+  for(int ind = 0; ind < sizeof(all_tokens) / sizeof(const TCHAR*); ++ind)
   {
     SQLWord word;
     word.m_word = all_tokens[ind];

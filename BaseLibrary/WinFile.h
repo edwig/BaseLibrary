@@ -161,7 +161,7 @@ public:
   bool      DeleteToTrashcan(bool p_show = false, bool p_confirm = false);
   bool      CopyFile(CString p_destination,FCopy p_how = winfile_copy);
   bool      MoveFile(CString p_destination,FMove p_how = winfile_move);
-  bool      CreateTempFileName(CString p_pattern,CString p_extension = "");
+  bool      CreateTempFileName(CString p_pattern,CString p_extension = _T(""));
   bool      GrantFullAccess();
   void      ForgetFile(); // BEWARE!
 
@@ -250,11 +250,11 @@ public:
   bool      SetFilenameByDialog(HWND     p_parent             // Parent HWND (if any)
                                ,bool     p_open               // true = Open/New, false = SaveAs
                                ,CString  p_title              // Title of the dialog
-                               ,CString  p_defext   = ""      // Default extension
-                               ,CString  p_filename = ""      // Default first file
+                               ,CString  p_defext   = _T("")      // Default extension
+                               ,CString  p_filename = _T("")      // Default first file
                                ,int      p_flags    = 0       // Default flags
-                               ,CString  p_filter   = ""      // Filter for extensions
-                               ,CString  p_direct   = "");    // Directory to start in
+                               ,CString  p_filter   = _T("")      // Filter for extensions
+                               ,CString  p_direct   = _T(""));    // Directory to start in
   // Open file as a shared memory segment
   void*     OpenAsSharedMemory(CString  p_name               // Name of the shared memory segment to open
                               ,bool     p_local     = true   // Standard on your local session, otherwise global
