@@ -113,4 +113,9 @@ Version 1.2.0 of 23-07-2023
     Can both be compiled in MBCS mode or in Unicode mode and can process files 
     in UTF-8, UTF-16-LE and UTF-16-BE mode with according byte-order-marks (BOM)
     
-    
+Version 1.2.1 of 26-09-2023
+---------------------------
+1)  Added a streaming interface to WinFile. You can now << 'add a string to a file'
+    or you can read a string form 'file >> string_var'.
+    Other datatypes are TCHAR, short, int, unsigned, INT64, float, double and LPCTSTR.
+
