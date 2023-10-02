@@ -118,4 +118,9 @@ Version 1.2.1 of 26-09-2023
 1)  Added a streaming interface to WinFile. You can now << 'add a string to a file'
     or you can read a string form 'file >> string_var'.
     Other datatypes are TCHAR, short, int, unsigned, INT64, float, double and LPCTSTR.
-
+2)  Added Set/Get XMLHttpRequest to the HTTPMessage class.
+    Here we can retain the "X-Requested-With: XMLHttpRequest" header for the Marlin server.
+    This triggers a CORS pre-flight in case of an Ajax request.
+3)  Extended the XSD restriction check on double datattype to handle 0.0 correctly.
+4)  Extended the XSD restriction check on base64Binary fields to include whitespace 
+    and '/' and '+' characters.
