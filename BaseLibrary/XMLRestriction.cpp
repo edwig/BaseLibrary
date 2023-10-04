@@ -674,7 +674,7 @@ XMLRestriction::CheckBase64(XString p_value)
                       continue;
                     }
     }
-    return _T("Not a base64Binary field");
+    return _T("Not a base64Binary value");
   }
   return _T("");
 }
