@@ -13,6 +13,8 @@ binDebug_x64/
 binDebug_win32/
 binRelease_x64/
 binRelease_win32/
+DebugUnicode/
+ReleaseUnicode/
 BaseLibrary-cppcheck-build-dir/
  
 # User-specific files (MonoDevelop/Xamarin Studio) 

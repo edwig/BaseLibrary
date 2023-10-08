@@ -166,7 +166,7 @@ public:
   void      ForgetFile(); // BEWARE!
 
   // OPERATIONS TO READ AND WRITE CONTENT
-  bool      Read(CString& p_string);
+  bool      Read(CString& p_string,uchar p_delim = '\n');
   bool      Read(void* p_buffer,size_t p_bufsize,int& p_read);
   bool      Write(const CString& p_string);
   bool      Write(void* p_buffer,size_t p_bufsize);

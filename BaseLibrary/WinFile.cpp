@@ -772,7 +772,7 @@ WinFile::ForgetFile()
 
 // Read a string (possibly with CR/LF to newline translation)
 bool
-WinFile::Read(CString& p_string)
+WinFile::Read(CString& p_string,uchar p_delim /*= '\n'*/)
 {
   std::string result;
   bool unicodeSkip(false);
@@ -811,7 +811,7 @@ WinFile::Read(CString& p_string)
     // Do the CR/LF to "\n" translation
     if(m_openMode & FFlag::open_trans_text)
     {
-      if(ch == '\n' || ch == '\r')
+      if(ch == p_delim || ch == '\r')
       {
         unicodeSkip = (m_encoding == Encoding::LE_UTF16) ||
                       (m_encoding == Encoding::BE_UTF16);
@@ -842,12 +842,12 @@ WinFile::Read(CString& p_string)
         continue;
       }
     }
-    if(ch == '\n' && m_encoding == Encoding::LE_UTF16)
+    if(ch == p_delim && m_encoding == Encoding::LE_UTF16)
     {
       // Read in trailing zero for a newline in this encoding
       result += (last = PageBufferRead());
     }
-    if(crstate && ch == '\n' && !last)
+    if(crstate && ch == p_delim && !last)
     {
       if(unicodeSkip)
       {
@@ -863,7 +863,7 @@ WinFile::Read(CString& p_string)
     }
 
     // See if we are ready reading the string
-    if(ch == '\n' && !last)
+    if(ch == p_delim && !last)
     {
       break;
     }
@@ -925,7 +925,7 @@ WinFile::TranslateInputBuffer(std::string& p_string)
     LPTSTR strbuf = result.GetBufferSetLength(clength);
     // Doing the conversion to MBCS
     clength = ::WideCharToMultiByte(GetACP(),0,(LPCWSTR) buffer,-1,reinterpret_cast<LPSTR>(strbuf),clength,NULL,NULL);
-    result.ReleaseBuffer(clength);
+    result.ReleaseBuffer();
     delete[] buffer;
     return result;
   }
@@ -2231,7 +2231,7 @@ WinFile::GetIsAtEnd() const
     m_error = ::GetLastError();
     return true;
   }
-  size_t cpos = pos.QuadPart;
+  size_t cpos = (size_t) pos.QuadPart;
 
   // See if something went wrong
   if(size == (size_t)-1 || cpos == (size_t)-1)
