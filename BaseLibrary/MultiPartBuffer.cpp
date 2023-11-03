@@ -132,7 +132,7 @@ MultiPart::CheckBoundaryExists(XString p_boundary)
     size_t length = 0L;
 
     m_file.GetBuffer(buffer,length);
-    if(buffer && length > p_boundary.GetLength())
+    if(buffer && length > (size_t)p_boundary.GetLength())
     {
       for(char* buf = (char*)buffer; buf < (char*)((char*)buffer + length - p_boundary.GetLength()); ++buf)
       {
