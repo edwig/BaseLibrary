@@ -666,7 +666,7 @@ XMLRestriction::CheckBase64(XString p_value)
       case _T('='): if(ind == len - 1 ||
                       (ind == len - 2 && p_value[ind + 1] == '='))
                     {
-                      return "";
+                      return _T("");
                     }
                     break;
       default:      if(_istalnum(ch))

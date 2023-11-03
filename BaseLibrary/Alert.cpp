@@ -110,7 +110,7 @@ XString GetAlertlogPath(int p_module)
       return it->second;
     }
   }
-  return "";
+  return _T("");
 }
 
 // Clean up all alert paths and modules

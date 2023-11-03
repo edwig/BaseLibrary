@@ -29,6 +29,13 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include <AuthenticationHeader.h>
+#include <HTTPMessage.h>
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -36,6 +43,13 @@ namespace BaseLibraryUnitTests
 {
 TEST_CLASS(AuthenticateTests)
 {
+private:
+  int TestCookie(HTTPMessage* p_msg,XString p_meta,XString p_expect)
+  {
+    XString value = p_msg->GetCookieValue(_T("SESSIONCOOKIE"),p_meta);
+    return value.Compare(p_expect) != 0;
+  }
+
 public:
 
   TEST_METHOD(TestAuthenticateHeader)
@@ -51,8 +65,8 @@ public:
     XString findpass;
     if(DecodeAuthentication(auth,finduser,findpass))
     {
-      Assert::AreEqual(finduser.GetString(),user.GetString());
-      Assert::AreEqual(findpass.GetString(),pass.GetString());
+      Assert::AreEqual(user.GetString(),finduser.GetString());
+      Assert::AreEqual(pass.GetString(),findpass.GetString());
     }
     else
     {
@@ -63,7 +77,7 @@ public:
 
   TEST_METHOD(TestAuthenticateHeaderDiacrits)
   {
-    Logger::WriteMessage("Testing AuthenticateHeader with diacrits");
+    Logger::WriteMessage("Testing AuthenticateHeader with diacritics");
 
     XString user(_T("edwig.huisman@organisatie.nl"));
     XString pass(_T("Thí$ì$MÿPä$wö3dFò3Tôdây"));
@@ -105,6 +119,44 @@ public:
       Assert::Fail(L"Could not decode the authentication header");
     }
     Logger::WriteMessage("Your Authenticate header: " + auth);
+  }
+
+  TEST_METHOD(TestCookiesOverwrite)
+  {
+    int errors = 0;
+
+    // Standard values
+    XString url;
+    url.Format(_T("http://localhost:1201/MarlinTest/CookieTest/"));
+
+    // Test 1
+    HTTPMessage* msg = new HTTPMessage(HTTPCommand::http_put,url);
+
+    msg->SetCookie(_T("SESSIONCOOKIE"),_T("123456"),_T("meta"),false,true);
+    errors += TestCookie(msg,_T("meta"),_T("123456"));
+
+    msg->SetCookie(_T("SESSIONCOOKIE"),_T(""),_T(""),false,true);
+    errors += TestCookie(msg,_T(""),_T(""));
+
+    msg->SetCookie(_T("SESSIONCOOKIE"),_T("654321"),_T(""),false,true);
+    errors += TestCookie(msg,_T(""),_T("654321"));
+
+    delete msg;
+
+    Assert::AreEqual(0,errors);
+  }
+
+  TEST_METHOD(TestDecryptCookie)
+  {
+    int errors = 0;
+
+    HTTPMessage msg;
+    msg.SetCookie(_T("MYCOOKIE"),_T("ea415e3b69bc8383ff4342ad736d8f3d"),_T("webenab-03-01-2019 10:02:43"),true,true);
+    XString val = msg.GetCookieValue(_T("MYCOOKIE"),_T("webenab-03-01-2019 10:02:43"));
+
+    errors += val.Compare(_T("ea415e3b69bc8383ff4342ad736d8f3d")) != 0;
+
+    Assert::AreEqual(0,errors);
   }
 };
 }

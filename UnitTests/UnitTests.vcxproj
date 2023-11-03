@@ -176,7 +176,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)Environment.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform" </Command>
@@ -218,7 +218,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
@@ -266,7 +266,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)Environment.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform" </Command>
@@ -317,7 +317,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>crypt32.lib;bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
@@ -365,9 +365,12 @@
     <ClCompile Include="QueryReWriterTests.cpp" />
     <ClCompile Include="SOAPTests.cpp" />
     <ClCompile Include="TestAuthenticate.cpp" />
+    <ClCompile Include="TestCrackURL_Unicode.cpp" />
+    <ClCompile Include="TestCryptoBase64.cpp" />
     <ClCompile Include="TestEnvironment.cpp" />
     <ClCompile Include="TestToken.cpp" />
     <ClCompile Include="TestWinFile.cpp" />
+    <ClCompile Include="TestXML.cpp" />
     <ClCompile Include="TestXStringBuilder.cpp" />
     <ClCompile Include="XSDSchemaTests.cpp" />
   </ItemGroup>

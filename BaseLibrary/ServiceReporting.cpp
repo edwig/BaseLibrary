@@ -75,7 +75,7 @@ SvcStartEventBuffer()
 }
 
 void
-SvcReportInfoEvent(bool p_doFormat,PTSTR p_message,...)
+SvcReportInfoEvent(bool p_doFormat,LPCTSTR p_message,...)
 {
   // Be sure our event system is started
   SvcStartEventBuffer();
@@ -114,7 +114,7 @@ SvcReportInfoEvent(bool p_doFormat,PTSTR p_message,...)
 }
 
 void
-SvcReportSuccessEvent(PTSTR p_message)
+SvcReportSuccessEvent(LPCTSTR p_message)
 {
   // Be sure our event system is started
   SvcStartEventBuffer();
@@ -147,7 +147,7 @@ SvcReportSuccessEvent(PTSTR p_message)
 // Remarks:       The service must have an entry in the Application event log.
 //
 void
-SvcReportErrorEvent(int p_module,bool p_doFormat,PTSTR szFunction,PTSTR p_message,...)
+SvcReportErrorEvent(int p_module,bool p_doFormat,LPCTSTR szFunction,LPCTSTR p_message,...)
 {
   TCHAR   buffer1[256];
   TCHAR   buffer2[256];

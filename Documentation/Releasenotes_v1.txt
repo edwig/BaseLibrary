@@ -124,3 +124,10 @@ Version 1.2.1 of 26-09-2023
 3)  Extended the XSD restriction check on double datattype to handle 0.0 correctly.
 4)  Extended the XSD restriction check on base64Binary fields to include whitespace 
     and '/' and '+' characters.
+
+Version 1.3.0 of 03-11-2023
+---------------------------
+1)  BaseLibrary now supports MBCS/Unicode compilation units. 
+    Fully tested in UTF-16 Unicode mode
+2)  Unit tests from the MarlinClient are moved to this library.
+3)  Tested with SQLComponents in the ODBC Querytool and with Marlin IIS internet servers
