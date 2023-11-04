@@ -55,9 +55,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+// CTOR is private: See static NewLogfile method
 LogAnalysis::LogAnalysis(XString p_name)
             :m_name(p_name)
 {
+  Acquire();
   InitializeCriticalSection(&m_lock);
 }
 
@@ -65,6 +67,42 @@ LogAnalysis::~LogAnalysis()
 {
   Reset();
   DeleteCriticalSection(&m_lock);
+}
+
+/*static */
+LogAnalysis* 
+LogAnalysis::CreateLogfile(XString p_name)
+{
+  return new LogAnalysis(p_name);
+}
+
+/*static */bool
+LogAnalysis::DeleteLogfile(LogAnalysis* p_log)
+{
+  return p_log->Release() <= 0;
+}
+
+long 
+LogAnalysis::Acquire()
+{
+  return InterlockedIncrement(&m_refcounter);
+}
+
+long
+LogAnalysis::Release()
+{
+  long refs = InterlockedDecrement(&m_refcounter);
+  if(refs <= 0)
+  {
+    delete this;
+  }
+  else if(refs == 1 && m_useWriter)
+  {
+    // Flushing the cache and ending all writing activity
+    // Writer will delete by releasing last reference counter
+    SetEvent(m_event);
+  }
+  return refs;
 }
 
 void
@@ -801,6 +839,10 @@ LogAnalysis::RunLogAnalysis()
 
   // Also ending this thread
   m_logThread = NULL;
+  m_useWriter = false;
+
+  // Release hold on the object
+  Release();
 }
 
 // Append date time to log's filename
