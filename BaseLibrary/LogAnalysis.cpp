@@ -79,7 +79,11 @@ LogAnalysis::CreateLogfile(XString p_name)
 /*static */bool
 LogAnalysis::DeleteLogfile(LogAnalysis* p_log)
 {
-  return p_log->Release() <= 0;
+  if(p_log)
+  {
+    return p_log->Release() <= 0;
+  }
+  return false;
 }
 
 long 
@@ -806,16 +810,22 @@ LogAnalysis::RunLog()
       m_logThread = NULL;
       //ATLTRACE("Cannot make a thread for the LogAnalysis function\n");
     }
+    else
+    {
+      Acquire();
+    }
   }
 }
 
 // Running the main thread of the logfile
+// As long as it's initialized and we holds at lease 1 more
+// reference than just the writer thread.
 void
 LogAnalysis::RunLogAnalysis()
 {
   DWORD sync = 0;
 
-  while(m_initialised)
+  while(m_initialised && m_refcounter > 1)
   {
     DWORD res = WaitForSingleObjectEx(m_event,m_interval,true);
 
