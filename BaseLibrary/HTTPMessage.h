@@ -246,7 +246,7 @@ public:
   // Add a routing part
   void    AddRoute(XString p_route);
   // Convert system time to HTTP time string
-  XString HTTPTimeFormat(PSYSTEMTIME p_systime = NULL);
+  XString HTTPTimeFormat(PSYSTEMTIME p_systime = nullptr);
   // Convert HTTP time string to system time
   bool    SetHTTPTime(XString p_timestring);
   // Change POST method to PUT/MERGE/PATCH/DELETE (Incoming!)
