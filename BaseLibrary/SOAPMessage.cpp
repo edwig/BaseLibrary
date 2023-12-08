@@ -1333,14 +1333,20 @@ SOAPMessage::SetSoapBody()
       xmlns = FindAttribute(m_paramObject,_T("xmlns:tns"));
       if(xmlns)
       {
-        xmlns->m_value = m_namespace;
+        if(m_forceNamespace)
+        {
+          xmlns->m_value = m_namespace;
+        }
       }
       else
       {
         xmlns = FindAttribute(m_paramObject,_T("xmlns"));
         if(xmlns)
         {
-          xmlns->m_value = m_namespace;
+          if(m_forceNamespace)
+          {
+            xmlns->m_value = m_namespace;
+          }
         }
         else
         {
@@ -1806,7 +1812,8 @@ SOAPMessage::CreateParametersObject(ResponseType p_responseType)
       {
         // Make sure we have a valid XML name
         // If not, we provide a generic default name to proceed with fingers crossed
-        if(m_soapAction.IsEmpty() || !XMLElement::IsValidName(m_soapAction))
+        if(m_soapVersion == SoapVersion::SOAP_12 &&
+          (m_soapAction.IsEmpty() || !XMLElement::IsValidName(m_soapAction)))
         {
           m_soapAction = _T("SoapAction");
         }
