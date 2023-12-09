@@ -56,5 +56,19 @@ public:
 
     Assert::AreEqual(expected.GetString(),testval.GetString());
   }
+
+  TEST_METHOD(TestNaturalLog)
+  {
+	  Logger::WriteMessage("Testing BCD Natural Log 0.5");
+
+    bcd value(_T("0.5"));
+    bcd nlog = value.Log();
+
+    XString expected = _T("-0.693147180559945309417232121458176568023");
+    XString testval  = nlog.AsString(bcd::Format::Bookkeeping,false,30);
+
+	  Assert::AreEqual(expected.GetString(), testval.GetString());
+
+  }
 };
 }
