@@ -140,3 +140,9 @@ Version 1.3.1 of xx-xx-xxxx
     If set to false: the general namespace (Of the SOAP 1.1 SOAPAction) can differ from the
     namespace of the first parameter node in the message. You can now override that attribute
     with an explicitly forged "AddAttribute(....)"
+2)  The method SOAPMessage::Reset() now no longer resets the URL setting. The reset is ALWAYS
+    intended to reset the message for an answer to the same client it came from!
+    The method JSONMessage::Reset() now no longer resets the URL setting. The reset is ALWAYS
+    intended to reset the message for an answer to the same client it came from!
+    The method HTTPMessage::Reset() now also has a p_resetURL parameter to optionally reset
+    the (cracked) URL.
