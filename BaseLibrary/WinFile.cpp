@@ -353,17 +353,17 @@ WinFile::Exists()
   return _taccess(m_filename.GetString(),0) != -1;
 }
 
-// Check for access to the file
+// Check for access to the file or directory
 bool
 WinFile::CanAccess(bool p_write /*= false*/)
 {
-  // In case we already had an opened file: use the file modes
+  // In case we already had an opened file: use the file mode
   if(m_file)
   {
     // See if file was opened in write-mode
     if(p_write)
     {
-      return (m_openMode & FFlag::open_read);
+      return (m_openMode & FFlag::open_write) > 0;
     }
     // Existence and read-access both granted
     return true;
@@ -372,20 +372,25 @@ WinFile::CanAccess(bool p_write /*= false*/)
   // Go take a look on the filesystem
 
   // Default check for read access
-  int mode = 4;
-
+  DWORD mode = GENERIC_READ;
   // Also check for write access
   if(p_write)
   {
-    mode |= 2;
+    mode |= GENERIC_WRITE;
   }
-  // Use low-level POSIX access function.
-  // Other MS-Windows functions call this one, so use it directly
-  if(_taccess(m_filename.GetString(),mode) != -1)
+  HANDLE handle = CreateFile(m_filename,
+                             mode,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,  // share for reading and writing
+                             NULL,                                // no security
+                             OPEN_EXISTING,                       // existing file only, testing only
+                             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS,
+                             NULL);
+  if(handle == INVALID_HANDLE_VALUE)
   {
-    return true;
+    return false;
   }
-  return false;
+  CloseHandle(handle);
+  return true;
 }
 
 // Remove the file from the filesystem
