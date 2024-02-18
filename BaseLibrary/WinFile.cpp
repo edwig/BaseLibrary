@@ -829,7 +829,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
       p_string = TranslateInputBuffer(result);
       return p_string.GetLength() ? true : false;
     }
-    result += (uchar) ch;
+    result += (uchar)ch;
 
     // Do the CR/LF to "\n" translation
     if(m_openMode & FFlag::open_trans_text)
@@ -846,7 +846,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
         switch(m_encoding)
         {
           case Encoding::LE_UTF16:  ext = PageBufferRead();
-                                    result += (uchar)ext;
+                                    result += (uchar) ext;
                                     if(ext)
                                     {
                                       crstate = false;
@@ -868,7 +868,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
     if(ch == p_delim && m_encoding == Encoding::LE_UTF16)
     {
       // Read in trailing zero for a newline in this encoding
-      result += (uchar) (last = PageBufferRead());
+      result += (uchar)(last = PageBufferRead());
     }
     if(crstate && ch == p_delim && !last)
     {
@@ -879,7 +879,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
       }
       else
       {
-        result[result.size() - 2] = (uchar) ch;
+        result[result.size() - 2] = (uchar)ch;
       }
       result.erase(result.size() - 1 - (unicodeSkip ? 1 : 0));
       crstate = false;
