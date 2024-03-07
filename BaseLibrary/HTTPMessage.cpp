@@ -331,6 +331,8 @@ HTTPMessage::operator=(const JSONMessage& p_msg)
 void
 HTTPMessage::ConstructBodyFromString(XString p_string,XString p_charset,bool p_withBom)
 {
+  int length = 0;
+
 #ifdef UNICODE
   // Set body 
   if(p_charset.CompareNoCase(_T("utf-16")) == 0)
@@ -341,11 +343,11 @@ HTTPMessage::ConstructBodyFromString(XString p_string,XString p_charset,bool p_w
       p_string = ConstructBOMUTF16() + p_string;
     }
     SetBody(p_string);
+    length = p_string.GetLength() * sizeof(TCHAR);
   }
   else
   {
     uchar* buffer = nullptr;
-    int length = 0;
     if(TryCreateNarrowString(p_string,p_charset,p_withBom,&buffer,length))
     {
       SetBody(buffer,length);
@@ -364,7 +366,6 @@ HTTPMessage::ConstructBodyFromString(XString p_string,XString p_charset,bool p_w
   if(p_charset.CompareNoCase(_T("utf-16")) == 0)
   {
     uchar* buffer = nullptr;
-    int    length = 0;
     if(TryCreateWideString(p_string,_T(""),p_withBom,&buffer,length))
     {
       SetBody(buffer,length);
@@ -382,8 +383,15 @@ HTTPMessage::ConstructBodyFromString(XString p_string,XString p_charset,bool p_w
   {
     // Simply record as our body
     SetBody(p_string);
+    length = p_string.GetLength();
   }
 #endif
+  // Set the correct content length after constructing the body
+  XString cl;
+  cl.Format("%d",length);
+
+  DelHeader("Content-Length");
+  AddHeader("Content-Length",cl);
 }
 
 // General DTOR
