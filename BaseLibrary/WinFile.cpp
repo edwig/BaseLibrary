@@ -1236,9 +1236,7 @@ WinFile::FormatV(LPCTSTR p_format,va_list p_list)
 {
   CString buffer;
   buffer.FormatV(p_format,p_list);
-  bool result = Write(buffer);
-  delete[] buffer;
-  return result;
+  return Write(buffer);
 }
 
 // Getting the current file position
