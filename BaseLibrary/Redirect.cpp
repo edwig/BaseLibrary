@@ -648,7 +648,6 @@ Redirect::StdErrThread8Bits(HANDLE hStdErrRead)
         writeResidu = true;
       }
       m_eof_error = 1;
-      break;
     }
     // Add to line
     if(lpszBuffer[0] != EOT)
@@ -722,7 +721,6 @@ Redirect::StdErrThreadUnicode(HANDLE hStdErrRead)
         writeResidu = true;
       }
       m_eof_error = 1;
-      break;
     }
     // Add to line
     if(lpszBuffer[0] != EOT)
