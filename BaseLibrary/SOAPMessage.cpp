@@ -373,10 +373,16 @@ SOAPMessage::ConstructFromRawBuffer(uchar* p_buffer,unsigned p_length,XString p_
   }
   else if(!p_charset.IsEmpty())
   {
+    if(p_charset.CompareNoCase("utf-8") == 0)
+    {
+      m_encoding = Encoding::UTF8;
+    }
     message = DecodeStringFromTheWire(XString(p_buffer),p_charset);
   }
   else
   {
+    // Charset is empty: assume UTF8
+    m_encoding = Encoding::UTF8;
     message = p_buffer;
   }
 #endif
