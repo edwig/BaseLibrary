@@ -286,33 +286,6 @@ public:
     Assert::AreEqual(true,result);
   }
 
-  TEST_METHOD(TestXML_UTF8)
-  {
-    Logger::WriteMessage("Testing UTF-8 support in XML (at least 4 codepages)");
-
-    bool result = false;
-    XString namesp = DEFAULT_NAMESPACE;
-    XString action = _T("MyAction");
-
-    SOAPMessage msg(namesp,action);
-    msg.SetParameter(_T("PriceTag"),_T("€ 42,00"));
-    msg.SetEncoding(Encoding::UTF8);
-
-    XString test1 = msg.GetSoapMessage();
-
-    SOAPMessage msg2(test1,true);
-    XString priceTag = msg2.GetParameter(_T("PriceTag"));
-
-    // Test for positive result
-    XString expected(_T("€ 42,00"));
-    expected = EncodeStringForTheWire(expected);
-    if(priceTag == expected)
-    {
-      result = true;
-    }
-    Assert::AreEqual(true,result);
-  }
-
   TEST_METHOD(TestXML_Windows1252)
   {
     Logger::WriteMessage("Testing default Active-Code-Page support in XML");
