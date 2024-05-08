@@ -216,6 +216,12 @@ XMLMessage::SetRoot(XMLElement* p_root)
   m_root->AddReference();
 }
 
+void
+XMLMessage::SetStandalone(bool p_alone)
+{
+  m_standalone = p_alone ? _T("yes") : _T("no");
+}
+
 #pragma endregion XMLMessage_XTOR
 
 #pragma region File_Load_Save
