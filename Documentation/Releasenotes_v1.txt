@@ -132,7 +132,7 @@ Version 1.3.0 of 03-11-2023
 2)  Unit tests from the MarlinClient are moved to this library.
 3)  Tested with SQLComponents in the ODBC Querytool and with Marlin IIS internet servers
 
-Version 1.3.1 of xx-xx-xxxx
+Version 1.3.1 of 14-05-2024
 ---------------------------
 1)  Added more fine grained control over the general namespace of the SOAPMessage.
     With the new "SetForceNamespace(bool)" you can force the first node within the SOAP body
@@ -150,3 +150,11 @@ Version 1.3.1 of xx-xx-xxxx
     by setting the global variable "g_eventLogCategory" to another value than "Application".
     If you call "RegisterMessagesDllForService" after setting this variable, you create an event
     log in your own category in the Windows Event Viewer.
+4)  An XMLMessage object can now have the 'standalone' member set by "SetStandalone(boolean)".
+5)  Correction for WSS UserTokenProfile namespace for the #PasswordDigest
+6)  XML Attributes can now be found with "namespace:attributename", to find the exact correct
+    attribute, when differing per namespace.
+7)  The default 'charset' for a SOAP or JSON message is now "utf-8", in case NO charset has been
+    given in the xml header or in the HTTP content-type header. We then always assume "utf-8"
+    encoding. If something else is required (e.g. windows-1252 or utf-16), you must specify so.
+8)  Base64 decryption to a binary buffer no longer appends a zero byte.
