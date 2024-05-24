@@ -117,6 +117,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -134,6 +135,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -152,6 +154,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -170,6 +173,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -188,6 +192,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -206,6 +211,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -224,6 +230,7 @@ public:
   {
     Crypto  crypt;
     XString buffer(message);
+    crypt.SetDigestBase64(false);
 
 #ifdef UNICODE
     // Test against UTF16-LE !!
@@ -275,13 +282,14 @@ public:
     AutoCSTR cdate(date);
     AutoCSTR cpasswd(password2);
     char noncebuf[100];
-    base.Decrypt((BYTE*) cnonce64.cstr(),cnonce64.size(),(BYTE*) noncebuf,100);
+    int len = base.Decrypt((BYTE*) cnonce64.cstr(),cnonce64.size(),(BYTE*) noncebuf,100);
+    if(len >= 0 && len < 100)
+    {
+      noncebuf[len] = 0;
+    }
     char cbuffer[1024];
     sprintf_s(cbuffer,1024,"%s%s%s",noncebuf,cdate.cstr(),cpasswd.cstr());
     total3 = crypt.Digest(cbuffer,strlen(cbuffer),CALG_SHA1);
-    Base64 hexbase(CRYPT_STRING_HEXRAW,0);
-    XString binary = hexbase.Decrypt(total3);
-    total3 = base.Encrypt(binary);
     // #else
     //   nonce = base.Decrypt(nonce64);
     //   combined = nonce + date + password2;
