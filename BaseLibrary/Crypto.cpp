@@ -440,7 +440,7 @@ Crypto::ImplementDecryption(const BYTE* p_input,int p_lengthINP,const BYTE* p_pa
 
   // Create a data string of the base64 string
   pbEncrypt  = new BYTE[dataLength + 2];
-  base64.Decrypt(p_input,pbEncrypt,dataLength + 2);
+  base64.Decrypt(const_cast<BYTE*>(p_input),p_lengthINP,pbEncrypt,(int)(dataLength + 2));
   decrypting = pbEncrypt;
   // Buffer to do the conversion in
   pbData     = new BYTE[blocklen + 2];
