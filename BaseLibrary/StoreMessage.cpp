@@ -45,7 +45,6 @@ StoreMessage::StoreMessage(XString p_filename)
 {
   // Use file with UTF-8 encoding for strings
   m_file.SetFilename(m_filename);
-  m_file.SetEncoding(Encoding::UTF8);
 }
 
 StoreMessage::~StoreMessage()
