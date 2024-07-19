@@ -106,7 +106,7 @@ bool
 StoreMessage::StoreResponseMessage(HTTPMessage* p_message)
 {
   bool result = false;
-  if(m_file.Open(winfile_read | open_trans_binary | open_random_access))
+  if(!m_file.Open(winfile_read | open_trans_binary | open_random_access))
   {
     m_error = m_file.GetLastError();
     return result;

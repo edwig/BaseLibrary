@@ -166,3 +166,5 @@ Version 1.3.2 of XX-XX-2024
 2)  StdExeception: all getter methods are now have the 'const' modifier
 3)  Binary buffers no longer have a closing zero when en-decrypted by Crypto, so report the length
     so that we can create a base64 representation of the buffer.
+4)  JSONPath enhancement to scan beyond an array file path definition
+5)  XMLMessages can now be read in shared mode
