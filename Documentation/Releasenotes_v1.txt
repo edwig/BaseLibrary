@@ -159,7 +159,7 @@ Version 1.3.1 of 14-05-2024
     encoding. If something else is required (e.g. windows-1252 or utf-16), you must specify so.
 8)  Base64 decryption to a binary buffer no longer appends a zero byte.
 
-Version 1.3.2 of XX-XX-2024
+Version 1.3.2 of 28-07-2024
 ---------------------------
 1)  Fixed default Base64 encoding of an encrypted string in the "Crypto" class. This is to better
     scale with previous versions and difficult to find bugs in existing software
@@ -168,3 +168,6 @@ Version 1.3.2 of XX-XX-2024
     so that we can create a base64 representation of the buffer.
 4)  JSONPath enhancement to scan beyond an array file path definition
 5)  XMLMessages can now be read in shared mode
+6)  Encoding enumeration class now 'knows' about all supported MS-Windows character sets
+7)  Character set conversion is now removed from SOAP and JSON parsers and is exclusivly now the 
+    domain of placing the message in an HTTPMessage, or reversely getting the message from HTTP.

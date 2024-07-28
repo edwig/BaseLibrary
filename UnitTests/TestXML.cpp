@@ -296,7 +296,7 @@ public:
 
     SOAPMessage msg(namesp,action);
     msg.SetParameter(_T("PriceTag"),_T("€ 42,00"));
-    msg.SetEncoding(Encoding::Default);
+    msg.SetEncoding((Encoding) GetACP());
 
     XString test1 = msg.GetSoapMessage();
 

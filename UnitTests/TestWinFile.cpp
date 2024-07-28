@@ -114,14 +114,14 @@ public:
     }
     CString one(_T("This is an amount of € 10.00\n"));
     CString two(_T("The name is génèpëllêtje\n"));
-#ifdef UNICODE
+#ifdef _UNICODE
     CString three(L"荷じば委集ヘモホア住75定ヱウコヨ保博芸よいんづ添具メツ質上たせばる模34連ユニ信方ロ知演レフサ幅性トヌソミ条上ヲコ政優裕ぶリば聞杉更打アチマロ井機スユ物彩ろぽ。面せんちや祭9賞巨ケノエ太謡そべぐ無波夫わゃぴ合督作ト疑芸リマネ載日作ヱシ乱夕のさルょ弁番を据記きべや降家リモメル絡敷詳木ラに。\n");
 #endif
     CString fin(_T("No final newline"));
 
     file.Write(one);
     file.Write(two);
-#ifdef UNICODE
+#ifdef _UNICODE
     file.Write(three);
 #endif
     file.Write(fin);
@@ -141,7 +141,7 @@ public:
     CString string1,string2,string3,string4;
     file2.Read(string1);
     file2.Read(string2);
-#ifdef UNICODE
+#ifdef _UNICODE
     file2.Read(string3);
 #endif
     file2.Read(string4);
@@ -150,7 +150,7 @@ public:
     {
       Assert::Fail(L"ERROR while reading back UTF-16 file!");
     }
-#ifdef UNICODE
+#ifdef _UNICODE
     if(three.Compare(string3))
     {
       Assert::Fail(L"ERROR while reading back Japanese UTF-16 from the file file!");

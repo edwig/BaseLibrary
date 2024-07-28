@@ -66,7 +66,7 @@ public:
     Logger::WriteMessage("Testing Unicode conversions on diacritic chars");
     int errors = 1;
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // We ARE the Unicode mode !!
     errors = 0;
 #else

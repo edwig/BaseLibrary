@@ -46,7 +46,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 // Test values synchronized with: https://dencode.com/hash
 // UNICODE is UTF16-LE (Motorola / MAC OS)
 
-#ifdef UNICODE
+#ifdef _UNICODE
 XString expected1(L"61c2b4221f6392fc57b286e72482e65fabfb4a5f"); // SHA1
 XString expected2(L"db65b0c7d41a286f53556898ababca67");         // MD2
 XString expected3(L"a29a06a79d4f1bc307b879baf502a8b7");         // MD4
@@ -76,7 +76,7 @@ namespace BaseLibraryUnitTests
 TEST_CLASS(CryptoBase64)
 {
 private:
-#ifdef UNICODE
+#ifdef _UNICODE
   // On input:  Convert Big-Endian (Blefuscu) to Little-Endian (Lilliput)
   // On output: Convert Little-Endian (Lilliput) to Big-Endian (Blefuscu)
   // MS-Windows = Intel architecture = Little-Endian (LE)
@@ -119,7 +119,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -137,7 +137,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -156,7 +156,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -175,7 +175,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -194,7 +194,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -213,7 +213,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -232,7 +232,7 @@ public:
     XString buffer(message);
     crypt.SetDigestBase64(false);
 
-#ifdef UNICODE
+#ifdef _UNICODE
     // Test against UTF16-LE !!
     BlefuscuToLaputa(buffer);
 #endif
@@ -277,7 +277,7 @@ public:
     XString password2(_T("MijnWachtwoord$$"));
     XString total3;
 
-    //#ifdef UNICODE
+    //#ifdef _UNICODE
     AutoCSTR cnonce64(nonce64);
     AutoCSTR cdate(date);
     AutoCSTR cpasswd(password2);

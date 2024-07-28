@@ -191,7 +191,8 @@ public:
 
     XString text = _T("{\"PriceTag\":\"€ 42,00\"}");
     JSONMessage msg(text);
-    XString test = msg.GetJsonMessage(Encoding::UTF8);
+    XString test = msg.GetJsonMessage();
+    test = EncodeStringForTheWire(test);
     XString mustbe = _T("{\"PriceTag\":\"\xe2\x82\xac 42,00\"}");
 
     if(test == mustbe)
@@ -402,7 +403,7 @@ public:
     json.AddNamedObject(_T("MyObject"),object2,true);
 
     json.SetWhitespace(true);
-    XString total = json.GetJsonMessage(Encoding::Default);
+    XString total = json.GetJsonMessage();
 
     XString expected = _T("{\n")
                        _T("\t\"MyObject\":[\n")
