@@ -2371,9 +2371,12 @@ bcd::AsLong() const
 
   // Adjust to exponent
   int exponent = 2 * bcdDigits - m_exponent - 1;
-  while(exponent--)
+  if(exponent > 0)
   {
-    result /= 10;
+    while(exponent--)
+    {
+      result /= 10;
+    }
   }
 
   // Take care of sign and over/under flows

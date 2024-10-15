@@ -260,6 +260,12 @@ XMLMessage::LoadFile(const XString& p_fileName)
     m_encoding = file.GetEncoding();
     m_sendBOM  = file.GetFoundBOM();
 
+    // No encoding in the file: presume it is a file from our OS
+    if(!m_sendBOM && m_encoding == Encoding::EN_ACP)
+    {
+      m_encoding = (Encoding)GetACP();
+    }
+
     // Close the file
     if(!file.Close())
     {

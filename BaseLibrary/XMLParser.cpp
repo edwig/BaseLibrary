@@ -203,6 +203,13 @@ XMLParser::ParseMessage(XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_W
 
   // Conclusion of condensed level
   m_message->SetCondensed(m_spaces < m_elements);
+
+  // We believe what the header said :-)
+  int charset = CharsetToCodepage(m_encoding);
+  if(charset > 0 && charset != (int)m_message->GetEncoding())
+  {
+    m_message->SetEncoding((Encoding)charset);
+  }
 }
 
 // Parse from a beginning node
