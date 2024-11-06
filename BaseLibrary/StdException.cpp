@@ -68,7 +68,9 @@ StdException::StdException(unsigned p_safeExceptionCode,_EXCEPTION_POINTERS* p_e
 StdException::StdException(const StdException& p_other)
 {
   m_safeExceptionCode = p_other.m_safeExceptionCode;
-	m_exceptionPointers = p_other.m_exceptionPointers;
+  m_exceptionPointers = p_other.m_exceptionPointers;
+  m_applicationCode   = p_other.m_applicationCode;
+  m_applicationFault  = p_other.m_applicationFault;
 }
 
 // CTOR: Create exception from static text or XString

@@ -171,3 +171,11 @@ Version 1.3.2 of 28-07-2024
 6)  Encoding enumeration class now 'knows' about all supported MS-Windows character sets
 7)  Character set conversion is now removed from SOAP and JSON parsers and is exclusivly now the 
     domain of placing the message in an HTTPMessage, or reversely getting the message from HTTP.
+
+Version 1.3.3 of ....
+----------------------------
+1)  Fixed endless loop bug in 'bcd' class
+2)  Fixed reading XML/JSON from file, with no BOM, defaults to the current ACP encoding
+3)  Faster release of the LogAnalysis files after closing an application
+4)  Fix for constructor of StdException from a different StdException.
+    Not all members where copied in the constructor.
