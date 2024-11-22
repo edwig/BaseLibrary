@@ -49,10 +49,12 @@
 #include <vector>
 #include <algorithm>
 
+#ifdef _AFX
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 // CTOR is private: See static NewLogfile method
@@ -684,7 +686,7 @@ LogAnalysis::Flush(bool p_all)
   catch(StdException& er)
   {
     // Logfile failed. Where to log this??
-    TRACE("%s\n",er.GetErrorMessage().GetString());
+    OutputDebugString(er.GetErrorMessage() + _T("\n"));
   }
   m_file.Flush();
 }
@@ -706,7 +708,7 @@ LogAnalysis::WriteLog(XString& p_buffer)
   }
   else if(!m_file.Write(p_buffer))
   {
-    TRACE("Cannot write logfile. Error: %d\n",GetLastError());
+    OutputDebugString(_T("Cannot write logfile. Error: ") + GetLastError());
   }
 }
 

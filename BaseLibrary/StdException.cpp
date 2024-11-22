@@ -38,10 +38,12 @@
 #include "pch.h"
 #include "StdException.h"
 
+#ifdef _AFX
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
+#endif
 #endif
 
 // Macro to help with the display switch in GetErrorMessage()
@@ -197,7 +199,7 @@ StdException::GetErrorMessage(PTCHAR p_error, unsigned p_maxSize, unsigned* p_he
   return true;
 }
 
-#ifdef _ATL
+#ifdef _AFX
 XString
 MessageFromException(CException& p_exception)
 {
