@@ -35,6 +35,8 @@ static char THIS_FILE[] = __FILE__;
 #endif
 #endif
 
+#pragma warning (disable:4312)
+
 DocFileDialog::DocFileDialog(HWND    p_owner
                             ,bool    p_open        // true = open, false = SaveAs
                             ,XString p_title       // Title of the dialog
