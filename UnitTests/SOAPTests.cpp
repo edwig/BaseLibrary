@@ -626,6 +626,7 @@ namespace BaseLibraryUnitTests
       msg.SetNamespace(_T("http://www.other.au/api/"));
       XString newaction(_T("MyTestFunction"));
       msg.SetSoapAction(newaction);
+      msg.SetEncoding(Encoding::UTF8);
       XString message = msg.GetSoapMessage();
 
       XString expected = _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
