@@ -33,17 +33,17 @@ using std::string;
 using std::wstring;
 
 // Are we using MFC (AFX)
-#ifdef __ATLSTR_H__
+#ifdef _AFX
 // If we are using the BaseLibrary within a MFC project
 // The string definition is purely the MFC XString class
 typedef CString XString;
-#ifdef _AFX
 #pragma message("XString is now defined as MFC::CString")
 #else
+#ifdef __ATLSTR_H__
 #pragma message("XString is now defined as ATL::CString")
-#endif
 #else
 #pragma message("XString is now defined as std::string::MSX_String")
+#endif
 
 class SMX_String : public std::string
 {
