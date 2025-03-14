@@ -135,7 +135,7 @@ private:
   void    HandleLogicalOr(XString p_token,int& p_pos);
   void    HandleBrackets(XString p_token,int& p_pos);
   bool    WithinQuotes(XString p_token,int p_pos,int p_charPos);
-  int     FindMatchingBracket(const CString& p_string,int p_bracketPos);
+  int     FindMatchingBracket(const XString& p_string,int p_bracketPos);
 
   // DATA
   XString           m_path;

@@ -1134,7 +1134,7 @@ XMLDuration::ScanDurationValue(XString& p_duration
   // Scan a marker
   if(isalpha(p_duration.GetAt(0)))
   {
-    p_marker = p_duration.GetAt(0);
+    p_marker   = (TCHAR) p_duration.GetAt(0);
     p_duration = p_duration.Mid(1);
   }
 

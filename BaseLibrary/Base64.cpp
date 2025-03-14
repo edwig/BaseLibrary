@@ -149,7 +149,7 @@ Base64::Decrypt(XString p_encrypted)
   unsigned char* buffer = new unsigned char[length + 2];
   CryptStringToBinary(p_encrypted.GetString(),p_encrypted.GetLength(),m_method,(BYTE*)buffer,&length,0,&type);
   buffer[length] = 0;
-  XString result(buffer);
+  XString result((LPCTSTR)buffer);
   delete[] buffer;
   return result;
 }
@@ -160,7 +160,7 @@ Base64::Decrypt(XString p_encrypted,BYTE* p_buffer,int p_length)
 {
   if(p_encrypted.GetLength() == 0 || p_length <= 0)
   {
-    return XString();
+    return false;
   }
   DWORD length = 0;
   CryptStringToBinary(p_encrypted.GetString(),p_encrypted.GetLength(),m_method,NULL,&length,0,NULL);

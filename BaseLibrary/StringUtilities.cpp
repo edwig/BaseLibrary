@@ -55,12 +55,12 @@ XString AsString(double p_number)
 
 int AsInteger(XString p_string)
 {
-  return _ttoi(p_string.GetBuffer());
+  return _ttoi(p_string.GetString());
 }
 
 double  AsDouble(XString p_string)
 {
-  return _ttof(p_string.GetBuffer());
+  return _ttof(p_string.GetString());
 }
 
 bcd AsBcd(XString p_string)
