@@ -179,3 +179,5 @@ Version 1.3.3 of ....
 3)  Faster release of the LogAnalysis files after closing an application
 4)  Fix for constructor of StdException from a different StdException.
     Not all members where copied in the constructor.
+5)  The bcd class now has MIN_BCD(), MAX_BCD() and MIN_EPSIION() methods to get the
+    minimum and maximum values of a bcd. 
