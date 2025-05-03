@@ -70,5 +70,19 @@ public:
 	  Assert::AreEqual(expected.GetString(), testval.GetString());
 
   }
+
+  TEST_METHOD(TestNegativeComparisons)
+  {
+    Logger::WriteMessage("Testing BCD negative value comparisons");
+
+    bcd value1(-5);
+    bcd value2(-7);
+    bcd value3(-155);
+
+    bool result1 = value2 < value1;
+    bool result2 = value3 < value1;
+    Assert::IsTrue(result1);
+    Assert::IsTrue(result2);
+  }
 };
 }
