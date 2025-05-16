@@ -334,6 +334,10 @@ CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
 
   // Re-encode the string: Now in buffer/length
   // Watch out: strange code ahead!
+  uchar last = 0;
+  int singlequote = 0;
+  int doublequote = 0;
+
   for(int ind = 0;ind < length; ++ind)
   {
     uchar ch = buffer[ind];
@@ -341,11 +345,23 @@ CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
     {
       p_queryValue = true;
     }
-    if(ch == ' ' && p_queryValue)
+    else if(ch == '\'') ++singlequote;
+    else if(ch == '\"') ++doublequote;
+    else if(_istspace(ch))
     {
-      encoded += '+';
+      // Collapse all red/white space chars to space
+      ch = ' ';
     }
-    else if(_tcschr(m_unsafeString,ch) ||                      // " \"<>#{}|\\^~[]`"     -> All strings
+    if(last == ' ' && ch == ' ')
+    {
+      // Collapse whitespace to one single space
+      if((singlequote % 2 == 0) &&
+         (doublequote % 2 == 0) )
+      {
+        continue;
+      }
+    }
+    else if(_tcschr(m_unsafeString,ch) ||                      // " \"<>#{}|\\^~[]`"    -> All strings
            (p_queryValue && _tcsrchr(m_reservedString,ch)) ||  // "$&+,./:;=?@-!*()'"   -> In query parameter value strings
            (ch < 0x20) ||                                      // 7BITS ASCII Control characters
            (ch > 0x7F) )                                       // Converted UTF-8 characters
@@ -356,6 +372,7 @@ CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
     {
       encoded += (_TUCHAR) ch;
     }
+    last = ch;
   }
   delete[] buffer;
   return encoded;
