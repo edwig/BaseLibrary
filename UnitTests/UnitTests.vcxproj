@@ -221,7 +221,8 @@
       <AdditionalDependencies>crypt32.lib;bcrypt.lib;Rpcrt4.lib;Winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
+      <Command>echo copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" 
+         copy $(ProjectDir)EnvironmentUTF16.env "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\TestPlatform\Environment.env" </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugUnicode|Win32'">

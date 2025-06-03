@@ -1,9 +1,8 @@
 /////////////////////////////////////////////////////////////////////////////////
 //
-// SourceFile: InteractiveTests.cpp
+// SourceFile: ActiveDirectory.h
 //
 // BaseLibrary: Indispensable general objects and functions
-//              UNIT TESTS for the BaseLibrary
 // 
 // Copyright (c) 2014-2025 ir. W.E. Huisman
 // All rights reserved
@@ -26,42 +25,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-#include "pch.h"
-#include "CppUnitTest.h"
-#include <ActiveDirectory.h>
-#include <WideMessageBox.h>
+#pragma once
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
-namespace BaseLibraryUnitTests
-{
-TEST_CLASS(InteractiveTests)
-{
-public:
-
-  TEST_METHOD(TestWideMessageBox)
-  {
-    Logger::WriteMessage("Testing WideMessageBox");
-
-    int res = WideMessageBox(NULL,_T("This is a test with a very wide message box surpassing the standard MS-Window width"),_T("WIDE"),MB_OK|MB_SETFOREGROUND|MB_ICONASTERISK);
-
-    Assert::AreEqual(res,IDOK);
-  }
-
-  TEST_METHOD(TestEmailAddress)
-  {
-    Logger::WriteMessage("Testing current email address");
-
-    CString email = GetUserMailaddress();
-
-    Assert::IsFalse(email.IsEmpty());
-    Logger::WriteMessage("The current email addres is: " + email);
-  }
-};
-}
+CString GetUserMailaddress();     // Current user email addres according to the ADSI
+CString GetADOrganisation();      // Getting the organisation name according to the AD
+CString GetUserLogincode();       // Returns <domain>\<usercode>
+CString GetUserPrincipalName();   // Returns <user>@organisation.com (mostly!)
