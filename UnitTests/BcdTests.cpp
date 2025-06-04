@@ -71,18 +71,47 @@ public:
 
   }
 
-  TEST_METHOD(TestNegativeComparisons)
+  TEST_METHOD(TestComparisons)
   {
     Logger::WriteMessage("Testing BCD negative value comparisons");
 
+    bcd value0;
     bcd value1(-5);
     bcd value2(-7);
     bcd value3(-155);
+    bcd value4(5);
+    bcd value5(7);
+    bcd value6(155);
 
-    bool result1 = value2 < value1;
-    bool result2 = value3 < value1;
-    Assert::IsTrue(result1);
-    Assert::IsTrue(result2);
+    Assert::IsTrue(value2 < value1);  //   -7 <   -5
+    Assert::IsTrue(value3 < value1);  // -155 <   -5
+    Assert::IsTrue(value1 < value0);  //   -5 <    0
+    Assert::IsTrue(value1 < value4);  //   -5 <    5
+    Assert::IsTrue(value1 < value5);  //   -5 <    7
+    Assert::IsTrue(value1 < value6);  //   -5 <  155
+    Assert::IsTrue(value4 < value5);  //    5 <    7
+    
+    Assert::IsTrue(value1 > value2);  //   -5 >   -7
+    Assert::IsTrue(value1 > value3);  //   -5 > -155
+    Assert::IsTrue(value0 > value1);  //    0 >   -5
+    Assert::IsTrue(value4 > value1);  //    5 >   -5
+    Assert::IsTrue(value5 > value1);  //    7 >   -5
+    Assert::IsTrue(value5 > value4);  //    7 >    5
+
+    Assert::IsFalse(value2 > value1);  //   -7 <   -5
+    Assert::IsFalse(value3 > value1);  // -155 <   -5
+    Assert::IsFalse(value1 > value0);  //   -5 <    0
+    Assert::IsFalse(value1 > value4);  //   -5 <    5
+    Assert::IsFalse(value1 > value5);  //   -5 <    7
+    Assert::IsFalse(value1 > value6);  //   -5 <  155
+    Assert::IsFalse(value4 > value5);  //    5 <    7
+
+    Assert::IsFalse(value1 < value2);  //   -5 >   -7
+    Assert::IsFalse(value1 < value3);  //   -5 > -155
+    Assert::IsFalse(value0 < value1);  //    0 >   -5
+    Assert::IsFalse(value4 < value1);  //    5 >   -5
+    Assert::IsFalse(value5 < value1);  //    7 >   -5
+    Assert::IsFalse(value5 < value4);  //    7 >    5
   }
 };
 }
