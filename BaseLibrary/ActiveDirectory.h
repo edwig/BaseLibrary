@@ -27,7 +27,9 @@
 //
 #pragma once
 
-CString GetUserMailaddress();     // Current user email addres according to the ADSI
-CString GetADOrganisation();      // Getting the organisation name according to the AD
-CString GetUserLogincode();       // Returns <domain>\<usercode>
-CString GetUserPrincipalName();   // Returns <user>@organisation.com (mostly!)
+// Gets the users email address from the AD
+// If not connected to the AD, it will retrieve the primary MS-Office mail address
+XString GetUserMailaddress();     // Current user email address according to the ADSI
+XString GetADOrganization();      // Getting the organization name according to the AD
+XString GetUserLogincode();       // Returns <domain>\<usercode>
+XString GetUserPrincipalName();   // Returns <user>@organisation.com (mostly!)

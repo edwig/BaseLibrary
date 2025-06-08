@@ -51,7 +51,7 @@ public:
     TCHAR buffer[2000];
     int len = GetEnvironmentVariable(_T("TEST"),buffer,2000);
     buffer[len] = 0;
-    CString msg;
+    XString msg;
     msg.Format(_T("TEST=%s\n"),buffer);
 
     Logger::WriteMessage(msg);
@@ -70,8 +70,8 @@ public:
     TCHAR buffer[2000];
     int len = GetEnvironmentVariable(_T("TEST"),buffer,2000);
     buffer[len] = 0;
-    CString foundenv;
-    CString expected(_T("TEST=bb"));
+    XString foundenv;
+    XString expected(_T("TEST=bb"));
     foundenv.Format(_T("TEST=%s"),buffer);
 
     // Test assignment

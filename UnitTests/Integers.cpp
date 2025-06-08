@@ -65,7 +65,7 @@ public:
     }
     catch(SafeIntException& ex)
     {
-      CString message;
+      XString message;
       message.Format(_T("Safe int error code: %d"),ex.m_code);
       Logger::WriteMessage(message);
       message.Format(_T("Number 2 still is: %d"),*number2.Ptr());

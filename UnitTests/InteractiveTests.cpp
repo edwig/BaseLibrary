@@ -58,10 +58,10 @@ public:
   {
     Logger::WriteMessage("Testing current email address");
 
-    CString email = GetUserMailaddress();
+    XString email = GetUserMailaddress();
 
     Assert::IsFalse(email.IsEmpty());
-    Logger::WriteMessage("The current email addres is: " + email);
+    Logger::WriteMessage("The current email address is: " + email);
   }
 };
 }

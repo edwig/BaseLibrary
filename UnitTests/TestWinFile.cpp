@@ -50,7 +50,7 @@ public:
   {
     Logger::WriteMessage("Testing WinFile UTF capabilities.");
 
-    CString filename(_T("C:\\Tmp\\TestUTF_8.txt"));
+    XString filename(_T("C:\\Tmp\\TestUTF_8.txt"));
 
     WinFile file(filename);
     file.CreateDirectory();
@@ -60,9 +60,9 @@ public:
     {
       Assert::Fail(L"Failed to create UTF-8 text file!");
     }
-    CString one(_T("This is an amount of € 10.00\n"));
-    CString two(_T("The name is génèpëllêtje\n"));
-    CString fin(_T("No final newline"));
+    XString one(_T("This is an amount of € 10.00\n"));
+    XString two(_T("The name is génèpëllêtje\n"));
+    XString fin(_T("No final newline"));
 
     file.Write(one);
     file.Write(two);
@@ -80,7 +80,7 @@ public:
     {
       Assert::Fail(L"Failed to open UTF-8 text file!");
     }
-    CString string1,string2,string3;
+    XString string1,string2,string3;
     file2.Read(string1);
     file2.Read(string2);
     file2.Read(string3);
@@ -102,7 +102,7 @@ public:
   {
     Logger::WriteMessage("Testing WinFile UTF capabilities.");
 
-    CString filename(_T("C:\\Tmp\\TestUTF_16.txt"));
+    XString filename(_T("C:\\Tmp\\TestUTF_16.txt"));
 
     WinFile file(filename);
     file.CreateDirectory();
@@ -112,12 +112,12 @@ public:
     {
       Assert::Fail(L"Failed to create UTF-16 text file!");
     }
-    CString one(_T("This is an amount of € 10.00\n"));
-    CString two(_T("The name is génèpëllêtje\n"));
+    XString one(_T("This is an amount of € 10.00\n"));
+    XString two(_T("The name is génèpëllêtje\n"));
 #ifdef _UNICODE
-    CString three(L"荷じば委集ヘモホア住75定ヱウコヨ保博芸よいんづ添具メツ質上たせばる模34連ユニ信方ロ知演レフサ幅性トヌソミ条上ヲコ政優裕ぶリば聞杉更打アチマロ井機スユ物彩ろぽ。面せんちや祭9賞巨ケノエ太謡そべぐ無波夫わゃぴ合督作ト疑芸リマネ載日作ヱシ乱夕のさルょ弁番を据記きべや降家リモメル絡敷詳木ラに。\n");
+    XString three(L"荷じば委集ヘモホア住75定ヱウコヨ保博芸よいんづ添具メツ質上たせばる模34連ユニ信方ロ知演レフサ幅性トヌソミ条上ヲコ政優裕ぶリば聞杉更打アチマロ井機スユ物彩ろぽ。面せんちや祭9賞巨ケノエ太謡そべぐ無波夫わゃぴ合督作ト疑芸リマネ載日作ヱシ乱夕のさルょ弁番を据記きべや降家リモメル絡敷詳木ラに。\n");
 #endif
-    CString fin(_T("No final newline"));
+    XString fin(_T("No final newline"));
 
     file.Write(one);
     file.Write(two);
@@ -138,7 +138,7 @@ public:
     {
       Assert::Fail(L"Failed to open UTF-16 text file!");
     }
-    CString string1,string2,string3,string4;
+    XString string1,string2,string3,string4;
     file2.Read(string1);
     file2.Read(string2);
 #ifdef _UNICODE
