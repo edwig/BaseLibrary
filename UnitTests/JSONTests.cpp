@@ -830,5 +830,142 @@ public:
     }
     Assert::AreEqual(0,errors);
   }
+
+  TEST_METHOD(TestJsonArrayConversion)
+  {
+    Logger::WriteMessage(_T("Conversion of a JSON array"));
+
+    XString json_string = _T("{\n")
+                          _T(" \"ProposedSchedule\": {\n")
+                          _T("   \"Proposed\": [\n")
+                          _T("   { \"Starttime\": \"01-07-2025T09:00:00\",\n")
+                          _T("     \"Endtime\":   \"01-07-2025T12:00:00\",\n")
+                          _T("     \"Employee\":  \"John Doe\"\n")
+                          _T("   },\n")
+                          _T("   { \"Starttime\": \"01-07-2025T12:00:00\",\n")
+                          _T("     \"Endtime\":   \"01-07-2025T15:00:00\",\n")
+                          _T("     \"Employee\":  \"Jane Doe\"\n")
+                          _T("   },\n")
+                          _T("   { \"Starttime\": \"01-07-2025T15:00:00\",\n")
+                          _T("     \"Endtime\":   \"01-07-2025T18:00:00\",\n")
+                          _T("     \"Employee\":  \"Another Sucker\"\n")
+                          _T("   }\n")
+                          _T("   ]\n")
+                          _T(" }\n");
+                          _T("}\n");
+    JSONMessage json(json_string);
+    SOAPMessage soap(&json);
+    soap.SetPreserveWhitespace();
+
+    XString soap_string = soap.GetSoapMessage();
+
+    XString expected = 
+      _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+      _T("<s:Envelope>\n")
+      _T("  <s:Header />\n")
+      _T("  <s:Body>\n")
+      _T("    <ProposedSchedule xml:space=\"preserve\">\n")
+      _T("      <Proposed>\n")
+      _T("        <Starttime>01-07-2025T09:00:00</Starttime>\n")
+      _T("        <Endtime>01-07-2025T12:00:00</Endtime>\n")
+      _T("        <Employee>John Doe</Employee>\n")
+      _T("      </Proposed>\n")
+      _T("      <Proposed>\n")
+      _T("        <Starttime>01-07-2025T12:00:00</Starttime>\n")
+      _T("        <Endtime>01-07-2025T15:00:00</Endtime>\n")
+      _T("        <Employee>Jane Doe</Employee>\n")
+      _T("      </Proposed>\n")
+      _T("      <Proposed>\n")
+      _T("        <Starttime>01-07-2025T15:00:00</Starttime>\n")
+      _T("        <Endtime>01-07-2025T18:00:00</Endtime>\n")
+      _T("        <Employee>Another Sucker</Employee>\n")
+      _T("      </Proposed>\n")
+      _T("    </ProposedSchedule>\n")
+      _T("  </s:Body>\n")
+      _T("</s:Envelope>\n");
+
+    Assert::IsTrue(soap_string.Compare(expected) == 0);
+  }
+
+  TEST_METHOD(TestSoapArrayConversion)
+  {
+    XString soap_string = _T("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+                          _T("<s:Envelope>\n")
+                          _T("  <s:Header />\n")
+                          _T("  <s:Body>\n")
+                          _T("    <ProposedSchedule xml:space=\"preserve\">\n")
+                          _T("      <Proposed>\n")
+                          _T("        <Starttime>01-07-2025T09:00:00</Starttime>\n")
+                          _T("        <Endtime>01-07-2025T12:00:00</Endtime>\n")
+                          _T("        <Employee>John Doe</Employee>\n")
+                          _T("      </Proposed>\n")
+                          _T("      <Proposed>\n")
+                          _T("        <Starttime>01-07-2025T12:00:00</Starttime>\n")
+                          _T("        <Endtime>01-07-2025T15:00:00</Endtime>\n")
+                          _T("        <Employee>Jane Doe</Employee>\n")
+                          _T("      </Proposed>\n")
+                          _T("      <Proposed>\n")
+                          _T("        <Starttime>01-07-2025T15:00:00</Starttime>\n")
+                          _T("        <Endtime>01-07-2025T18:00:00</Endtime>\n")
+                          _T("        <Employee>Another Sucker</Employee>\n")
+                          _T("      </Proposed>\n")
+                          _T("    </ProposedSchedule>\n")
+                          _T("  </s:Body>\n")
+                          _T("</s:Envelope>\n");
+
+    SOAPMessage soap(soap_string);
+    JSONMessage json(&soap);
+    json.SetWhitespace(true);
+
+    XString json_string1 = json.GetJsonMessage();
+    XString expected1 = _T("{\n")
+                        _T("	\"ProposedSchedule\":{\n")
+                        _T("		\"Proposed\":[\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T09:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T12:00:00\",\n")
+                        _T("				\"Employee\":\"John Doe\"\n")
+                        _T("			},\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T12:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T15:00:00\",\n")
+                        _T("				\"Employee\":\"Jane Doe\"\n")
+                        _T("			},\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T15:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T18:00:00\",\n")
+                        _T("				\"Employee\":\"Another Sucker\"\n")
+                        _T("			}\n")
+                        _T("		]\n")
+                        _T("	}\n")
+                        _T("}");
+
+    Assert::IsTrue(expected1.Compare(json_string1) == 0);
+
+    XString json_string2 = json.GetJsonMessage();
+    XString expected2 = _T("{\n")
+                        _T("	\"ProposedSchedule\":{\n")
+                        _T("		\"Proposed\":[\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T09:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T12:00:00\",\n")
+                        _T("				\"Employee\":\"John Doe\"\n")
+                        _T("			},\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T12:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T15:00:00\",\n")
+                        _T("				\"Employee\":\"Jane Doe\"\n")
+                        _T("			},\n")
+                        _T("				{\n")
+                        _T("				\"Starttime\":\"01-07-2025T15:00:00\",\n")
+                        _T("				\"Endtime\":\"01-07-2025T18:00:00\",\n")
+                        _T("				\"Employee\":\"Another Sucker\"\n")
+                        _T("			}\n")
+                        _T("		]\n")
+                        _T("	}\n")
+                        _T("}");
+
+    Assert::IsTrue(expected2.Compare(json_string2) == 0);
+  }
 };
 }
