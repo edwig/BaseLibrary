@@ -27,7 +27,9 @@
 //
 #include "pch.h"
 #include "ActiveDirectory.h"
-#include <StringUtilities.h>
+#include "JSONMessage.h"
+#include "JSONPath.h"
+#include "StringUtilities.h"
 
 #define SECURITY_WIN32
 #include <sspi.h>
@@ -58,7 +60,7 @@ class CoInit
 public:
   CoInit()
   {
-    CoInitialize(0);
+    std::ignore = CoInitialize(nullptr);
   }
   ~CoInit()
   {
@@ -68,7 +70,7 @@ public:
 
 // Getting the Distinguished Name from the current Windows user
 //
-static CString DistinguishedName()
+static XString DistinguishedName()
 {
   HRESULT hr;
 
@@ -76,7 +78,7 @@ static CString DistinguishedName()
   CoInit coInit;
   IADsADSystemInfoPtr pADsys;
   hr = CoCreateInstance(CLSID_ADSystemInfo,
-                        NULL,
+                        nullptr,
                         CLSCTX_INPROC_SERVER,
                         IID_IADsADSystemInfo,
                         (void**)&pADsys);
@@ -90,7 +92,7 @@ static CString DistinguishedName()
   if(SUCCEEDED(pADsys->get_UserName(&str)))
   {
     // Copy the name
-    CString dn(str);
+    XString dn(str);
     SysFreeString(str);
     return dn;
   }
@@ -99,19 +101,22 @@ static CString DistinguishedName()
 
 // Read a user attribute from the ADSI
 //
-static CString
-ReadAttribute(const CString& dn,const CString& attribute)
+static XString
+ReadAttribute(const XString& dn,const XString& attribute)
 {
   HRESULT hr;
+  USES_CONVERSION;
+
   // Initialize the COM subsystem
   CoInit coInit;
 
   // Create an LDAP query
-  CStringW query = L"LDAP://" + CStringW(dn);
+  std::wstring query = L"LDAP://";
+  query += CT2W(dn);
 
   // Open the LDAP object
   IADsPtr pAds;
-  hr = ADsGetObject(query,IID_IADs,(void**)&pAds);
+  hr = ADsGetObject(query.c_str(),IID_IADs,(void**)&pAds);
   if(FAILED(hr))
   {
     return _T("");
@@ -126,19 +131,57 @@ ReadAttribute(const CString& dn,const CString& attribute)
 
   if(SUCCEEDED(hr))
   {
-    CString result = (char*)CW2A(var.bstrVal);
+    XString result = CW2T(var.bstrVal);
     return result;
   }
   // Failure
   return _T("");
 }
 
-static CString organisation;
-
-CString GetUserMailaddress()
+XString PrimaryOfficeUser()
 {
-  CString user = DistinguishedName();
-  CString mail = ReadAttribute(user,_T("mail"));
+  HKEY   hk(nullptr);
+  TCHAR  szBuf[8 * MAX_PATH + 1] = _T("");
+  XString mail;
+
+  if(RegOpenKeyEx(HKEY_CURRENT_USER,_T("Software\\Microsoft\\Office\\Outlook\\Settings"),0,KEY_QUERY_VALUE,&hk))
+  {
+    // Key could not be opened
+    return _T("");
+  }
+
+  DWORD size = MAX_PATH * 8;
+  DWORD type = REG_EXPAND_SZ;
+  memset(szBuf,0,MAX_PATH);
+  if(RegQueryValueEx(hk,_T("Accounts"),NULL,&type,(LPBYTE)szBuf,(LPDWORD)&size) == ERROR_SUCCESS)
+  {
+    JSONMessage json(szBuf);
+    JSONPath path(json,_T("$.[*].primarySmtp"));
+    for(unsigned ind = 0;ind < path.GetNumberOfMatches();++ind)
+    {
+      JSONvalue* value = path.GetResult(ind);
+      if(value)
+      {
+        mail = value->GetString();
+        if(!mail.IsEmpty())
+        {
+          break;
+        }
+      }
+    }
+  }
+  RegCloseKey(hk);
+  return mail;
+}
+
+static XString organization;
+
+// Gets the users email address from the AD
+// If not connected to the AD, it will retrieve the primary MS-Office mail address
+XString GetUserMailaddress()
+{
+  XString user = DistinguishedName();
+  XString mail = ReadAttribute(user,_T("mail"));
   if(mail.IsEmpty())
   {
     mail = ReadAttribute(user,_T("proxyAddresses"));
@@ -146,11 +189,11 @@ CString GetUserMailaddress()
 
   // See if multiple addresses are loaded
   // If so, just use the very first email address
-  std::vector<CString> addresses;
+  std::vector<XString> addresses;
   SplitString(mail,addresses,_T(';'));
   for(auto& address : addresses)
   {
-    // Strip the fact that it is a SMTP proxy addres.
+    // Strip the fact that it is a SMTP proxy address.
     // "SMTP:" is the primary email address
     // "smtp:" is a secondary email address
     if(address.Left(5).Compare(_T("SMTP:")) == 0)
@@ -158,49 +201,56 @@ CString GetUserMailaddress()
       mail = address.Mid(5);
       break;
     }
-    // Pre-set a secondary email addres, in case we do not find the primary
+    // Preset a secondary email address, in case we do not find the primary
     if(address.Left(5).Compare(_T("smtp:")) == 0)
     {
       mail = address.Mid(5);
     }
   }
 
-  // Find the organisation
-  organisation.Empty();
+  // Possibly no Active-Directory user.
+  // Try to find an office outlook user
+  if(mail.IsEmpty())
+  {
+    mail = PrimaryOfficeUser();
+  }
+
+  // Find the organization
+  organization.Empty();
   int pos = mail.Find('@');
   if(pos > 0)
   {
-    organisation = mail.Mid(pos + 1);
+    organization = mail.Mid(pos + 1);
   }
   return mail;
 }
 
-// Getting the organisation name according to the AD
-CString GetADOrganisation()
+// Getting the organization name according to the AD
+XString GetADOrganization()
 {
-  if(organisation.IsEmpty())
+  if(organization.IsEmpty())
   {
     GetUserMailaddress();
   }
-  return organisation;
+  return organization;
 }
 
 // Returns <domain>\<usercode>
-CString GetUserLogincode()
+XString GetUserLogincode()
 {
   TCHAR name[MAX_PATH + 1];
   unsigned long lengte = MAX_PATH;
   GetUserNameEx(NameSamCompatible,name,&lengte);
 
-  return CString(name);
+  return XString(name);
 }
 
 // Returns <user>@organisation.com (mostly!)
-CString GetUserPrincipalName()
+XString GetUserPrincipalName()
 {
   TCHAR name[MAX_PATH + 1];
   unsigned long lengte = MAX_PATH;
   GetUserNameEx(NameUserPrincipal,name,&lengte);
 
-  return CString(name);
+  return XString(name);
 }

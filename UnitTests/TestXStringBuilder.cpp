@@ -57,7 +57,7 @@ public:
     for(int x = 1;x < NUM_TESTS; ++x)
     {
       total += newstring;
-      CString ext = newstring + newstring;
+      XString ext = newstring + newstring;
       total += ext;
     }
     size_t size = total.GetLength();
@@ -74,7 +74,7 @@ public:
     for(int x = 1;x < NUM_TESTS; ++x)
     {
       build.Append(newstring);
-      CString ext = newstring + newstring;
+      XString ext = newstring + newstring;
       total += ext;
     }
     total = build.ToString();
