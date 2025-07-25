@@ -172,7 +172,7 @@ Version 1.3.2 of 28-07-2024
 7)  Character set conversion is now removed from SOAP and JSON parsers and is exclusivly now the 
     domain of placing the message in an HTTPMessage, or reversely getting the message from HTTP.
 
-Version 1.3.3 of ....
+Version 1.3.3 of 25-07-2025
 ----------------------------
 1)  Fixed endless loop bug in 'bcd' class
 2)  Fixed reading XML/JSON from file, with no BOM, defaults to the current ACP encoding
@@ -180,4 +180,11 @@ Version 1.3.3 of ....
 4)  Fix for constructor of StdException from a different StdException.
     Not all members where copied in the constructor.
 5)  The bcd class now has MIN_BCD(), MAX_BCD() and MIN_EPSIION() methods to get the
-    minimum and maximum values of a bcd. 
+    minimum and maximum values of a bcd.
+6)  Fix for XPath to find multiple arrays at deeper levels
+7)  Full automatic library linking. Just include <Baselibrary.h> in you proeject!
+    No more need to specify all the MS-Windows OS libraries.
+8)  Fix for negative comparisons in the 'bcd' class if the 10th log of the number differs only by 1
+9)  Added the 'CreateFullThread' function to create OS threads with the same security
+    settings as your process
+10) BaseLibrary now can run on XString as std::string or std::wstring
