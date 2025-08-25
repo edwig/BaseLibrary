@@ -188,3 +188,10 @@ Version 1.3.3 of 25-07-2025
 9)  Added the 'CreateFullThread' function to create OS threads with the same security
     settings as your process
 10) BaseLibrary now can run on XString as std::string or std::wstring
+
+Version 1.3.4 of xx-xx-2025
+---------------------------
+1) Fix for very short lived logfiles. Wait till the writer thread has started, before continuing.
+2) Fix for copying strings to the clipboard for Unicode builds.
+3) Fix for double deletes of LogAnalysis files
+4) Fix for 32-bits builds for the 'CreateFullThread' function
