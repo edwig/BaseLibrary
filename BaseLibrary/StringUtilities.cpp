@@ -276,12 +276,13 @@ bool PutStringToClipboard(XString p_string,HWND p_wnd /*=NULL*/,bool p_append /*
   {
     // Put the text in a global GMEM_MOVABLE memory handle
     size_t size = ((size_t) p_string.GetLength() + 1) * sizeof(TCHAR);
-    HGLOBAL memory = GlobalAlloc(GHND,size);
+    HGLOBAL memory = GlobalAlloc(GHND | GMEM_MOVEABLE | GMEM_ZEROINIT,size);
     if(memory)
     {
       void* data = GlobalLock(memory);
       if(data)
       {
+        size /= sizeof(TCHAR);
         _tcsncpy_s((LPTSTR) data,size,(LPCTSTR) p_string.GetString(),size);
       }
       else
