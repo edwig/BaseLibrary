@@ -825,6 +825,18 @@ LogAnalysis::RunLog()
       m_logThread = NULL;
       //ATLTRACE("Cannot make a thread for the LogAnalysis function\n");
     }
+    else
+    {
+      // Wait for the writer to start
+      for(int ind = 0;ind < LOGWRITE_MINCACHE;++ind)
+      {
+        Sleep(2);
+        if(m_refcounter > 1)
+        {
+          break;
+        }
+      }
+    }
   }
 }
 
