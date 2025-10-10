@@ -3,10 +3,10 @@
 // SourceFile: BaseLibrary.h
 // BaseLibary: Collection of Indispensable base classes
 // 
-//  ______    _          _         _    _       _                           
-// |  ____|  | |        (_)       | |  | |     (_)                          
+//  ______    _          _         _    _       _
+// |  ____|  | |        (_)       | |  | |     (_)
 // | |__   __| |_      ___  __ _  | |__| |_   _ _ ___ _ __ ___   __ _ _ __  
-// |  __| / _` \ \ /\ / / |/ _` | |  __  | | | | / __| '_ ` _ \ / _` | '_ \ 
+// |  __| / _` \ \ /\ / / |/ _` | |  __  | | | | / __| '_ ` _ \ / _` | '_ \
 // | |___| (_| |\ V  V /| | (_| | | |  | | |_| | \__ \ | | | | | (_| | | | |
 // |______\__,_| \_/\_/ |_|\__, | |_|  |_|\__,_|_|___/_| |_| |_|\__,_|_| |_|
 //                          __/ |                                           
@@ -47,7 +47,7 @@
 #include "bcd.h"
 
 // VERSION NUMBER OF THIS LIBRARY
-#define BASELIBRARY_VERSION 1.3.3
+#define BASELIBRARY_VERSION 1.3.4
 
 // Selecting the right library to link with automatically
 // So we do not need to worry about which library to use in the linker settings

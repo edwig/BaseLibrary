@@ -283,7 +283,7 @@ bool PutStringToClipboard(XString p_string,HWND p_wnd /*=NULL*/,bool p_append /*
       if(data)
       {
         size /= sizeof(TCHAR);
-        _tcsncpy_s((LPTSTR) data,size,(LPCTSTR) p_string.GetString(),size);
+        _tcsncpy_s((LPTSTR)data,size,(LPCTSTR)p_string.GetString(),size);
       }
       else
       {
