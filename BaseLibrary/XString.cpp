@@ -300,7 +300,14 @@ SMX_String::FormatMessageV(UINT p_strID,va_list* p_list)
 PTSTR 
 SMX_String::GetBufferSetLength(int p_length)
 {
-  append(_T(" "), ((size_t)p_length - size()));
+  if(p_length > size())
+  {
+    append(((size_t)p_length - size()),' ');
+  }
+  else
+  {
+    resize(p_length);
+  }
   return (PTSTR)c_str();
 }
 
