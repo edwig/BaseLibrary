@@ -56,7 +56,7 @@ RegisterMessagesDllForService(XString p_serviceName,XString p_messageDLL,XString
   {
     if(StringCchCopy(g_svcname,SERVICE_NAME_LENGTH,p_serviceName) != S_OK)
     {
-      p_error = _T("The service name cannot be registered: ") + p_serviceName;
+      p_error = XString(_T("The service name cannot be registered: ")) + p_serviceName;
       return 0;
     }
   }

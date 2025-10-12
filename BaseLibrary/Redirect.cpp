@@ -103,7 +103,7 @@ Redirect::SetTimeoutIdle(ULONG p_timeout)
 // or: "UTF-16" for PowerShell like programs
 // BEWARE: Does **NOT** support 32 bits codepages (e.g. UTF-32)
 bool
-Redirect::SetStreamCharset(XString p_charset)
+Redirect::SetStreamCharset(const XString& p_charset)
 {
   XString current = CodepageToCharset(GetACP());
   if(p_charset.CompareNoCase(current) == 0)
@@ -531,7 +531,7 @@ Redirect::StdOutThread8Bits(HANDLE hStdOutRead)
       else
       {
         // Convert UTF-8 to MBCS codepage
-        XString buffer(lineBuffer);
+        XString buffer((LPCSTR)lineBuffer);
         XString input = DecodeStringFromTheWire(buffer,m_streamCharset);
         OnChildStdOutWrite((PTCHAR)input.GetString());
       }
@@ -684,7 +684,7 @@ Redirect::StdErrThread8Bits(HANDLE hStdErrRead)
       else
       {
         // Convert UTF-8 to MBCS codepage
-        XString buffer(lineBuffer);
+        XString buffer((LPCSTR)lineBuffer);
         XString input = DecodeStringFromTheWire(buffer,m_streamCharset);
         OnChildStdErrWrite((PTCHAR)input.GetString());
       }

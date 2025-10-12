@@ -471,13 +471,13 @@ StoreMessage::WriteSendBOM(bool p_bom)
 }
 
 void
-StoreMessage::WriteCookies(Cookies& p_cookies)
+StoreMessage::WriteCookies(const Cookies& p_cookies)
 {
   WriteHeader(MSGFieldType::FT_COOKIES);
   WriteNumber16((short)p_cookies.GetSize());
   for(size_t index = 0;index < p_cookies.GetSize();++index)
   {
-    Cookie* biscuit = p_cookies.GetCookie((unsigned)index);
+    const Cookie* biscuit = p_cookies.GetCookie((unsigned)index);
     WriteString(biscuit->GetSetCookieText());
   }
 }
@@ -509,7 +509,7 @@ StoreMessage::WriteHeaders(const HeaderMap* p_headers)
 }
 
 void
-StoreMessage::WriteRouting(Routing& p_routing)
+StoreMessage::WriteRouting(const Routing& p_routing)
 {
   WriteHeader(MSGFieldType::FT_ROUTING);
   WriteNumber16((short)p_routing.size());

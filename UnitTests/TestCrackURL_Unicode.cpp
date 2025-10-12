@@ -120,13 +120,29 @@ public:
     {
       --errors;
     }
+    else
+    {
+      Logger::WriteMessage(XString(_T("Orig URL: ")) + mustBeUrl);
+      Logger::WriteMessage(XString(_T("Code URL: ")) + encoded);
+    }
     if(diacrits == expected)
     {
       --errors;
     }
+    else
+    {
+      Logger::WriteMessage(XString(_T("Diacrits: ")) + diacrits);
+      Logger::WriteMessage(XString(_T("Expected: ")) + expected);
+    }
     if(url1.m_port == 1234)
     {
       --errors;
+    }
+    else
+    {
+      XString portFound;
+      portFound.Format(_T("Port number found: %d"), url1.m_port);
+      Logger::WriteMessage(portFound);
     }
     if(url1.m_host.Compare(_T("localhost")) == 0)
     {
@@ -146,6 +162,11 @@ public:
     if(urlString == encoded)
     {
       --errors;
+    }
+    else
+    {
+      Logger::WriteMessage(XString(_T("URL string: ")) + urlString);
+      Logger::WriteMessage(XString(_T("URL decode: ")) + encoded);
     }
     Assert::AreEqual(0,errors);
   }

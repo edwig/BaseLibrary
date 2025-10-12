@@ -102,7 +102,7 @@ XmlDataTypeToString(XmlDataType p_type)
 }
 
 XmlDataType
-StringToXmlDataType(XString p_name)
+StringToXmlDataType(const XString& p_name)
 {
   const TCHAR** datatypes = xml_datatypes;
 

@@ -125,8 +125,8 @@ public:
 #endif
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR),CALG_SHA1);
     Logger::WriteMessage(_T("DIGEST Method  : CALG_SHA1"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected1);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected1);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected1.GetString());
   }
@@ -144,8 +144,8 @@ public:
 
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR),CALG_MD2);
     Logger::WriteMessage(_T("DIGEST Method  : CALG_MD2"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected2);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected2);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected2.GetString());
   }
@@ -163,8 +163,8 @@ public:
     crypt.SetHashMethod(CALG_MD4);
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR));
     Logger::WriteMessage(_T("DIGEST Method  : CALG_MD4"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected3);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected3);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected3.GetString());
   }
@@ -182,8 +182,8 @@ public:
     crypt.SetHashMethod(CALG_MD5);
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR));
     Logger::WriteMessage(_T("DIGEST Method  : CALG_MD5"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected4);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected4);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected4.GetString());
   }
@@ -201,8 +201,8 @@ public:
     crypt.SetHashMethod(CALG_SHA_256);
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR));
     Logger::WriteMessage(_T("DIGEST Method  : CALG_SHA_256"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected5);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected5);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected5.GetString());
   }
@@ -220,8 +220,8 @@ public:
     crypt.SetHashMethod(CALG_SHA_384);
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR));
     Logger::WriteMessage(_T("DIGEST Method  : CALG_SHA_384"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected6);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected6);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected6.GetString());
   }
@@ -239,8 +239,8 @@ public:
     crypt.SetHashMethod(CALG_SHA_512);
     XString hash = crypt.Digest(buffer,buffer.GetLength() * sizeof(TCHAR));
     Logger::WriteMessage(_T("DIGEST Method  : CALG_SHA_512"));
-    Logger::WriteMessage(_T("DIGEST Expected: ") + expected7);
-    Logger::WriteMessage(_T("DIGEST hashval : ") + hash);
+    Logger::WriteMessage(XString(_T("DIGEST Expected: ")) + expected7);
+    Logger::WriteMessage(XString(_T("DIGEST hashval : ")) + hash);
 
     Assert::AreEqual(hash.GetString(),expected7.GetString());
   }
@@ -253,8 +253,8 @@ public:
     XString password(_T("P@$$w03d4m3")); // Password for me
 
     Logger::WriteMessage(_T("Nonce for SHA1"));
-    Logger::WriteMessage(_T("Nonce timestamp: ") + created);
-    Logger::WriteMessage(_T("Nonce password : ") + password);
+    Logger::WriteMessage(XString(_T("Nonce timestamp: ")) + created);
+    Logger::WriteMessage(XString(_T("Nonce password : ")) + password);
 
     // Password text = Base64(SHA1(nonce + created + password))
     XString combined = nonce + created + password;
@@ -315,20 +315,20 @@ public:
     Logger::WriteMessage(_T("TESTING ENCRYPTION PROVIDERS AND METHODS OF MS-Cryptographic-providers"));
     Logger::WriteMessage(_T("======================================================================"));
     Logger::WriteMessage(_T("Loading provider: MS Cryptographic provider in AES-256 mode."));
-    Logger::WriteMessage(_T("DIGEST Password : ") + password);
-    Logger::WriteMessage(_T("DIGEST Buffer   : ") + buffer);
+    Logger::WriteMessage(XString(_T("DIGEST Password : ")) + password);
+    Logger::WriteMessage(XString(_T("DIGEST Buffer   : ")) + buffer);
     Logger::WriteMessage(_T("Provider        : PROV_RSA_AES"));
     Logger::WriteMessage(_T("Password-hash   : CALG_SHA_256"));
     Logger::WriteMessage(_T("Encryption      : CALG_AES_256"));
 
     result = crypt.Encryption(buffer,password);
 
-    Logger::WriteMessage(_T("Expected        : ") + expected8);
-    Logger::WriteMessage(_T("ENCRYPTION      : ") + result);
+    Logger::WriteMessage(XString(_T("Expected        : ")) + expected8);
+    Logger::WriteMessage(XString(_T("ENCRYPTION      : ")) + result);
 
     result = crypt.Decryption(result,password);
 
-    Logger::WriteMessage(_T("DECRYPTION     : ") + result);
+    Logger::WriteMessage(XString(_T("DECRYPTION     : ")) + result);
 
     Assert::AreEqual(result.GetString(),buffer.GetString());
   }
@@ -344,8 +344,8 @@ public:
     Logger::WriteMessage(_T("TESTING ENCRYPTION PROVIDERS AND METHODS OF MS-Cryptographic-providers"));
     Logger::WriteMessage(_T("======================================================================"));
     Logger::WriteMessage(_T("Loading provider: MS Cryptographic provider in fast RC4 mode."));
-    Logger::WriteMessage(_T("DIGEST Password : ") + password);
-    Logger::WriteMessage(_T("DIGEST Buffer   : ") + buffer);
+    Logger::WriteMessage(XString(_T("DIGEST Password : ")) + password);
+    Logger::WriteMessage(XString(_T("DIGEST Buffer   : ")) + buffer);
 
     Logger::WriteMessage(_T("Provider        : BCrypt"));
     Logger::WriteMessage(_T("Password-hash   : RC4"));
@@ -353,14 +353,14 @@ public:
 
     result = crypt.FastEncryption(buffer,password);
 
-    Logger::WriteMessage(_T("Expected        : ") + expected9);
-    Logger::WriteMessage(_T("ENCRYPTION      : ") + result);
+    Logger::WriteMessage(XString(_T("Expected        : ")) + expected9);
+    Logger::WriteMessage(XString(_T("ENCRYPTION      : ")) + result);
 
-    result = crypt.FastDecryption(result,password);
+    XString decrypted = crypt.FastDecryption(result,password);
 
-    Logger::WriteMessage(_T("DECRYPTION      : ") + result);
+    Logger::WriteMessage(XString(_T("DECRYPTION      : ")) + decrypted);
 
-    Assert::AreEqual(result.GetString(),buffer.GetString());
+    Assert::AreEqual(decrypted.GetString(),buffer.GetString());
   }
 
   TEST_METHOD(TestLongerStrings)
@@ -389,7 +389,7 @@ public:
       if(original != decrypted)
       {
         ++errors;
-        Logger::WriteMessage(_T("Error: ") + crypting.GetError());
+        Logger::WriteMessage(XString(_T("Error: ")) + crypting.GetError());
       }
     }
     Assert::AreEqual(0,errors);

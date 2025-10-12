@@ -77,7 +77,7 @@ CrackedURL::CrackedURL()
 }
 
 // CRACK A URL/URI
-CrackedURL::CrackedURL(XString p_url)
+CrackedURL::CrackedURL(const XString& p_url)
 {
   CrackURL(p_url);
 }
@@ -116,7 +116,7 @@ CrackedURL::Reset()
 }
 
 bool
-CrackedURL::CrackURL(XString p_url)
+CrackedURL::CrackURL(const XString& p_url)
 {
   // Reset total url
   Reset();
@@ -126,14 +126,16 @@ CrackedURL::CrackURL(XString p_url)
   {
     return false;
   }
+  XString url(p_url);
+
   // Find the scheme
-  int pos = p_url.Find(':');
+  int pos = url.Find(':');
   if(pos <= 0)
   {
     return false;
   }
   m_foundScheme = true;
-  m_scheme = p_url.Left(pos);
+  m_scheme = url.Left(pos);
   if(m_scheme.CompareNoCase(_T("https")) == 0)
   {
     m_secure      = true;
@@ -141,30 +143,30 @@ CrackedURL::CrackURL(XString p_url)
     m_port        = INTERNET_DEFAULT_HTTPS_PORT;
   }
   // Remove the scheme
-  p_url = p_url.Mid(pos + 1);
+  url = url.Mid(pos + 1);
   
   // Check for '//'
-  if(p_url.GetAt(0) != '/' && p_url.GetAt(1) != '/')
+  if(url.GetAt(0) != '/' && url.GetAt(1) != '/')
   {
     return false;
   }
   // Remove '//'
-  p_url = p_url.Mid(2);
+  url = url.Mid(2);
   
   // Check for server:port
   XString server;
-  pos = p_url.Find('/');
+  pos = url.Find('/');
   if(pos <= 0)
   {
     // No absolute pathname
-    server = p_url;
-    p_url.Empty();
+    server = url;
+    url.Empty();
   }
   else
   {
     m_foundPath = true;
-    server = p_url.Left(pos);
-    p_url = p_url.Mid(pos);
+    server = url.Left(pos);
+    url    = url.Mid(pos);
   }
   // Find the port. 
   // BEWARE OF IPv6 TEREDO ADDRESSES!!
@@ -196,8 +198,8 @@ CrackedURL::CrackURL(XString p_url)
   }
   
   // Find Query or Anchor
-  int query  = p_url.Find('?');
-  int anchor = p_url.Find('#');
+  int query  = url.Find('?');
+  int anchor = url.Find('#');
   
   if(query > 0 || anchor > 0)
   {
@@ -205,18 +207,18 @@ CrackedURL::CrackURL(XString p_url)
     if(anchor > 0)
     {
       m_foundAnchor = true;
-      m_anchor = DecodeURLChars(p_url.Mid(anchor + 1));
-      p_url    = p_url.Left(anchor);
+      m_anchor = DecodeURLChars(url.Mid(anchor + 1));
+      url      = url.Left(anchor);
     }
     // Remember the absolute path name
     if(query > 0)
     {
-      m_path = p_url.Left(query);
-      p_url  = p_url.Mid(query + 1);
+      m_path = url.Left(query);
+      url    = url.Mid(query + 1);
     }
     else
     {
-      m_path = p_url;
+      m_path = url;
     }
     if(m_path.GetLength() > 0)
     {
@@ -228,16 +230,16 @@ CrackedURL::CrackURL(XString p_url)
     while(query > 0)
     {
       // FindNext query
-      query = p_url.Find('&');
+      query = url.Find('&');
       XString part;
       if(query > 0)
       {
-        part  = p_url.Left(query);
-        p_url = p_url.Mid(query + 1);
+        part = url.Left(query);
+        url  = url.Mid(query + 1);
       }
       else
       {
-        part = p_url;
+        part = url;
       }
 
       UriParam param;
@@ -260,7 +262,7 @@ CrackedURL::CrackURL(XString p_url)
   else
   {
     // No query and no anchor	
-    m_path = p_url;
+    m_path = url;
     m_foundPath = !m_path.IsEmpty();
   }
   // Reduce path: various 'mistakes'
@@ -299,20 +301,23 @@ CrackedURL::SetAllowPlusSign(bool p_allow)
 }
 
 void
-CrackedURL::SetPath(XString p_path)
+CrackedURL::SetPath(const XString& p_path)
 {
   // Strip parameters and anchors
   int pos = p_path.FindOneOf(_T("#?"));
   if (pos >= 0)
   {
-    p_path = p_path.Left(pos);
+    m_path = p_path.Left(pos);
   }
-  m_path = p_path;
+  else
+  {
+    m_path = p_path;
+  }
 }
 
 // Convert string to URL encoding, using UTF-8 chars
 XString
-CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
+CrackedURL::EncodeURLChars(const XString& p_text,bool p_queryValue /*=false*/)
 {
   XString encoded;
   uchar*  buffer = nullptr;
@@ -354,7 +359,7 @@ CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
     }
     else if(ch == '\'') ++singlequote;
     else if(ch == '\"') ++doublequote;
-    else if(_istspace(ch))
+    else if(isspace(ch))
     {
       // Collapse all red/white space chars to space
       ch = ' ';
@@ -387,7 +392,7 @@ CrackedURL::EncodeURLChars(XString p_text,bool p_queryValue /*=false*/)
 
 // Decode URL strings, including UTF-8 encoding
 XString
-CrackedURL::DecodeURLChars(XString p_text,bool p_queryValue /*=false*/,bool p_allowPlus /*=true*/)
+CrackedURL::DecodeURLChars(const XString& p_text,bool p_queryValue /*=false*/,bool p_allowPlus /*=true*/)
 {
   XString encoded;
   XString decoded;
@@ -449,7 +454,7 @@ CrackedURL::DecodeURLChars(XString p_text,bool p_queryValue /*=false*/,bool p_al
 
 // Decode 1 hex char for URL decoding
 uchar
-CrackedURL::GetHexcodedChar(XString& p_text
+CrackedURL::GetHexcodedChar(const XString& p_text
                            ,int&     p_index
                            ,bool&    p_percent
                            ,bool&    p_queryValue
@@ -610,7 +615,7 @@ CrackedURL::AbsolutePath() const
 
 // Setting a new extension on the path
 void
-CrackedURL::SetExtension(XString p_extension)
+CrackedURL::SetExtension(const XString& p_extension)
 {
   m_extension = p_extension;
 
@@ -693,7 +698,7 @@ CrackedURL::operator=(CrackedURL* p_orig)
 
 // Has parameter value
 const bool
-CrackedURL::HasParameter(XString p_parameter) const
+CrackedURL::HasParameter(const XString& p_parameter) const
 {
   for(unsigned i = 0; i < m_parameters.size(); ++i)
   {
@@ -706,7 +711,7 @@ CrackedURL::HasParameter(XString p_parameter) const
 }
 
 const XString 
-CrackedURL::GetParameter(XString p_parameter) const
+CrackedURL::GetParameter(const XString& p_parameter) const
 {
   for(auto& param : m_parameters)
   {
@@ -719,7 +724,7 @@ CrackedURL::GetParameter(XString p_parameter) const
 }
 
 void    
-CrackedURL::SetParameter(XString p_parameter,XString p_value)
+CrackedURL::SetParameter(const XString& p_parameter,const XString& p_value)
 {
   // See if we already have this parameter name
   for(auto& param : m_parameters)
@@ -752,7 +757,7 @@ CrackedURL::GetParameter(unsigned p_parameter) const
 }
 
 bool
-CrackedURL::DelParameter(XString p_parameter)
+CrackedURL::DelParameter(const XString& p_parameter)
 {
 //   auto it = std::find_if(m_parameters.begin(),m_parameters.end(),p_parameter);
 //   if(it != m_parameters.end())

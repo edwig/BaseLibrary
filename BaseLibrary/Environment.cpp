@@ -125,7 +125,7 @@ void ProcessVariable(XString& p_string)
     case '!': value.Empty(); 
               break;
     case '+': // fall through
-    case '>': value = envvar + value; 
+    case '>': value = XString(envvar) + value; 
               break;
     case '<': value = value  + envvar;
               break;

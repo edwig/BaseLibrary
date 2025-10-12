@@ -58,7 +58,7 @@ CRITICAL_SECTION  g_alertCritical;
 
 // Registers an alert log path for a module
 // Returns the module's alert number
-int ConfigureApplicationAlerts(XString p_path)
+int ConfigureApplicationAlerts(const XString& p_path)
 {
   // Check that we have a registration
   if(g_alertPath == nullptr)
@@ -69,16 +69,17 @@ int ConfigureApplicationAlerts(XString p_path)
     // Clean up at exit time of the process
     atexit(CleanupAlerts);
   }
-  AutoCritSec lock(&g_alertCritical);
 
   // Check that the path always ends in a backslash
+  XString path(p_path);
   if(p_path.Right(1) != _T("\\"))
   {
-    p_path += '\\';
+    path += _T("\\");
   }
 
   // register new path
-  (*g_alertPath)[++g_alertModules] = p_path;
+  AutoCritSec lock(&g_alertCritical);
+  (*g_alertPath)[++g_alertModules] = path;
 
   return g_alertModules;
 }

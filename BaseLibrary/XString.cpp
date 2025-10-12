@@ -33,24 +33,6 @@
 #include "ConvertWideString.h"
 #include "XString.h"
 
-// Are we using MFC (AFX)
-#ifdef _AFX
-// If we are using the BaseLibrary within a MFC project
-// The string definition is purely the MFC XString class
-typedef CString XString;
-#pragma message("XString is now defined as MFC::CString")
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#else
-#ifdef __ATLSTR_H__
-#pragma message("XString is now defined as ATL::CString")
-#else
-#pragma message("XString is now defined as std::string::MSX_String")
-#endif
-
 SMX_String::SMX_String()
 {
 }
@@ -73,25 +55,17 @@ SMX_String::SMX_String(const SMX_String& p_string)
   append(p_string.c_str());
 }
 
-// CTOR from std::string
-SMX_String::SMX_String(const stdstring& p_string)
-           :stdstring(p_string)
-{
-}
-
+#ifdef _UNICODE
 // CTOR from a ANSI string
 SMX_String::SMX_String(PCSTR p_string)
 {
-#ifdef _UNICODE
   int len = MultiByteToWideChar(CP_ACP,0,p_string,(int)strlen(p_string),nullptr,0);
   wchar_t* buffer = new wchar_t[len + 1];
   MultiByteToWideChar(CP_ACP,0,p_string,(int)strlen(p_string),buffer,len);
   append(buffer);
   delete [] buffer;
-#else
-  append(p_string);
-#endif
 }
+#endif
 
 BSTR 
 SMX_String::AllocSysString()
@@ -115,7 +89,7 @@ SMX_String::AnsiToOem()
 {
 #ifndef _UNICODE
   // Only works for MBCS, not for Unicode
-  ::CharToOemBuff(reinterpret_cast<LPCSTR>(c_str()),reinterpret_cast<LPSTR>(c_str()),reinterpret_cast<DWORD>(length()));
+  ::CharToOemBuff((LPCSTR)(c_str()),(LPSTR)(c_str()),static_cast<DWORD>(length()));
 #endif
 }
 
@@ -211,18 +185,6 @@ SMX_String::Format(UINT p_strID,...)
   va_start(argList,p_strID);
 
   FormatV(p_strID,argList);
-
-  va_end(argList);
-}
-
-void
-SMX_String::Format(SMX_String p_format,...)
-{
-  LPCTSTR format = p_format.c_str();
-  va_list argList;
-  va_start(argList,format);
-
-  FormatV(p_format.c_str(),argList);
 
   va_end(argList);
 }
@@ -338,7 +300,7 @@ SMX_String::FormatMessageV(UINT p_strID,va_list* p_list)
 PTSTR 
 SMX_String::GetBufferSetLength(int p_length)
 {
-  reserve(p_length);
+  append(_T(" "), ((size_t)p_length - size()));
   return (PTSTR)c_str();
 }
 
@@ -389,7 +351,7 @@ SMX_String::Left(int p_length) const
   }
 
   stdstring copy(*this);
-  const SMX_String left(copy.substr(0,p_length));
+  const SMX_String left(copy.substr(0,p_length).c_str());
   return left;
 }
 
@@ -469,11 +431,11 @@ SMX_String::ReleaseBuffer(int p_newLength /*=-1*/)
 {
   if(p_newLength < 0)
   {
-    shrink_to_fit();
+    p_newLength = (int)_tcslen(c_str());
   }
-  else
+  if(length() >= p_newLength)
   {
-    resize(p_newLength,0);
+    erase(p_newLength);
   }
 }
 
@@ -552,7 +514,7 @@ SMX_String::Right(int p_length) const
   {
     p_length = sz;
   }
-  return SMX_String(substr(sz - p_length,p_length));
+  return SMX_String(substr(sz - p_length,p_length).c_str());
 }
 
 // Set char at a position
@@ -758,6 +720,10 @@ SMX_String& SMX_String::TrimRight(TCHAR p_char)
         ++pos;
         break;
       }
+      if(pos == 0)
+      {
+        break;
+      }
       --pos;
     }
     erase(pos);
@@ -792,6 +758,24 @@ SMX_String::TrimRight(PCTSTR p_string)
   // truncate at left-most matching character
   erase(pos,string::npos);
   return(*this);
+}
+
+SMX_String SMX_String::Mid(int p_index) const
+{
+  if(p_index < length())
+  {
+    return SMX_String(substr(p_index).c_str());
+  }
+  return SMX_String();
+}
+
+SMX_String SMX_String::Mid(int p_index,int p_length) const
+{
+  if(p_index < length())
+  {
+    return SMX_String(substr(p_index,p_length).c_str());
+  }
+  return SMX_String();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -918,5 +902,3 @@ SMX_String::operator=(LPCTSTR p_string)
 //     }
 //   }
 // }
-
-#endif

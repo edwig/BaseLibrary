@@ -539,7 +539,7 @@ error_exit:
 }
 
 XString
-Crypto::FastEncryption(XString p_input, XString password)
+Crypto::FastEncryption(const XString& p_input, XString password)
 {
   AutoCritSec lock(&m_lock);
   BCRYPT_ALG_HANDLE hAlgorithm = NULL;
@@ -589,7 +589,7 @@ Crypto::FastEncryption(XString p_input, XString password)
 }
 
 XString
-Crypto::FastDecryption(XString p_input,XString password)
+Crypto::FastDecryption(const XString& p_input,XString password)
 {
   AutoCritSec lock(&m_lock);
 

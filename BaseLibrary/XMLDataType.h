@@ -102,7 +102,7 @@ typedef unsigned XmlDataType;
 
 // Conversion between XML datatype and string names
 XString     XmlDataTypeToString(XmlDataType p_type);
-XmlDataType StringToXmlDataType(XString p_name);
+XmlDataType StringToXmlDataType(const XString& p_name);
 
 // Conversion between XML datatype and ODBC types
 int         XmlDataTypeToODBC(XmlDataType p_type);

@@ -61,7 +61,7 @@ public:
     XString email = GetUserMailaddress();
 
     Assert::IsFalse(email.IsEmpty());
-    Logger::WriteMessage("The current email address is: " + email);
+    Logger::WriteMessage(XString("The current email address is: ") + email);
   }
 };
 }

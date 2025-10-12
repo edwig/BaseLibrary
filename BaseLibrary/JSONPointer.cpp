@@ -45,7 +45,7 @@ JSONPointer::JSONPointer(bool p_originOne /*= false*/)
   m_origin = p_originOne ? 1 : 0;
 }
 
-JSONPointer::JSONPointer(JSONMessage* p_message,XString p_pointer,bool p_originOne /*= false*/)
+JSONPointer::JSONPointer(JSONMessage* p_message,const XString& p_pointer,bool p_originOne /*= false*/)
             :m_message(p_message)
             ,m_pointer(p_pointer)
 {
@@ -111,7 +111,7 @@ JSONPointer::Evaluate()
 
 // SETTERS
 bool
-JSONPointer::SetPointer(XString p_pointer)
+JSONPointer::SetPointer(const XString& p_pointer)
 {
   m_pointer = p_pointer;
   if(m_message)

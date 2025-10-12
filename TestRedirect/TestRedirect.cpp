@@ -41,7 +41,7 @@ XString CreateMessage()
     msg += line;
   }
   // five times
-  msg = msg + line + msg + line + msg + line + + msg + line + msg;
+  msg = msg + line + msg + line + msg + line + msg + line + msg;
   // end marker
   msg += _T("*** END ***\n");
 

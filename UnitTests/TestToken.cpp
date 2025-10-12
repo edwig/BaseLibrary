@@ -58,7 +58,7 @@ public:
     {
       Assert::Fail(L"Cannot read the current user name");
     }
-    Logger::WriteMessage("Current process user: " + userName);
+    Logger::WriteMessage(XString("Current process user: ") + userName);
 
     XString list;
     if(!DumpToken(list,token_handle))

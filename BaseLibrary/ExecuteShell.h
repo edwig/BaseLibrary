@@ -32,9 +32,9 @@
 #define MAX_COMMANDLINE 8191
 
 bool
-ExecuteShell(XString  p_command
-            ,XString  p_program
-            ,XString  p_arguments
-            ,HWND     p_parent
-            ,int      p_show
-            ,XString* p_error = nullptr);
+ExecuteShell(const XString& p_command
+            ,const XString& p_program
+            ,const XString& p_arguments
+            ,HWND           p_parent
+            ,int            p_show
+            ,XString*       p_error = nullptr);

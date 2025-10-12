@@ -772,7 +772,7 @@ public:
     {
       MultiPart* part = multi.GetPart((int) ind);
 
-      Logger::WriteMessage(_T("Part: ") + part->GetData());
+      Logger::WriteMessage(XString(_T("Part: ")) + part->GetData());
     }
     XString test = multi.GetPart(3)->GetData();
     if(test.Compare(_T("{\"ID\":\"1\",\"Old: \":\"\",\"New\":\"\",\"Event\":\"Close\"}\r\n")))
@@ -820,7 +820,7 @@ public:
     {
       MultiPart* part = multi.GetPart((int) ind);
 
-      Logger::WriteMessage(_T("Part: ") + part->GetData());
+      Logger::WriteMessage(XString(_T("Part: ")) + part->GetData());
     }
     XString test = multi.GetPart(3)->GetData();
     if(test.Compare(_T("{\"ID\":\"1\",\"Old: \":\"\",\"New\":\"\",\"Event\":\"Close\"}\r\n")))

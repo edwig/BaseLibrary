@@ -65,9 +65,9 @@ public:
   XString  Decryption(XString p_input,XString password);
 
   // ENCRYPT a buffer quickly in RC4 through the BCrypt interface
-  XString  FastEncryption(XString p_input, XString password);
+  XString  FastEncryption(const XString& p_input, XString password);
   // DECRYPT a buffer quickly in RC4 through BCrypt interface
-  XString  FastDecryption(XString p_input, XString password);
+  XString  FastDecryption(const XString& p_input, XString password);
 
   // Make a MD5 Hash value for a buffer
   XString  Digest(const void* data,const size_t data_size,unsigned hashType = 0);

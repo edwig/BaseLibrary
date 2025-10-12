@@ -31,11 +31,11 @@
 class AutoFont 
 {
 public:
-	AutoFont();                             // Default Constructor
-	explicit AutoFont(XString facename);    // Font name constructor
-	explicit AutoFont(LOGFONT& logfont);    // LogFont constructor
-	explicit AutoFont(HFONT font);          // Constructs font based on existing font
-	~AutoFont();                            // Destructor
+	AutoFont();                                 // Default Constructor
+	explicit AutoFont(const XString& facename); // Font name constructor
+	explicit AutoFont(LOGFONT& logfont);        // LogFont constructor
+	explicit AutoFont(HFONT font);              // Constructs font based on existing font
+	~AutoFont();                                // Destructor
 
 	LONG      SetHeight(LONG height);
 	LONG      SetHeightA(LONG height);

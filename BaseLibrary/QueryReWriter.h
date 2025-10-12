@@ -115,16 +115,20 @@ using SQLWords = std::map<XString,SQLWord,StringICompare>;
 class QueryReWriter
 {
 public:
-  explicit QueryReWriter(XString p_schema);
+  explicit QueryReWriter(const XString& p_schema);
   // Our primary function
-  XString Parse(XString p_input);
+  XString Parse(const XString& p_input);
 
   // Settings 
   bool    SetOption(SROption p_option);
-  bool    AddSQLWord(XString p_word,XString p_replacement,XString p_schema = _T(""),Token p_token = Token::TK_EOS,OdbcEsc p_odbc = OdbcEsc::None);
-  bool    AddSQLWord(SQLWord& p_word);
-  bool    AddSQLWords(SQLWords& p_words);
-  bool    AddSQLWordsFromFile(XString p_filename);
+  bool    AddSQLWord(const XString& p_word
+                    ,const XString& p_replacement
+                    ,const XString  p_schema = _T("")
+                    ,      Token    p_token  = Token::TK_EOS
+                    ,      OdbcEsc  p_odbc   = OdbcEsc::None);
+  bool    AddSQLWord(const SQLWord& p_word);
+  bool    AddSQLWords(const SQLWords& p_words);
+  bool    AddSQLWordsFromFile(const XString& p_filename);
   // Getters
   int     GetReplaced() { return m_replaced; }
   int     GetOptions()  { return m_options;  }

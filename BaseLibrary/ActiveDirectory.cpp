@@ -92,7 +92,7 @@ static XString DistinguishedName()
   if(SUCCEEDED(pADsys->get_UserName(&str)))
   {
     // Copy the name
-    XString dn(str);
+    XString dn((LPCTSTR)str);
     SysFreeString(str);
     return dn;
   }
@@ -144,31 +144,28 @@ XString PrimaryOfficeUser()
   TCHAR  szBuf[8 * MAX_PATH + 1] = _T("");
   XString mail;
 
-  if(RegOpenKeyEx(HKEY_CURRENT_USER,_T("Software\\Microsoft\\Office\\Outlook\\Settings"),0,KEY_QUERY_VALUE,&hk))
+  if(RegOpenKeyEx(HKEY_CURRENT_USER,_T("Software\\Microsoft\\IdentityCRL\\UserExtendedProperties"),0,KEY_READ,&hk))
   {
     // Key could not be opened
     return _T("");
   }
 
-  DWORD size = MAX_PATH * 8;
-  DWORD type = REG_EXPAND_SZ;
+  DWORD size = MAX_PATH;
+  FILETIME ftLastWriteTime;
   memset(szBuf,0,MAX_PATH);
-  if(RegQueryValueEx(hk,_T("Accounts"),NULL,&type,(LPBYTE)szBuf,(LPDWORD)&size) == ERROR_SUCCESS)
+
+  DWORD retCode = RegEnumKeyEx(hk,
+                               0,
+                               szBuf,
+                               &size,
+                               NULL,
+                               NULL,
+                               NULL,
+                               &ftLastWriteTime);
+
+  if(retCode == ERROR_SUCCESS)
   {
-    JSONMessage json(szBuf);
-    JSONPath path(json,_T("$.[*].primarySmtp"));
-    for(unsigned ind = 0;ind < path.GetNumberOfMatches();++ind)
-    {
-      JSONvalue* value = path.GetResult(ind);
-      if(value)
-      {
-        mail = value->GetString();
-        if(!mail.IsEmpty())
-        {
-          break;
-        }
-      }
-    }
+    mail = szBuf;
   }
   RegCloseKey(hk);
   return mail;

@@ -43,7 +43,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 #endif
 
-LPITEMIDLIST PathToPidl(XString const& path)
+LPITEMIDLIST PathToPidl(const XString& path)
 {
   LPITEMIDLIST  pidl = NULL;
   LPSHELLFOLDER pDesktopFolder;

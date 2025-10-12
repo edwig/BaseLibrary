@@ -141,7 +141,7 @@ XMLParser::PrintJsonString(const XString& p_string)
   *pointer++ = '\"';
   *pointer   = 0;
 
-  XString result(buffer);
+  XString result((LPCTSTR)buffer);
   delete [] buffer;
   return result;
 }
@@ -158,7 +158,7 @@ XMLParser::XMLParser(XMLMessage* p_message)
 }
 
 void
-XMLParser::ParseMessage(XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_WHITESPACE*/)
+XMLParser::ParseMessage(const XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_WHITESPACE*/)
 {
   // Remember parsing mode
   m_whiteSpace = p_whiteSpace;
@@ -216,7 +216,7 @@ XMLParser::ParseMessage(XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_W
 
 // Parse from a beginning node
 void
-XMLParser::ParseForNode(XMLElement* p_node,XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_WHITESPACE*/)
+XMLParser::ParseForNode(XMLElement* p_node,const XString& p_message,WhiteSpace p_whiteSpace /*=PRESERVE_WHITESPACE*/)
 {
   m_lastElement = m_element = p_node;
   ParseMessage(p_message,p_whiteSpace);
@@ -849,7 +849,7 @@ XMLParser::NeedToken(_TUCHAR p_token)
 
 // Make an element
 void
-XMLParser::MakeElement(XString& p_namespace,XString& p_name)
+XMLParser::MakeElement(const XString& p_namespace,const XString& p_name)
 {
   // One element more
   ++m_elements;

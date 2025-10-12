@@ -31,12 +31,6 @@
 #include <AuthenticationHeader.h>
 #include <HTTPMessage.h>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace BaseLibraryUnitTests
@@ -72,7 +66,7 @@ public:
     {
       Assert::Fail(L"Could not decode the authentication header");
     }
-    Logger::WriteMessage("Your Authenticate header: " + auth);
+    Logger::WriteMessage(XString("Your Authenticate header: ") + auth);
   }
 
   TEST_METHOD(TestAuthenticateHeaderDiacrits)
@@ -95,7 +89,7 @@ public:
     {
       Assert::Fail(L"Could not decode the authentication header");
     }
-    Logger::WriteMessage("Your Authenticate header: " + auth);
+    Logger::WriteMessage(XString("Your Authenticate header: ") + auth);
   }
 
   TEST_METHOD(TestAuthenticateHeaderSeperator)
@@ -118,7 +112,7 @@ public:
     {
       Assert::Fail(L"Could not decode the authentication header");
     }
-    Logger::WriteMessage("Your Authenticate header: " + auth);
+    Logger::WriteMessage(XString("Your Authenticate header: ") + auth);
   }
 
   TEST_METHOD(TestCookiesOverwrite)

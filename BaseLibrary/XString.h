@@ -28,27 +28,17 @@
 #pragma once
 #include <wtypes.h>
 #include <string>
+#include <tchar.h>
 
 using std::string;
 using std::wstring;
 
-// Are we using MFC (AFX)
-#ifdef _AFX
-// If we are using the BaseLibrary within a MFC project
-// The string definition is purely the MFC XString class
-typedef CString XString;
-#pragma message("XString is now defined as MFC::CString")
-#else
-#ifdef __ATLSTR_H__
-#pragma message("XString is now defined as ATL::CString")
-#else
-#pragma message("XString is now defined as std::string::MSX_String")
-#endif
-
 #ifdef _UNICODE
-#define stdstring std::wstring
+#define stdstring wstring
+#pragma message("XString is now defined as std::wstring")
 #else
-#define stdstring std:string
+#define stdstring string
+#pragma message("XString is now defined as std::string")
 #endif
 
 #pragma warning(disable: 4239)
@@ -64,10 +54,10 @@ public:
   SMX_String(TCHAR p_char,int p_count = 1);
   // CTOR from other string
   SMX_String(const SMX_String& p_string);
-  // CTOR from std::string
-  SMX_String(const stdstring& p_string);
+#ifdef _UNICODE
   // CTOR from a ANSI string
   SMX_String(PCSTR p_string);
+#endif
 
   // Convert String to BSTR. Free it with "SysFreeString"
   BSTR        AllocSysString();
@@ -106,7 +96,6 @@ public:
   // Format a string
   void        Format(LPCTSTR p_format,...);
   void        Format(UINT   p_strID ,...);
-  void        Format(SMX_String p_format,...);
   // Format a variable list
   void        FormatV(LPCTSTR p_format,va_list p_list);
   void        FormatV(UINT    p_strID, va_list p_list);
@@ -320,21 +309,11 @@ inline void SMX_String::MakeReverse()
   _tcsrev((TCHAR*)(c_str()));
 }
 
-inline SMX_String SMX_String::Mid(int p_index) const
-{
-  return SMX_String(substr(p_index));
-}
-
-inline SMX_String SMX_String::Mid(int p_index,int p_length) const
-{
-  return SMX_String(substr(p_index,p_length));
-}
-
 inline void SMX_String::OemToAnsi()
 {
 #ifndef _UNICODE
   // Only works for MBCS, not for Unicode
-  ::OemToCharBuff(c_str(),reinterpret_cast<LPTSTR>(c_str()),reinterpret_cast<DWORD>(length()));
+  ::OemToCharBuff(c_str(),(LPSTR)c_str(),static_cast<DWORD>(length()));
 #endif
 }
 
@@ -401,5 +380,3 @@ typedef SMX_String XString;
 // {
 //   // Unlock();
 // }
-
-#endif  // #ifdef _AFX

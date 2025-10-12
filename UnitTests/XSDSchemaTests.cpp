@@ -85,7 +85,7 @@ public:
     XsdError validation = schema.ValidateXML(msg,errors);
     if(validation != XsdError::XSDE_NoError)
     {
-      Logger::WriteMessage("ERRORS: " + errors);
+      Logger::WriteMessage(XString("ERRORS: ") + errors);
       Assert::Fail();
     }
   }
@@ -108,7 +108,7 @@ public:
     XsdError validation = schema.ValidateXML(msg,errors);
     if(validation != XsdError::XSDE_NoError)
     {
-      Logger::WriteMessage(_T("ERRORS: ") + errors);
+      Logger::WriteMessage(XString(_T("ERRORS: ")) + errors);
       Assert::Fail();
     }
   }

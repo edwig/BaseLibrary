@@ -189,7 +189,7 @@ public:
     }
     else
     {
-      XMLElement* extraNode = msg.FindElement("Extra");
+      XMLElement* extraNode = msg.FindElement(_T("Extra"));
       if(extraNode)
       {
         XString extra = extraNode->GetValue();
@@ -300,7 +300,7 @@ public:
 
     XString test1 = msg.GetSoapMessage();
 
-    SOAPMessage msg2(test1,true);
+    SOAPMessage msg2((LPCTSTR)test1.GetString(),true);
     XString priceTag = msg2.GetParameter(_T("PriceTag"));
 
     // Test for positive result

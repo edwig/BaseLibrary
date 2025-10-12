@@ -55,7 +55,7 @@ public:
  ~JSONParser();
 
   // Parse a complete JSON message string
-  void    ParseMessage(XString& p_message,bool& p_whitespace);
+  void    ParseMessage(const XString& p_message,bool& p_whitespace);
 private:
   void    SetError(JsonError p_error,LPCTSTR p_text,bool p_throw = true);
   void    SkipWhitespace();
@@ -89,8 +89,8 @@ class JSONParserSOAP : public JSONParser
 {
 public:
   explicit JSONParserSOAP(JSONMessage* p_message);
-  explicit JSONParserSOAP(JSONMessage* p_message,SOAPMessage* p_soap);
-  explicit JSONParserSOAP(JSONMessage* p_message,XMLMessage*  p_xml);
+  explicit JSONParserSOAP(JSONMessage* p_message,const SOAPMessage* p_soap);
+  explicit JSONParserSOAP(JSONMessage* p_message,const XMLMessage*  p_xml);
 
   void Parse(XMLElement* p_element,bool p_forceerArray = false);
 private:

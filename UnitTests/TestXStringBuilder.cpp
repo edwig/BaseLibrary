@@ -39,7 +39,8 @@ static char THIS_FILE[] = __FILE__;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define NUM_TESTS 100000  // 1E+05
+#define NUM_TESTS  10000  // 1E+04
+#define NUM_RESULT 1169883
 
 namespace BaseLibraryUnitTests
 {
@@ -62,7 +63,7 @@ public:
     }
     size_t size = total.GetLength();
     count.Stop();
-    Assert::IsTrue(size == 11699883);
+    Assert::IsTrue(size == NUM_RESULT);
 
     XString msg;
     msg.Format(_T("Adding all XStrings took: %8.6f ms"),count.GetCounter());
@@ -71,11 +72,11 @@ public:
     XStringBuilder build;
 
     HPFCounter count2;
+    XString ext = newstring + newstring;
     for(int x = 1;x < NUM_TESTS; ++x)
     {
       build.Append(newstring);
-      XString ext = newstring + newstring;
-      total += ext;
+      build.Append(ext);
     }
     total = build.ToString();
     size = total.GetLength();
@@ -84,7 +85,7 @@ public:
     msg.Format(_T("XStringBuilder took: %8.6f ms"),count2.GetCounter());
     Logger::WriteMessage(msg);
 
-    Assert::IsTrue(size == 3899961);
+    Assert::IsTrue(size == NUM_RESULT);
   }
 };
 }

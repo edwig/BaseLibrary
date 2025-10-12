@@ -92,8 +92,8 @@ public:
   virtual ~XSDSchema();
 
   // Reading and writing
-  XsdError ReadXSDSchema(XString p_fileName);
-  bool    WriteXSDSchema(XString p_fileName);
+  XsdError ReadXSDSchema(const XString& p_fileName);
+  bool    WriteXSDSchema(const XString& p_fileName);
 
   // Validate an XML document, with optional starting point
   XsdError ValidateXML(XMLMessage& p_document,XString& p_error,XMLElement* p_start = nullptr);
@@ -119,10 +119,10 @@ private:
   void     WriteXSDRestrictions(XMLMessage& p_doc,XMLElement* p_elem,XMLRestriction* p_restrict);
 
   // Handle ComplexType objects and helper functions
-  XSDComplexType* FindComplexType(XString p_name);
-  XSDComplexType* AddComplexType (XString p_name);
+  XSDComplexType* FindComplexType(const XString& p_name);
+  XSDComplexType* AddComplexType (const XString& p_name);
   bool            StripSchemaNS  (XString& p_name);
-  XMLElement*     FindElement(ElementMap& p_map,XString p_name);
+  XMLElement*     FindElement(ElementMap& p_map,const XString& p_name);
   bool            XMLRestrictionMoreThanBase(XMLRestriction* p_restrict);
 
   // Validation

@@ -42,13 +42,13 @@
 #define EXECUTE_TIMEOUT           -3
 #define EXECUTE_NOT_STARTED   0xFFFF
 
-int ExecuteProcess(XString  p_program
-                  ,XString  p_arguments
-                  ,bool     p_currentdir
-                  ,XString& p_errormessage
-                  ,int      p_showWindow  = SW_HIDE    // SW_SHOW / SW_HIDE
-                  ,bool     p_waitForExit = false
-                  ,bool     p_waitForIdle = false
-                  ,unsigned p_factor      = 1
-                  ,DWORD*   p_threadID    = NULL);
+int ExecuteProcess(const XString& p_program
+                  ,const XString& p_arguments
+                  ,bool           p_currentdir
+                  ,XString&       p_errormessage
+                  ,int            p_showWindow  = SW_HIDE    // SW_SHOW / SW_HIDE
+                  ,bool           p_waitForExit = false
+                  ,bool           p_waitForIdle = false
+                  ,unsigned       p_factor      = 1
+                  ,DWORD*         p_threadID    = NULL);
 

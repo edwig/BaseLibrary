@@ -184,17 +184,17 @@ ErrorReportWriteToFile(const XString& p_filename
   XString current = FileTimeToMarker(nu);
   XString pathname(p_webroot);
 
-  // Creating product dir
+  // Creating product directory
   XString productDir(p_url);
   productDir.Trim(_T("/"));
   productDir.Replace(_T("/"),_T("\\"));
-  if(productDir.Right(1) != '\\')
+  if(productDir.Right(1) != _T("\\"))
   {
     productDir += _T("\\");
   }
 
   // Checking webroot
-  if(pathname.Right(1) != '\\')
+  if(pathname.Right(1) != _T("\\"))
   {
     pathname += _T("\\");
   }
@@ -491,7 +491,7 @@ ErrorReport::DoReport(const XString&    p_subject
 #endif
 
   // Format the message
-  XString message = _T("SYSTEMUSER: ") + procInfo->m_username + _T(" on ") + procInfo->m_computer + _T("\n")
+  XString message = XString(_T("SYSTEMUSER: ")) + procInfo->m_username + _T(" on ") + procInfo->m_computer + _T("\n")
                     _T("PROGRAM   : ") + m_product +     _T(": version: ") + m_version + _T(": ") + p_subject + _T(" in ") + errorAddress + _T("\n")
                     _T("-------------\n")
                     _T("Version:      ") + m_version + _T("\n")

@@ -30,5 +30,5 @@
 
 // These functions are meant to be used in conjunction with your own HTTP X-<app>-Authentication header
 
-XString CreateAuthentication(XString p_user,XString p_password);
-bool    DecodeAuthentication(XString p_scramble,XString& p_user,XString& p_password);
+XString CreateAuthentication(const XString& p_user,const XString& p_password);
+bool    DecodeAuthentication(const XString& p_scramble,XString& p_user,XString& p_password);

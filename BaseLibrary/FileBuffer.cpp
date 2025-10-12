@@ -51,7 +51,7 @@ FileBuffer::FileBuffer()
 {
 }
 
-FileBuffer::FileBuffer(XString p_fileName)
+FileBuffer::FileBuffer(const XString& p_fileName)
            :m_fileName(p_fileName)
 {
 }
@@ -225,23 +225,28 @@ FileBuffer::AddBufferCRLF(uchar* p_buffer,size_t p_length)
 
 // Specialized add a string (FormData protocol)
 void
-FileBuffer::AddStringToBuffer(XString p_string,XString p_charset,bool p_crlf/*=true*/)
+FileBuffer::AddStringToBuffer(const XString& p_string,const XString& p_charset,bool p_crlf/*=true*/)
 {
+  XString extra;
+  bool plus(false);
+
   // Possibly add a CRLF to the string
   if(p_crlf)
   {
-    p_string += _T("\r\n");
+    extra  = p_string;
+    extra += _T("\r\n");
+    plus   = true;
   }
 #ifdef _UNICODE
   BYTE* buffer = nullptr;
   int   length = 0;
-  if(TryCreateNarrowString(p_string,p_charset,false,&buffer,length))
+  if(TryCreateNarrowString(plus ? extra : p_string,p_charset,false,&buffer,length))
   {
     AddBuffer(buffer,length);
   }
   delete[] buffer;
 #else
-  XString string = EncodeStringForTheWire(p_string,p_charset);
+  XString string = EncodeStringForTheWire(plus ? extra : p_string,p_charset);
   AddBuffer((uchar*)string.GetString(),string.GetLength());
 #endif
 }
@@ -264,13 +269,13 @@ FileBuffer::AllocateBuffer(size_t p_length)
 }
 
 void
-FileBuffer::GetBuffer(uchar*& p_buffer,size_t& p_length)
+FileBuffer::GetBuffer(uchar*& p_buffer,size_t& p_length) const
 {
   if(m_parts.size())
   {
     // CANNOT GET IT. Indicate the length
     p_buffer = NULL;
-    p_length = GetLength();
+    p_length = const_cast<FileBuffer*>(this)->GetLength();
     return;
   }
   // Get the buffer in one go
@@ -280,7 +285,7 @@ FileBuffer::GetBuffer(uchar*& p_buffer,size_t& p_length)
 
 // Get a buffer part
 bool    
-FileBuffer::GetBufferPart(unsigned p_index,uchar*& p_buffer,size_t& p_length)
+FileBuffer::GetBufferPart(unsigned p_index,uchar*& p_buffer,size_t& p_length) const
 {
   // Read past end?
   if(p_index >= m_parts.size())
@@ -299,10 +304,10 @@ FileBuffer::GetBufferPart(unsigned p_index,uchar*& p_buffer,size_t& p_length)
 // Getting a copy of the total buffer
 // ready for conversion to a XString / std::string
 bool
-FileBuffer::GetBufferCopy(uchar*& p_buffer,size_t& p_length)
+FileBuffer::GetBufferCopy(uchar*& p_buffer,size_t& p_length) const
 {
   // Calculate length and getting a buffer
-  p_length = GetLength();
+  p_length = const_cast<FileBuffer*>(this)->GetLength();
   p_buffer = new uchar[p_length + 2];
 
   // Optimize in one go

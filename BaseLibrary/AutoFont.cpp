@@ -60,7 +60,7 @@ AutoFont::AutoFont()
 	m_hDC       = NULL;
 }
 
-AutoFont::AutoFont(XString facename)
+AutoFont::AutoFont(const XString& facename)
 {
 	m_lf.lfHeight         = -12;
 	m_lf.lfWidth          = 0;

@@ -220,10 +220,10 @@ namespace BaseLibraryUnitTests
         XString param2 = msg.GetParameter(_T("Param2"));
         XString param3 = msg.GetParameter(_T("Param3"));
 
-        Logger::WriteMessage(_T("Soap action: ") + action);
-        Logger::WriteMessage(_T("Parameter 1: ") + param1);
-        Logger::WriteMessage(_T("Parameter 2: ") + param2);
-        Logger::WriteMessage(_T("Parameter 3: ") + param3);
+        Logger::WriteMessage(XString(_T("Soap action: ")) + action);
+        Logger::WriteMessage(XString(_T("Parameter 1: ")) + param1);
+        Logger::WriteMessage(XString(_T("Parameter 2: ")) + param2);
+        Logger::WriteMessage(XString(_T("Parameter 3: ")) + param3);
         if(action == _T("FirstCommand") &&
            param1 == _T("first") &&
            param2.IsEmpty() &&
@@ -266,10 +266,10 @@ namespace BaseLibraryUnitTests
         XString param2 = msg.GetParameter(_T("Param2"));
         XString param3 = msg.GetParameter(_T("Param3"));
 
-        Logger::WriteMessage(_T("Soap action: ") + action);
-        Logger::WriteMessage(_T("Parameter 1: ") + param1);
-        Logger::WriteMessage(_T("Parameter 2: ") + param2);
-        Logger::WriteMessage(_T("Parameter 3: ") + param3);
+        Logger::WriteMessage(XString(_T("Soap action: ")) + action);
+        Logger::WriteMessage(XString(_T("Parameter 1: ")) + param1);
+        Logger::WriteMessage(XString(_T("Parameter 2: ")) + param2);
+        Logger::WriteMessage(XString(_T("Parameter 3: ")) + param3);
         if(action == _T("FirstCommand") &&
            param1 == _T("first") &&
            param2.IsEmpty() &&
@@ -312,10 +312,10 @@ namespace BaseLibraryUnitTests
         XString param2 = msg.GetParameter(_T("Param2"));
         XString param3 = msg.GetParameter(_T("Param3"));
 
-        Logger::WriteMessage(_T("Soap action: ") + action);
-        Logger::WriteMessage(_T("Parameter 1: ") + param1);
-        Logger::WriteMessage(_T("Parameter 2: ") + param2);
-        Logger::WriteMessage(_T("Parameter 3: ") + param3);
+        Logger::WriteMessage(XString(_T("Soap action: ")) + action);
+        Logger::WriteMessage(XString(_T("Parameter 1: ")) + param1);
+        Logger::WriteMessage(XString(_T("Parameter 2: ")) + param2);
+        Logger::WriteMessage(XString(_T("Parameter 3: ")) + param3);
         if(action == _T("SmallObject") &&
            param1 == _T("first") &&
            param2.IsEmpty() &&
@@ -372,8 +372,8 @@ namespace BaseLibraryUnitTests
         XString resCode = msg.GetParameter(_T("ResultCode"));
         XString folder;
 
-        Logger::WriteMessage(_T("Soap action: ") + action);
-        Logger::WriteMessage(_T("Result code: ") + resCode);
+        Logger::WriteMessage(XString(_T("Soap action: ")) + action);
+        Logger::WriteMessage(XString(_T("Result code: ")) + resCode);
 
         XMLElement* refer = msg.FindElement(NULL,_T("Reference"),true);
         if(refer)
@@ -382,7 +382,7 @@ namespace BaseLibraryUnitTests
           if(ident)
           {
             folder = ident->GetValue();
-            Logger::WriteMessage(_T("Folder: %s\n") + folder);
+            Logger::WriteMessage(XString(_T("Folder: %s\n")) + folder);
           }
         }
         if(action  == _T("IContainer/CreateContainerResponse") &&
@@ -449,7 +449,7 @@ namespace BaseLibraryUnitTests
       {
         XString documentID;
         XString    action = msg.GetSoapAction();
-        XMLElement* docid = msg.FindElement("DocumentId",true);
+        XMLElement* docid = msg.FindElement(_T("DocumentId"),true);
         if(docid)
         {
           documentID = docid->GetValue();

@@ -50,7 +50,7 @@ static char THIS_FILE[] = __FILE__;
 // 5) Add five random characters at the begining and the end
 // 6) Do Base64 encrypting
 //
-XString CreateAuthentication(XString p_user,XString p_password)
+XString CreateAuthentication(const XString& p_user,const XString& p_password)
 {
   XString authenticate;
   // STEP 1) Put together with a less used separator
@@ -123,7 +123,7 @@ XString CreateAuthentication(XString p_user,XString p_password)
 //    Split the strings and reverse the order
 
 bool 
-DecodeAuthentication(XString p_scramble,XString& p_user,XString& p_password)
+DecodeAuthentication(const XString& p_scramble,XString& p_user,XString& p_password)
 {
   bool result(false);
 
@@ -174,7 +174,7 @@ DecodeAuthentication(XString p_scramble,XString& p_user,XString& p_password)
   bool bom(false);
   TryConvertNarrowString(resbuffer,length,_T(""),authenticate,bom);
 #else
-  XString buf(resbuffer);
+  XString buf((LPCSTR)resbuffer);
   authenticate = DecodeStringFromTheWire(buf);
 #endif
 

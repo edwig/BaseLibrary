@@ -29,7 +29,7 @@
 
 // Registers an alert log path for a module
 // Returns the module's alert number
-int     ConfigureApplicationAlerts(XString p_path);
+int     ConfigureApplicationAlerts(const XString& p_path);
 // Remove a alert modules path name
 bool    DeregisterApplicationAlerts(int p_module);
 // Clean up all alert paths and modules

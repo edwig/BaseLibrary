@@ -63,15 +63,15 @@ static char THIS_FILE[] = __FILE__;
 // Negative value               ERROR -> Evaluate / process / show the "p_foutboodschap"
 //                              See the error codes in the *.h interface file!!
 //
-int ExecuteProcess(XString  p_program
-                  ,XString  p_arguments
-                  ,bool     p_currentdir
-                  ,XString& p_errormessage                  // Prefix IN, Full error OUT
-                  ,int      p_showWindow  /*= SW_HIDE */    // SW_SHOW / SW_HIDE etc
-                  ,bool     p_waitForExit /*= false   */
-                  ,bool     p_waitForIdle /*= false   */
-                  ,unsigned p_factor      /*= 1       */
-                  ,DWORD*   p_threadID    /*= NULL    */)
+int ExecuteProcess(const XString& p_program
+                  ,const XString& p_arguments
+                  ,bool           p_currentdir
+                  ,XString&       p_errormessage                  // Prefix IN, Full error OUT
+                  ,int            p_showWindow  /*= SW_HIDE */    // SW_SHOW / SW_HIDE etc
+                  ,bool           p_waitForExit /*= false   */
+                  ,bool           p_waitForIdle /*= false   */
+                  ,unsigned       p_factor      /*= 1       */
+                  ,DWORD*         p_threadID    /*= NULL    */)
 {
   XString program = p_program;
   if(p_currentdir)

@@ -55,14 +55,14 @@ class JSONPointer
 {
 public:
   explicit JSONPointer(bool p_originOne = false);
-  explicit JSONPointer(JSONMessage* p_message,XString p_pointer,bool p_originOne = false);
+  explicit JSONPointer(JSONMessage* p_message,const XString& p_pointer,bool p_originOne = false);
  ~JSONPointer();
 
   // Our main purpose: evaluate the pointer in the message
   bool Evaluate();
 
   // SETTERS + Re-Evaluate
-  bool SetPointer(XString      p_pointer);
+  bool SetPointer(const XString& p_pointer);
   bool SetMessage(JSONMessage* p_message);
 
   // GETTERS

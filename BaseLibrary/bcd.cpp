@@ -2745,12 +2745,12 @@ bcd::AsString(Format p_format /*=Bookkeeping*/,bool p_printPositive /*=false*/,i
   {
     if(p_printPositive)
     {
-      result = _T("+") + result;
+      result = XString(_T("+")) + result;
     }
   }
   else
   {
-    result = _T("-") + result;
+    result = XString(_T("-")) + result;
   }
 
   // Ready

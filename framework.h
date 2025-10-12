@@ -20,10 +20,10 @@
 // Un-comment when building the production MarlinModule !
 // #include <tchar.h>
 // For other purposes use the MFC AFX main header
-#include <afx.h>
+// #include <afx.h>
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some XString constructors will be explicit
-#include <atlstr.h>
+// #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some XString constructors will be explicit
+// #include <atlstr.h>
 
 /////////////////////////////////////////////////////////////////////////////////
 //

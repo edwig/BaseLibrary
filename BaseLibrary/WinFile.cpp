@@ -73,7 +73,7 @@ WinFile::WinFile()
 }
 
 // CTOR from a filename
-WinFile::WinFile(XString p_filename)
+WinFile::WinFile(const XString& p_filename)
         :m_filename(p_filename)
 {
   InitializeCriticalSection(&m_fileaccess);
@@ -526,7 +526,7 @@ WinFile::DeleteToTrashcan(bool p_show /*= false*/,bool p_confirm /*= false*/)
 
 // Make a copy of the file
 bool
-WinFile::CopyFile(XString p_destination,FCopy p_how /*= winfile_copy*/)
+WinFile::CopyFile(const XString& p_destination,FCopy p_how /*= winfile_copy*/)
 {
   // Reset the error
   m_error = 0;
@@ -556,7 +556,7 @@ WinFile::CopyFile(XString p_destination,FCopy p_how /*= winfile_copy*/)
 
 // Move the file by making a copy and removing the original file
 bool
-WinFile::MoveFile(XString p_destination,FMove p_how /*= winfile_move*/)
+WinFile::MoveFile(const XString& p_destination,FMove p_how /*= winfile_move*/)
 {
   // Reset the error
   m_error = 0;
@@ -589,7 +589,7 @@ WinFile::MoveFile(XString p_destination,FMove p_how /*= winfile_move*/)
 
 // Create a temporary file on the %TMP% directory
 bool      
-WinFile::CreateTempFileName(XString p_pattern,XString p_extension /*= ""*/)
+WinFile::CreateTempFileName(const XString& p_pattern,const XString& p_extension /*= ""*/)
 {
   // Directory for GetTempFileName cannot be larger than (MAX_PATH-14)
   // See documentation on "docs.microsoft.com"
@@ -650,7 +650,7 @@ WinFile::OpenAsSharedMemory(XString  p_name
   }
 
   // Extend the name for RDP sessions
-  p_name = (p_local ? _T("Local\\") : _T("Global\\")) + p_name;
+  p_name = XString(p_local ? _T("Local\\") : _T("Global\\")) + p_name;
 
   // Acquire a file access lock
   AutoCritSec lock(&m_fileaccess);
@@ -1800,7 +1800,7 @@ WinFile::DefuseBOM(const uchar*  p_pointer
 
 // Set the filename, but only if the file was not (yet) opened
 bool
-WinFile::SetFilename(XString p_filename)
+WinFile::SetFilename(const XString& p_filename)
 {
   if(m_file == nullptr)
   {
@@ -1813,7 +1813,7 @@ WinFile::SetFilename(XString p_filename)
 // Get a filename in a 'special' Windows folder
 // p_folder parameter is one of the many CSIDL_* folder names
 bool
-WinFile::SetFilenameInFolder(int p_folder,XString p_filename)
+WinFile::SetFilenameInFolder(int p_folder,const XString& p_filename)
 {
   // Check if file was already opened
   if(m_file)
@@ -1874,12 +1874,12 @@ WinFile::SetFilenameInFolder(int p_folder,XString p_filename)
   }
   pShellMalloc->Release();
 
-  m_filename = special + XString(_T("\\")) + p_filename;
+  m_filename = XString(special) + XString(_T("\\")) + p_filename;
   return result;
 }
 
 bool
-WinFile::SetFilenameFromResource(XString p_resource)
+WinFile::SetFilenameFromResource(const XString& p_resource)
 {
   m_filename = FileNameFromResourceName(p_resource);
   return !m_filename.IsEmpty();
@@ -2831,7 +2831,7 @@ WinFile::operator=(const WinFile& p_other)
 }
 
 XString
-WinFile::LegalDirectoryName(XString p_name,bool p_extensionAllowed /*= true*/)
+WinFile::LegalDirectoryName(const XString& p_name,bool p_extensionAllowed /*= true*/)
 {
   // Check on non-empty
   if(p_name.IsEmpty())
@@ -2877,7 +2877,7 @@ WinFile::LegalDirectoryName(XString p_name,bool p_extensionAllowed /*= true*/)
     // Direct transformation of the reserved name
     if(upper.Compare(reserved[index]) == 0)
     {
-      name = _T("Directory_") + name;
+      name = XString(_T("Directory_")) + name;
       break;
     }
     // No extension allowed after a reserved name (e.g. "LPT3.txt")
@@ -2906,7 +2906,7 @@ WinFile::LegalDirectoryName(XString p_name,bool p_extensionAllowed /*= true*/)
 
 // Create a file name from an HTTP resource name
 XString
-WinFile::FileNameFromResourceName(XString p_resource)
+WinFile::FileNameFromResourceName(const XString& p_resource)
 {
   XString filename = CrackedURL::DecodeURLChars(p_resource);
   filename.Replace(_T('/'),_T('\\'));
@@ -2921,7 +2921,7 @@ WinFile::FileNameFromResourceName(XString p_resource)
 //////////////////////////////////////////////////////////////////////////
 
 void
-WinFile::FilenameParts(XString  p_fullpath
+WinFile::FilenameParts(const XString& p_fullpath
                       ,XString& p_drive
                       ,XString& p_directory
                       ,XString& p_filename
@@ -2932,8 +2932,8 @@ WinFile::FilenameParts(XString  p_fullpath
   TCHAR fname [_MAX_FNAME + 1];
   TCHAR extens[_MAX_EXT   + 1];
 
-  p_fullpath = StripFileProtocol(p_fullpath);
-  _tsplitpath_s(p_fullpath.GetString(),drive,direct,fname,extens);
+  XString fullpath = StripFileProtocol(p_fullpath);
+  _tsplitpath_s(fullpath.GetString(),drive,direct,fname,extens);
   p_drive     = drive;
   p_directory = direct;
   p_filename  = fname;
@@ -2944,25 +2944,26 @@ WinFile::FilenameParts(XString  p_fullpath
 // "file:///c|/Program%20Files/Program%23name/file%25name.exe" =>
 // "c:\Program Files\Program#name\file%name.exe"
 XString
-WinFile::StripFileProtocol(XString p_fileref)
+WinFile::StripFileProtocol(const XString& p_fileref)
 {
-  if(p_fileref.GetLength() > 8)
+  XString fileref(p_fileref);
+  if(fileref.GetLength() > 8)
   {
-    if(_tcsicmp(p_fileref.Left(8),_T("file:///")) == 0)
+    if(_tcsicmp(fileref.Left(8),_T("file:///")) == 0)
     {
-      p_fileref = p_fileref.Mid(8);
+      fileref = fileref.Mid(8);
     }
   }
   // Create a filename separator char name
-  for(int index = 0; index < p_fileref.GetLength(); ++index)
+  for(int index = 0; index < fileref.GetLength(); ++index)
   {
-    if(p_fileref[index] == '/') p_fileref.SetAt(index,'\\');
-    if(p_fileref[index] == '|') p_fileref.SetAt(index,':');
+    if(fileref[index] == '/') fileref.SetAt(index,'\\');
+    if(fileref[index] == '|') fileref.SetAt(index,':');
   }
 
   // Resolve the '%' chars in the filename
-  ResolveSpecialChars(p_fileref);
-  return p_fileref;
+  ResolveSpecialChars(fileref);
+  return fileref;
 }
 
 // Special optimized function to resolve %5C -> '\' in pathnames

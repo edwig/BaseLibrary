@@ -67,7 +67,7 @@ JSONParser::SetError(JsonError p_error,LPCTSTR p_text,bool p_throw /*= true*/)
 }
 
 void
-JSONParser::ParseMessage(XString& p_message,bool& p_whitespace)
+JSONParser::ParseMessage(const XString& p_message,bool& p_whitespace)
 {
   // Check if we have something to do
   if(m_message == nullptr)
@@ -237,7 +237,7 @@ JSONParser::GetString()
 
   // Getting the string
   *buffer = 0;
-  return XString(m_scanString);
+  return XString((LPCTSTR)m_scanString);
 }
 
 // Conversion of xdigit to a numeric value
@@ -300,7 +300,7 @@ JSONParser::UnicodeChar()
   XString result;
   if(TryConvertWideString(reinterpret_cast<const uchar*>(buffer),1,"",result,foundBOM))
   {
-    return result.GetAt(0);
+    return result[0];
   }
   return '?';
 #endif
@@ -560,11 +560,11 @@ JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message)
 {
 }
 
-JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message,SOAPMessage* p_soap)
+JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message,const SOAPMessage* p_soap)
                :JSONParser(p_message)
 {
   // Construct the correct contents!!
-  p_soap->CompleteTheMessage();
+  const_cast<SOAPMessage*>(p_soap)->CompleteTheMessage();
 
   JSONvalue&  valPointer = *m_message->m_value;
   XMLElement& element    = *p_soap->GetParameterObjectNode();
@@ -572,7 +572,7 @@ JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message,SOAPMessage* p_soap)
   ParseMain(valPointer,element);
 }
 
-JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message,XMLMessage* p_xml)
+JSONParserSOAP::JSONParserSOAP(JSONMessage* p_message,const XMLMessage* p_xml)
                :JSONParser(p_message)
 {
   JSONvalue&  valPointer = *m_message->m_value;

@@ -55,7 +55,7 @@ public:
   int  WriteChildStdIn(PTCHAR lpszInput);
   void SetTimeoutIdle(ULONG p_timeout);
   void CloseChildStdIn();
-  bool SetStreamCharset(XString p_charset);
+  bool SetStreamCharset(const XString& p_charset);
 
   // Virtual interface. Derived class must implement this!!
   virtual void OnChildStarted    (LPCTSTR lpszCmdLine) = 0;

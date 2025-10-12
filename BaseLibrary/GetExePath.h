@@ -30,4 +30,4 @@
 XString GetExeFile();
 XString GetExePath();
 void    TerminateWithoutCleanup(int p_exitcode);
-void    CheckExePath(XString p_runtimer,XString p_productName);
+void    CheckExePath(const XString& p_runtimer,const XString& p_productName);

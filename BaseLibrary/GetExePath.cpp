@@ -94,7 +94,7 @@ TerminateWithoutCleanup(int p_exitcode)
 // WARNING:
 // CANNOT BE CALLED FROM AN INTERNET IIS APPLICATION
 void
-CheckExePath(XString p_runtimer,XString p_productName)
+CheckExePath(const XString& p_runtimer,const XString& p_productName)
 {
   TCHAR buffer   [_MAX_PATH];
   TCHAR drive    [_MAX_DRIVE];

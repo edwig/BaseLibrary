@@ -41,7 +41,7 @@ JSONPath::JSONPath(bool p_originOne /*= false*/)
   m_origin = p_originOne ? 1 : 0;
 }
 
-JSONPath::JSONPath(JSONMessage* p_message,XString p_path,bool p_originOne /*= false*/)
+JSONPath::JSONPath(JSONMessage* p_message,const XString& p_path,bool p_originOne /*= false*/)
          :m_message(p_message)
          ,m_path(p_path)
 {
@@ -54,7 +54,7 @@ JSONPath::JSONPath(JSONMessage* p_message,XString p_path,bool p_originOne /*= fa
   Evaluate();
 }
 
-JSONPath::JSONPath(JSONMessage& p_message,XString p_path,bool p_originOne /*= false*/)
+JSONPath::JSONPath(JSONMessage& p_message,const XString& p_path,bool p_originOne /*= false*/)
          :m_message(&p_message)
          ,m_path(p_path)
 {
@@ -77,7 +77,7 @@ JSONPath::~JSONPath()
 }
 
 bool 
-JSONPath::SetPath(XString p_path) noexcept
+JSONPath::SetPath(const XString& p_path) noexcept
 {
   m_path = p_path;
   return Evaluate();
@@ -747,7 +747,7 @@ JSONPath::ParseLevel(XString& p_parsing)
             found = FindMatchingBracket(token,i);
             if(found < 0)
             {
-              m_errorInfo = _T("Could not parse index filter in JsonPath: ") + m_path;
+              m_errorInfo = XString(_T("Could not parse index filter in JsonPath: ")) + m_path;
               return false;
             }
           }
@@ -798,7 +798,7 @@ JSONPath::ParseLevel(XString& p_parsing)
         ProcessFilter(token);
         if(m_bracketStack.size() > 0)
         {
-          m_errorInfo.Format(_T("Missing ')' in filter: ") + token);
+          m_errorInfo.Format(XString(_T("Missing ')' in filter: ")) + token);
         }
         return false;
       }
@@ -989,7 +989,7 @@ JSONPath::HandleLogicalOr(XString p_token,int& p_pos)
       rightSide = p_token.Mid(p_pos,p_token.GetLength()).Trim();
 
       // Evaluate the part after the "||"
-      JSONPath path(m_message,_T("$") + m_rootWord + _T("[?(") + rightSide + _T(")]"));
+      JSONPath path(m_message,XString(_T("$")) + m_rootWord + _T("[?(") + rightSide + _T(")]"));
 
       // Result from path.m_reuslts only to be appended if not already present
       bool exist = false;

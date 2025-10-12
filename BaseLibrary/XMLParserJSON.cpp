@@ -105,7 +105,7 @@ XMLParserJSON::ParseMain(XMLElement* p_element,JSONvalue& p_value)
 }
 
 void
-XMLParserJSON::ParseLevel(XMLElement* p_element,JSONvalue& p_value,XString p_arrayName /*=""*/)
+XMLParserJSON::ParseLevel(XMLElement* p_element,JSONvalue& p_value,const XString& p_arrayName /*=""*/)
 {
   JSONobject* object  = nullptr;
   JSONarray*  array   = nullptr;

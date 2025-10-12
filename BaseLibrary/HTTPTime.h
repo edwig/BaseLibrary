@@ -38,6 +38,6 @@
 // So in order to be able to interpret mixed definitions, we created a much looser implementation
 
 bool    HTTPTimeFromSystemTime(const SYSTEMTIME* p_systemTime,XString& p_string);
-bool    HTTPTimeToSystemTime  (const XString p_string,SYSTEMTIME* p_systemtime);
+bool    HTTPTimeToSystemTime  (const XString& p_string,SYSTEMTIME* p_systemtime);
 XString HTTPGetSystemTime();
 void    AddSecondsToSystemTime(SYSTEMTIME* p_timeIn,SYSTEMTIME* p_timeOut,double p_seconds);

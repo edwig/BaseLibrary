@@ -368,7 +368,7 @@ SOAPSecurity::DigestPassword()
 }
 
 void
-SOAPSecurity::GenerateNonce(XString p_nonce)
+SOAPSecurity::GenerateNonce(const XString& p_nonce)
 {
   Base64 base;
   m_nonce = base.Encrypt(p_nonce);
@@ -376,7 +376,7 @@ SOAPSecurity::GenerateNonce(XString p_nonce)
 
 // Incoming control field
 XString 
-SOAPSecurity::FindHeaderField(SOAPMessage* p_message,XMLElement* p_secure,XString p_field)
+SOAPSecurity::FindHeaderField(SOAPMessage* p_message,XMLElement* p_secure,const XString& p_field)
 {
   XString value;
 
@@ -392,7 +392,7 @@ SOAPSecurity::FindHeaderField(SOAPMessage* p_message,XMLElement* p_secure,XStrin
 }
 
 XString 
-SOAPSecurity::DeBase64(XString p_field)
+SOAPSecurity::DeBase64(const XString& p_field)
 {
   Base64  base;
   return base.Decrypt(p_field);

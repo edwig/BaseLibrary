@@ -36,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 #endif
 
-static const TCHAR* weekday_short[7] =
+const TCHAR* weekday_short[7] =
 {
   _T("Sun")
  ,_T("Mon")
@@ -47,7 +47,7 @@ static const TCHAR* weekday_short[7] =
  ,_T("Sat")
 };
 
-static const TCHAR* weekday_long[7] =
+const TCHAR* weekday_long[7] =
 {
    _T("Sunday")
   ,_T("Monday")
@@ -58,7 +58,7 @@ static const TCHAR* weekday_long[7] =
   ,_T("Saturday")
 };
 
-static const TCHAR* month[12] =
+const TCHAR* month[12] =
 {
   _T("Jan")
  ,_T("Feb")
@@ -142,7 +142,7 @@ CheckYearImplementation(SYSTEMTIME* p_systemtime)
 // in header fields.See section 19.3 for further information
 //
 bool
-HTTPTimeToSystemTime(const XString p_time,SYSTEMTIME* p_systemtime)
+HTTPTimeToSystemTime(const XString& p_time,SYSTEMTIME* p_systemtime)
 {
   unsigned index  = 0;
   unsigned length = p_time.GetLength();
