@@ -6,6 +6,6 @@
 #pragma once
 
 #include "targetver.h"
-#include "framework.h"
+#include <winsock2.h>
 
 #include <BaseLibrary.h>

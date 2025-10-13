@@ -532,7 +532,6 @@
     <ClInclude Include="ExecuteShell.h" />
     <ClInclude Include="FileBuffer.h" />
     <ClInclude Include="FileDialog.h" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="GenerateGUID.h" />
     <ClInclude Include="GetExePath.h" />
     <ClInclude Include="GetLastErrorAsString.h" />

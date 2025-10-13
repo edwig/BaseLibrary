@@ -246,9 +246,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="framework.h">
-      <Filter>Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="FileDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>

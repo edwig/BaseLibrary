@@ -1,0 +1,26 @@
+RELEASENOTES BASE LIBARY
+========================
+
+This base library has been created out of common classes from the Marlin, SQLComponents,
+StyleFramework, bcd, StringIntegration and other projects on https://github.com/edwig
+By doing so, the maintenancae of these libraries is strongly simplified.
+Source project directories can be replaced in target projects bij simply replacing the
+whole directory including the VS project files. 
+Target projects are at least "Kwatta", "OpenODBCQuerytool", "Marlin", "CXHibernate".
+But many more open source and commercial projects exist that use this base library.
+
+Version 2.0.0
+----------------------------------------------------------------------------------------
+Second main version of this library
+This version was created when dropping the need for the use of the ATL/MFC libraries and 
+mainly the use of the CString class.
+
+Version 2.0.0 of 10-10-2025
+---------------------------
+1) The XString class is now soly derived from std::string and std::wstring.
+   The macro redefinition of XString from CString has now been dropped.
+2) Mainly **all** calls to methods that have a 'XString' parameter have been rewritten
+   to 'const XString&' parameters.
+   This removes the need for making many local copies of the string object, and thus
+   mitigating the advantage that CString had with it's pointer like behaviour and
+   copy-on-write design filosophy.
