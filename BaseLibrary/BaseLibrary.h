@@ -12,8 +12,8 @@
 //                          __/ |                                           
 //                         |___/                                            
 //
-// Copyright (c) 2014-2025 ir. W.E. Huisman
-// All rights reserved
+// Created: 2014-2025 ir. W.E. Huisman
+// MIT License
 //
 // MIT License:
 //

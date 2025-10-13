@@ -7,7 +7,8 @@
 // The string is derived from std::string with XString methods
 // SMX = std::string with MFC eXtensions
 //
-// Copyright (c) 2016-2025 ir. W.E. Huisman MSC
+// Created: 2014-2025 ir. W.E. Huisman
+// MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a 
 // copy of this software and associated documentation files(the "Software"), 

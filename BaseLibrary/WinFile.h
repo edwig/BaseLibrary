@@ -3,7 +3,9 @@
 // File: WinFile.h
 //
 // Everything :-) you can do with a Microsoft MS-Windows file (and faster!)
-// Author: W.E. Huisman
+//
+// Created: 2014-2025 ir. W.E. Huisman
+// MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
