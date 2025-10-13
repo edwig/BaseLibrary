@@ -30,14 +30,6 @@
 #include "XMLParser.h"
 #include "ConvertWideString.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 JSONParser::JSONParser(JSONMessage* p_message)
            :m_message(p_message)
 {
@@ -85,7 +77,7 @@ JSONParser::ParseMessage(const XString& p_message,bool& p_whitespace)
   // Allocate scanning buffer
   // Individual string cannot be larger than this
   m_scanLength = p_message.GetLength();
-  m_scanString = new _TUCHAR[(size_t)m_scanLength + 1];
+  m_scanString = alloc_new _TUCHAR[(size_t)m_scanLength + 1];
 
   // See if we have an empty message string
   SkipWhitespace();

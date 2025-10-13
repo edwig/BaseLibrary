@@ -35,14 +35,6 @@
 #define BIF_NEWDIALOGSTYLE 0x0040
 #endif
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 LPITEMIDLIST PathToPidl(const XString& path)
 {
   LPITEMIDLIST  pidl = NULL;

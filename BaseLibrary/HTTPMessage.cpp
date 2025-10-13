@@ -37,14 +37,6 @@
 #include <xutility>
 #include <string>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // All headers. Must be in sequence with HTTPCommand
 // See HTTPCommand for sequencing
 LPCTSTR headers[] = 
@@ -523,7 +515,7 @@ HTTPMessage::GetRawBody(uchar** p_body,size_t& p_length) const
     return;
   }
   // Allocate a buffer, big enough for Unicode conversion
-  *p_body  = new uchar[p_length + 2];
+  *p_body  = alloc_new uchar[p_length + 2];
 
   if(m_buffer.GetHasBufferParts())
   {

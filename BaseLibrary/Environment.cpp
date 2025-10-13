@@ -26,14 +26,6 @@
 #include "pch.h"
 #include "Environment.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #define BUFFER_LINE 4096
 
 // Getting the <modulename>.env file
@@ -115,7 +107,7 @@ void ProcessVariable(XString& p_string)
   // Get size of the variable value
   PTCHAR envvar = nullptr;
   int size = GetEnvironmentVariable(variable,envvar,0);
-  envvar = new TCHAR[size+1];
+  envvar = alloc_new TCHAR[size+1];
   GetEnvironmentVariable(variable,envvar,size);
 
   // Perform the operator calculation

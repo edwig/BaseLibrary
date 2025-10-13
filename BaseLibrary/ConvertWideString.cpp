@@ -29,19 +29,11 @@
 #include <map>
 #include <xstring>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 typedef struct _cpNames
 {
   int     m_codepage_ID;    // Active codepage ID
-  XString m_codepage_Name;  // Codepage name as in HTTP protocol "charset"
-  XString m_information;    // MSDN Documentary description
+  TCHAR*  m_codepage_Name;  // Codepage name as in HTTP protocol "charset"
+  TCHAR*  m_information;    // MSDN Documentary description
 }
 CodePageName;
 
@@ -209,19 +201,20 @@ static CodePageName cpNames[] =
 // Name mapping of code-page names is case insensitive
 struct CPCompare
 {
-  bool operator()(const XString& p_left,const XString& p_right) const
+  bool operator()(const TCHAR* p_left,const TCHAR* p_right) const
   {
-    return (p_left.CompareNoCase(p_right) < 0);
+    return (_tcsicmp(p_left,p_right) < 0);
   }
 };
 
-using CPIDNameMap = std::map<int,XString>;
-using NameCPIDMap = std::map<XString,int,CPCompare>;
+using CPIDNameMap = std::map<int,TCHAR*>;
+using NameCPIDMap = std::map<TCHAR*,int,CPCompare>;
 // 
 static CPIDNameMap cp_cpid_map;
 static NameCPIDMap cp_name_map;
 static CPIDNameMap cp_info_map;
-// 
+
+// Create mappings of the code pages names and ID's
 void 
 InitCodePageNames()
 {
@@ -234,11 +227,8 @@ InitCodePageNames()
       // Fill in both mappings
       if(_tcslen(pointer->m_codepage_Name))
       {
-        XString lowerName(pointer->m_codepage_Name);
-        lowerName.MakeLower();
-
         cp_cpid_map.insert(std::make_pair(pointer->m_codepage_ID,pointer->m_codepage_Name));
-        cp_name_map.insert(std::make_pair(lowerName,pointer->m_codepage_ID));
+        cp_name_map.insert(std::make_pair(pointer->m_codepage_Name,pointer->m_codepage_ID));
       }
       // always fill in code to info 
       cp_info_map.insert(std::make_pair(pointer->m_codepage_ID,pointer->m_information));
@@ -552,7 +542,7 @@ TryConvertNarrowString(const BYTE*    p_buffer
   {
     // Getting a UTF-16 wide-character buffer
     // +2 chars for a BOM, +2 chars for the closing zeros
-    extraBuffer = new TCHAR[(size_t) iLength + 4];
+    extraBuffer = alloc_new TCHAR[(size_t) iLength + 4];
 
     // Doing the 'real' conversion
     iLength = MultiByteToWideChar(codePage
@@ -611,7 +601,7 @@ TryCreateNarrowString(const XString& p_string
   if(iLength > 0)
   {
     iLength *= 2; // Funny but needed in most cases with 3-byte composite chars
-    *p_buffer = new BYTE[iLength];
+    *p_buffer = alloc_new BYTE[iLength];
     memset(*p_buffer,0,iLength * sizeof(char));
 
     // Construct an UTF-8 BOM
@@ -685,7 +675,7 @@ XString
 DecodeStringFromTheWire(const XString& p_string,XString p_charset /*="utf-8"*/,bool* p_foundBom /*=nullptr*/)
 {
   int   length = p_string.GetLength();
-  BYTE* buffer = new BYTE[length + 1];
+  BYTE* buffer = alloc_new BYTE[length + 1];
   for(int ind = 0;ind < length; ++ind)
   {
     buffer[ind] = (uchar) p_string.GetAt(ind);
@@ -757,7 +747,7 @@ LPCSTRToString(LPCSTR p_string,bool p_utf8 /*= false*/)
   {
     // Getting a UTF-16 wide-character buffer
     // +2 chars for a BOM, +2 chars for the closing zeros
-    BYTE* buffer = new BYTE[2 * (size_t) length + 4];
+    BYTE* buffer = alloc_new BYTE[2 * (size_t) length + 4];
 
     // Doing the 'real' conversion
     length = MultiByteToWideChar(codePage
@@ -825,7 +815,7 @@ TryConvertWideString(const BYTE*    p_buffer
     // Unicode buffer not null terminated !!! 
     // Completely legal to get from the HTTP service.
     // So make it so, and expand with two (!!) extra null chars.
-    extraBuffer = new BYTE[(size_t)p_length + 4];
+    extraBuffer = alloc_new BYTE[(size_t)p_length + 4];
     memcpy_s(extraBuffer,(size_t)p_length + 2,p_buffer,(size_t)p_length + 2);
     // Needs two (!) extra nulls in the buffer for conversion
     extraBuffer[++p_length] = 0;
@@ -865,7 +855,7 @@ TryConvertWideString(const BYTE*    p_buffer
   if(iLength > 0)
   {
     iLength *= 2; // Funny but needed in most cases with 3-byte composite chars
-    char* buffer = new char[iLength];
+    char* buffer = alloc_new char[iLength];
     if(buffer != NULL)
     {
       DWORD dwFlag = 0; // WC_COMPOSITECHECK | WC_DISCARDNS;
@@ -934,7 +924,7 @@ TryCreateWideString(const XString& p_string
   {
     // Getting a UTF-16 wide-character buffer
     // +2 chars for a BOM
-    *p_buffer = new BYTE[2*(size_t)iLength + 2];
+    *p_buffer = alloc_new BYTE[2*(size_t)iLength + 2];
     BYTE* buffer = (BYTE*) *p_buffer;
 
     // Construct an UTF-16 Byte-Order-Mark
@@ -990,7 +980,7 @@ StringToWString(const XString& p_string)
   {
     // Getting a UTF-16 wide-character buffer
     // +2 chars for a BOM, +2 chars for the closing zeros
-    BYTE* buffer = new BYTE[2*(size_t)length + 4];
+    BYTE* buffer = alloc_new BYTE[2*(size_t)length + 4];
 
     // Doing the 'real' conversion
     length = MultiByteToWideChar(codePage
@@ -1034,7 +1024,7 @@ WStringToString(const std::wstring& p_string)
   if(length > 0)
   {
     length *= 2; // Funny but needed in most cases with 3-byte composite chars
-    char* buffer = new char[length];
+    char* buffer = alloc_new char[length];
     if(buffer != NULL)
     {
       DWORD dwFlag = 0; // WC_COMPOSITECHECK | WC_DISCARDNS;
@@ -1185,7 +1175,7 @@ StringToLPCSTR(const XString& p_string,LPCSTR* p_buffer,int& p_size,bool p_utf8 
 {
   XString string = p_utf8 ? EncodeStringForTheWire(p_string) : p_string;
   p_size   = string.GetLength();
-  *p_buffer = new char[p_size + 1];
+  *p_buffer = alloc_new char[p_size + 1];
   strncpy_s((char*)*p_buffer,p_size + 1,string.GetString(),p_size + 1);
   return p_size;
 }

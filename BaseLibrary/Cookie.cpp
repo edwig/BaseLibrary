@@ -32,14 +32,6 @@
 #include "HTTPTime.h"
 #include "ConvertWideString.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #pragma comment(lib,"Winhttp.lib")
 
 // XTOR: Empty cookie

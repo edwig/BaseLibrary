@@ -24,3 +24,5 @@ Version 2.0.0 of 10-10-2025
    This removes the need for making many local copies of the string object, and thus
    mitigating the advantage that CString had with it's pointer like behaviour and
    copy-on-write design filosophy.
+3) Place a call to "InitBaseLibrary()" in your application startup code.
+   This initializes the settings for debugging memory leaks.

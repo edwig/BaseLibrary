@@ -31,14 +31,6 @@
 #include "Base64.h"
 #include <time.h>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #define EXTRABUF 5
 
 // ALGORITHM
@@ -66,13 +58,13 @@ XString CreateAuthentication(const XString& p_user,const XString& p_password)
 #else
   XString ext = EncodeStringForTheWire(authenticate);
   length = ext.GetLength();
-  buffer = new BYTE[length + 1];
+  buffer = alloc_new BYTE[length + 1];
   strncpy_s((char*)buffer,length + 1,ext.GetString(),length);
 #endif
 
 
   // STEP 3) Reverse our string in the buffer
-  BYTE* resbuffer = new BYTE[length + 1 + 2 * EXTRABUF];
+  BYTE* resbuffer = alloc_new BYTE[length + 1 + 2 * EXTRABUF];
   for(int ind = 0;ind <length; ++ind)
   {
     resbuffer[EXTRABUF + ind] = buffer[length - ind - 1];
@@ -134,7 +126,7 @@ DecodeAuthentication(const XString& p_scramble,XString& p_user,XString& p_passwo
   // STEP 2) Decode base64
   Base64 base;
   int length = (int)base.Ascii_length(p_scramble.GetLength());
-  BYTE* buffer = new BYTE[length + 1];
+  BYTE* buffer = alloc_new BYTE[length + 1];
   base.Decrypt(p_scramble,buffer,length + 1);
   length = (int) strlen((char*)buffer);
   if(p_scramble.IsEmpty() || length == 0)
@@ -161,7 +153,7 @@ DecodeAuthentication(const XString& p_scramble,XString& p_user,XString& p_passwo
   }
 
   // STEP 5: Revert the buffer
-  BYTE* resbuffer = new BYTE[length + 1 + 2 * EXTRABUF];
+  BYTE* resbuffer = alloc_new BYTE[length + 1 + 2 * EXTRABUF];
   for(int ind = 0;ind < length; ++ind)
   {
     resbuffer[ind] = buffer[EXTRABUF + length - ind - 1];

@@ -29,14 +29,6 @@
 #include "Base64.h"
 #include <ConvertWideString.h>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #pragma comment(lib,"crypt32.lib")
 
 Base64::Base64(int p_method /*= CRYPT_STRING_BASE64*/,int p_options /*= CRYPT_STRING_NOCRLF*/)
@@ -110,7 +102,7 @@ Base64::Encrypt(const XString& p_unencrypted)
 #endif
   DWORD tchars = 0;
   CryptBinaryToString(unencrypted,length,m_method | m_options,(LPTSTR)NULL,&tchars);
-  _TUCHAR* buffer = new _TUCHAR[tchars + 2];
+  _TUCHAR* buffer = alloc_new _TUCHAR[tchars + 2];
   CryptBinaryToString(unencrypted,length,m_method | m_options,(LPTSTR)buffer,&tchars);
   buffer[tchars] = 0;
   XString result((LPTSTR)buffer);
@@ -129,7 +121,7 @@ Base64::EncryptUnicode(const XString& p_unencrypted)
   }
   DWORD tchars = 0;
   CryptBinaryToString((const BYTE*)p_unencrypted.GetString(),p_unencrypted.GetLength() * sizeof(TCHAR),m_method | m_options,(LPTSTR) NULL,&tchars);
-  _TUCHAR* buffer = new _TUCHAR[tchars + 2];
+  _TUCHAR* buffer = alloc_new _TUCHAR[tchars + 2];
   CryptBinaryToString((const BYTE*)p_unencrypted.GetString(),p_unencrypted.GetLength() * sizeof(TCHAR),m_method | m_options,(LPTSTR) buffer,&tchars);
   buffer[tchars] = 0;
   XString result((LPTSTR)buffer);
@@ -148,7 +140,7 @@ Base64::Decrypt(const XString& p_encrypted)
   DWORD length = 0;
   DWORD type = CRYPT_STRING_BASE64_ANY;
   CryptStringToBinary(p_encrypted.GetString(),p_encrypted.GetLength(),m_method,NULL,&length,0,&type);
-  BYTE* buffer = new BYTE[length + 2];
+  BYTE* buffer = alloc_new BYTE[length + 2];
   CryptStringToBinary(p_encrypted.GetString(),p_encrypted.GetLength(),m_method,buffer,&length,0,&type);
   buffer[length] = 0;
 #ifdef _UNICODE

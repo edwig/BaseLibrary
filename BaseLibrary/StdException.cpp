@@ -38,14 +38,6 @@
 #include "pch.h"
 #include "StdException.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // Macro to help with the display switch in GetErrorMessage()
 #define CASE(seCode,errorstring) case EXCEPTION_##seCode: \
                     errorstring.Format(_T("Exception %s (0x%.8X) at address 0x%.8I64X."),_T(#seCode),(unsigned int)EXCEPTION_##seCode,(INT64)m_exceptionPointers->ExceptionRecord->ExceptionAddress); \

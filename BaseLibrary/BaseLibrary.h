@@ -40,6 +40,24 @@
 // Minimal requirements from the MS-Windows OS
 #include <windows.h>
 
+// For the memory leak checks.
+// Place the following at the beginning of your programs:
+// 
+// CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+// _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
+// 
+// See also: https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
+//
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define alloc_new new(_NORMAL_BLOCK,__FILE__,__LINE__)
+// Possibly replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+#else
+#define alloc_new new
+#endif
+
 // This is the compilation/include order of the base-library
 #include "XString.h"
 #include "StdException.h"
@@ -48,6 +66,9 @@
 
 // VERSION NUMBER OF THIS LIBRARY
 #define BASELIBRARY_VERSION 2.0.0
+
+// Call once at the start of your application
+void InitBaseLibrary();
 
 // Selecting the right library to link with automatically
 // So we do not need to worry about which library to use in the linker settings

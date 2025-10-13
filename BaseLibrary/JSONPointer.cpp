@@ -29,14 +29,6 @@
 #include "JSONPointer.h"
 #include "CrackURL.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // Global value to reference non-existing array or object members
 static TCHAR g_invalid_jp_value[] = _T("-");
 

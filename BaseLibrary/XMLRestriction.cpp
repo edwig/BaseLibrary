@@ -30,14 +30,6 @@
 #include <stdint.h>
 #include <regex>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 XMLRestriction::XMLRestriction(const XString& p_name)
                :m_name(p_name)
 {

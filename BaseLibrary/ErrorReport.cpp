@@ -40,14 +40,6 @@
 #include <signal.h>
 #include <memory>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // Error report running
 __declspec(thread) bool g_exception       = false;
 __declspec(thread) bool g_reportException = true;
@@ -473,7 +465,7 @@ ErrorReport::DoReport(const XString&    p_subject
                      ,const XString&    p_url) const
 {
   // Getting process information
-  std::unique_ptr<ProcInfo> procInfo(new ProcInfo);
+  std::unique_ptr<ProcInfo> procInfo(alloc_new ProcInfo);
   FILETIME creationTime, exitTime, kernelTime, userTime;
   GetProcessTimes(GetCurrentProcess(),
                   &creationTime,

@@ -50,14 +50,6 @@
 #include <algorithm>
 #include <stdarg.h>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 static bool g_except = false;
 
 // CTOR is private: See static NewLogfile method
@@ -78,7 +70,7 @@ LogAnalysis::~LogAnalysis()
 LogAnalysis* 
 LogAnalysis::CreateLogfile(const XString& p_name)
 {
-  return new LogAnalysis(p_name);
+  return alloc_new LogAnalysis(p_name);
 }
 
 /*static */bool
@@ -641,7 +633,7 @@ LogAnalysis::BareBufferLog(void* p_buffer,unsigned p_length)
   }
 
   static const XString marker(_T(BUFFER_MARKER));
-  BYTE* copy = new BYTE[p_length];
+  BYTE* copy = alloc_new BYTE[p_length];
   memcpy(copy,p_buffer,p_length);
 
   LogBuff buff { copy,p_length };

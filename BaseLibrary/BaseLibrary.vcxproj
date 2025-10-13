@@ -603,6 +603,7 @@
     <ClCompile Include="AutoCritical.cpp" />
     <ClCompile Include="AutoFont.cpp" />
     <ClCompile Include="Base64.cpp" />
+    <ClCompile Include="BaseLibrary.cpp" />
     <ClCompile Include="bcd.cpp" />
     <ClCompile Include="ConvertWideString.cpp" />
     <ClCompile Include="Cookie.cpp" />

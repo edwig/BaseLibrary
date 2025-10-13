@@ -30,14 +30,6 @@
 #include "HTTPMessage.h"
 #include "GetLastErrorAsString.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 StoreMessage::StoreMessage()
 {
 }
@@ -141,7 +133,7 @@ StoreMessage::ReadIncomingMessage()
     m_error = m_file.GetLastError();
     return nullptr;
   }
-  HTTPMessage* msg = new HTTPMessage();
+  HTTPMessage* msg = alloc_new HTTPMessage();
 
   try
   {
@@ -172,7 +164,7 @@ StoreMessage::ReadResponseMessage()
     m_error = m_file.GetLastError();
     return nullptr;
   }
-  HTTPMessage* msg = new HTTPMessage();
+  HTTPMessage* msg = alloc_new HTTPMessage();
 
   try
   {
@@ -820,7 +812,7 @@ StoreMessage::ReadBody(HTTPMessage* p_msg)
   if(length)
   {
     int read = 0;
-    unsigned char* buffer = new unsigned char[length];
+    unsigned char* buffer = alloc_new unsigned char[length];
     if(!m_file.Read(buffer,length,read))
     {
       delete[] buffer;

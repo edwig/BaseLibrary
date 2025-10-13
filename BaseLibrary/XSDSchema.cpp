@@ -35,14 +35,6 @@
 #include "XSDSchema.h"
 #include "XMLRestriction.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 //
 // XSDComplexType
@@ -376,7 +368,7 @@ XSDSchema::ReadElementDefinition(XMLMessage&  p_doc
   XString maxoccurs = p_doc.GetAttribute(p_elem,_T("maxOccurs"));
 
   XmlDataType xmlType = 0;
-  XMLRestriction* restrict = new XMLRestriction(type);
+  XMLRestriction* restrict = alloc_new XMLRestriction(type);
   m_restrictions.push_back(restrict);
 
   if(minoccurs.GetLength())
@@ -463,7 +455,7 @@ XSDSchema::ReadElementDefinition(XMLMessage&  p_doc
   {
     // Complex type reference
   }
-  XMLElement* next = new XMLElement();
+  XMLElement* next = alloc_new XMLElement();
   next->SetName(name);
   next->SetType(xmlType);
   next->SetRestriction(restrict);
@@ -687,7 +679,7 @@ XSDSchema::AddComplexType(const XString& p_name)
   XSDComplexType* complex = FindComplexType(p_name);
   if(!complex)
   {
-    complex = new XSDComplexType(p_name);
+    complex = alloc_new XSDComplexType(p_name);
     m_types[p_name] = complex;
   }
   return complex;

@@ -60,14 +60,6 @@
 #include "ConvertWideString.h"
 #include <winhttp.h>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 LPCTSTR CrackedURL::m_unsafeString   = _T(" \"@<>#{}|\\^~[]`");
 LPCTSTR CrackedURL::m_reservedString = _T("$&/;?-!*()'"); // ".,+_:="
 
@@ -337,7 +329,7 @@ CrackedURL::EncodeURLChars(const XString& p_text,bool p_queryValue /*=false*/)
     {
       delete[] buffer;
       length = encoded.GetLength();
-      buffer = new uchar[length + 1];
+      buffer = alloc_new uchar[length + 1];
       memcpy(buffer,encoded.GetString(),length + 1);
       encoded.Empty();
     }
@@ -414,7 +406,7 @@ CrackedURL::DecodeURLChars(const XString& p_text,bool p_queryValue /*=false*/,bo
   {
     // Compress to real UTF-8
     int length = decoded.GetLength();
-    uchar* buffer = new uchar[length + 1];
+    uchar* buffer = alloc_new uchar[length + 1];
     bool foundBom = false;
 
     // Make a real UTF-8 memory string

@@ -34,14 +34,6 @@
 
 #pragma comment(lib, "version.lib")
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 //=============================================================================
 
 //	PSAPI.DLL on WinNT 4.0
@@ -285,7 +277,7 @@ ProcInfo::GetSystemType()
 void 
 ProcInfo::GetSystemInfo()
 {
-  PTCHAR buffer = new TCHAR[MAX_ENVSPACE];
+  PTCHAR buffer = alloc_new TCHAR[MAX_ENVSPACE];
   DWORD dwLength;
 
   //	Determine computer name
@@ -458,7 +450,7 @@ ProcInfo::ReadLangString(LPVOID pVI
 ProcModule* 
 ProcInfo::LoadModule(HMODULE hModule)
 {
-  Module* loadModule = new Module();
+  Module* loadModule = alloc_new Module();
 
   //	Format hModule, which is the load address 
   TCHAR buff[40];
@@ -500,7 +492,7 @@ ProcInfo::LoadModule(HMODULE hModule)
   if(dwVersionSize > 0)
   {
     //  Allocate and retrieve block
-    LPVOID pVI = new BYTE[dwVersionSize];
+    LPVOID pVI = alloc_new BYTE[dwVersionSize];
     if(GetFileVersionInfo((PTCHAR)loadModule->m_full_path.GetString(),0,dwVersionSize, pVI))
     {
       UINT len;

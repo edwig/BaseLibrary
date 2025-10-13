@@ -81,6 +81,8 @@ int main(const int argc,const char* argv[])
   int errors     = 0;
   int testamount = 10;
 
+  InitBaseLibrary();
+
   // Different number of tests specified?
   if(argc >= 2)
   {
@@ -110,6 +112,11 @@ int main(const int argc,const char* argv[])
       ++errors;
     }
   }
+
+  // Testing Memory leaks of various sorts
+  char* test = alloc_new char[2000];
+  std::string* teststring = alloc_new std::string(_T("testing"));
+  BYTE* block = (BYTE*)malloc(1000);
 
   _tprintf(_T("Total number of errors: %d\n"),errors);
   return errors;

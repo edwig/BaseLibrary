@@ -31,12 +31,6 @@
 #include <XStringBuilder.h>
 #include <HPFCounter.h>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 #define NUM_TESTS 100000  // 1E+05

@@ -35,14 +35,6 @@
 #include <corecrt_io.h>
 #include <fcntl.h>
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 #ifdef _DEBUG
 #define verify(x)  assert(x)
 #else
@@ -403,12 +395,12 @@ Redirect::PrepAndLaunchRedirectedChild(PTCHAR lpszCmdLine
   // This is made using an empty security descriptor. It is not the same
   // as using a NULL pointer for the security attribute!
 
-  PSECURITY_DESCRIPTOR lpSD = new SECURITY_DESCRIPTOR;
+  PSECURITY_DESCRIPTOR lpSD = alloc_new SECURITY_DESCRIPTOR;
   verify(::InitializeSecurityDescriptor(lpSD, SECURITY_DESCRIPTOR_REVISION));
 #pragma warning(disable: 6248) // Setting ZERO DACL.
   verify(::SetSecurityDescriptorDacl(lpSD, -1, 0, 0));
 
-  LPSECURITY_ATTRIBUTES lpSA = new SECURITY_ATTRIBUTES;
+  LPSECURITY_ATTRIBUTES lpSA = alloc_new SECURITY_ATTRIBUTES;
   lpSA->nLength = sizeof(SECURITY_ATTRIBUTES);
   lpSA->lpSecurityDescriptor = lpSD;
   lpSA->bInheritHandle = TRUE;

@@ -34,14 +34,6 @@
 #include <iterator>
 #include <algorithm>
 
-#ifdef _AFX
-#ifdef _DEBUG 
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 JSONvalue::JSONvalue()
 {
 }
@@ -627,7 +619,7 @@ JSONMessage::JSONMessage()
   AddReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   // Set sender to null
   memset(&m_sender,0,sizeof(SOCKADDR_IN6));
@@ -640,7 +632,7 @@ JSONMessage::JSONMessage(const XString& p_message)
   AddReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   // Overrides from the declaration
   m_incoming = true; // INCOMING!!
@@ -659,7 +651,7 @@ JSONMessage::JSONMessage(const XString& p_message,bool p_whitespace,Encoding p_e
   AddReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   // Preserve whitespace setting
   m_whitespace = p_whitespace;
@@ -677,7 +669,7 @@ JSONMessage::JSONMessage(const XString& p_message,const XString& p_url)
   AddReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   // Set sender to null
   memset(&m_sender,0,sizeof(SOCKADDR_IN6));
@@ -695,7 +687,7 @@ JSONMessage::JSONMessage(const JSONMessage* p_other)
   AddReference();
 
   // Copy the primary message value, and reference it
-  m_value = new JSONvalue(p_other->m_value);
+  m_value = alloc_new JSONvalue(p_other->m_value);
   m_value->AddReference();
 
   // Copy all other data members
@@ -742,7 +734,7 @@ JSONMessage::JSONMessage(const HTTPMessage* p_message)
   AddReference();
 
   // Set empty value
-  m_value          = new JSONvalue();
+  m_value          = alloc_new JSONvalue();
 
   // Copy all parts
   m_url            = p_message->GetURL();
@@ -814,7 +806,7 @@ JSONMessage::JSONMessage(const SOAPMessage* p_message)
   AddReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   // Copy all parts
   m_url             = p_message->GetURL();
@@ -930,7 +922,7 @@ JSONMessage::Reset(bool p_resetURL /*= false*/)
   m_value->DropReference();
 
   // Set empty value
-  m_value = new JSONvalue();
+  m_value = alloc_new JSONvalue();
 
   m_incoming = false;
   // Reset error

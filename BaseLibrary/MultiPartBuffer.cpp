@@ -37,14 +37,6 @@
 #include "HTTPMessage.h"
 #include "ConvertWideString.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 //////////////////////////////////////////////////////////////////////////
 //
 // MULTIPART
@@ -436,7 +428,7 @@ MultiPartBuffer::AddPart(const XString& p_name
   }
 
   // Add the part
-  MultiPart* part = new MultiPart(p_name,p_contentType);
+  MultiPart* part = alloc_new MultiPart(p_name,p_contentType);
 
   // See to data conversion
   XString data;
@@ -476,7 +468,7 @@ MultiPartBuffer::AddFile(const XString& p_name,const XString& p_contentType,cons
   }
 
   // Create file part
-  MultiPart* part = new MultiPart(p_name,p_contentType);
+  MultiPart* part = alloc_new MultiPart(p_name,p_contentType);
   if(part->SetFile(p_filename) == false)
   {
     delete part;
@@ -764,13 +756,13 @@ MultiPartBuffer::CalculateBinaryBoundary(XString p_boundary,BYTE*& p_binary,unsi
   if(m_charSize == 2)
   {
     length *= 2;
-    p_binary = new BYTE[length + 2];
+    p_binary = alloc_new BYTE[length + 2];
     memcpy(p_binary,p_boundary.GetString(),length + 2);
   }
   else // m_charSize == 1
   {
     // Implode
-    p_binary = new BYTE[length + 2];
+    p_binary = alloc_new BYTE[length + 2];
     ImplodeString(p_boundary,p_binary,(unsigned) length);
   }
 #else
@@ -778,12 +770,12 @@ MultiPartBuffer::CalculateBinaryBoundary(XString p_boundary,BYTE*& p_binary,unsi
   {
     // Explode
     length *= 2;
-    p_binary = new BYTE[length + 2];
+    p_binary = alloc_new BYTE[length + 2];
     ExplodeString(p_boundary,p_binary,(unsigned) (length + 2));
   }
   else // m_charSize == 1
   {
-    p_binary = new BYTE[length + 2];
+    p_binary = alloc_new BYTE[length + 2];
     memcpy(p_binary,p_boundary.GetString(),length);
   }
 #endif
@@ -850,7 +842,7 @@ MultiPartBuffer::FindPartBuffer(uchar*& p_finding,size_t& p_remaining,BYTE* p_bo
 void
 MultiPartBuffer::AddRawBufferPart(uchar* p_partialBegin,const uchar* p_partialEnd,bool p_conversion)
 {
-  MultiPart* part = new MultiPart();
+  MultiPart* part = alloc_new MultiPart();
   XString charset,boundary;
 
   while(true)

@@ -29,14 +29,6 @@
 #include "BaseLibrary.h"
 #include "AutoFont.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 AutoFont::AutoFont()
 {
 	m_lf.lfHeight         = -12;

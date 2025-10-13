@@ -41,14 +41,6 @@
 #define DEFAULT_RECV_TIMEOUT   6000     // six second
 #define MAX_RECV_BUF_LEN       0xFFFF   // Max incoming packet size.
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 //
 // Function: PrintAddress
 //
@@ -374,7 +366,7 @@ static USHORT ComputeIcmp6PseudoHeaderChecksum(SOCKET s,char* icmppacket,int icm
   }
 
   // We use a temporary buffer to calculate the pseudo header. 
-  char* tmp = new char[MAX_RECV_BUF_LEN];
+  char* tmp = alloc_new char[MAX_RECV_BUF_LEN];
   char* ptr = tmp;
   memset(ptr,0,MAX_RECV_BUF_LEN);
   total = 0;
@@ -762,7 +754,7 @@ double WinPing(char* p_destination // internet address to ping
   }
 
   // Allocate receive buffer
-  recvbuf = new char[recvbuflen];     // For received packets
+  recvbuf = alloc_new char[recvbuflen];     // For received packets
 
   // Post the first overlapped receive
   fromlen = sizeof(from);

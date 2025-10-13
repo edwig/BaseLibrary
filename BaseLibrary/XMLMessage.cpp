@@ -29,14 +29,6 @@
 #include "XMLRestriction.h"
 #include "Namespace.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 // Defined in FileBuffer
 extern unsigned long g_streaming_limit; // = STREAMING_LIMIT;
 
@@ -68,7 +60,7 @@ XMLElement::XMLElement(const XMLElement& source)
 {
   for(const auto& element : source.m_elements)
   {
-    XMLElement* param = new XMLElement(*element);
+    XMLElement* param = alloc_new XMLElement(*element);
     param->m_parent = this;
     m_elements.push_back(param);
   }
@@ -173,7 +165,7 @@ XMLElement::SetName(const XString& p_name)
 // XTOR XML Message
 XMLMessage::XMLMessage()
 {
-  m_root = new XMLElement();
+  m_root = alloc_new XMLElement();
   m_root->SetType(XDT_String);
   AddReference();
 }
@@ -182,7 +174,7 @@ XMLMessage::XMLMessage()
 XMLMessage::XMLMessage(const XMLMessage* p_orig)
 {
   // Copy the element chain
-  m_root = new XMLElement(*p_orig->m_root);
+  m_root = alloc_new XMLElement(*p_orig->m_root);
   // Copy the contents
   m_version             = p_orig->m_version;
   m_encoding            = p_orig->m_encoding;
@@ -718,7 +710,7 @@ XMLMessage::AddElement(XMLElement* p_base,const XString& p_name,XmlDataType p_ty
 
   XmlElementMap& elements = p_base ? p_base->GetChildren() : m_root->GetChildren();
   XMLElement* parent = p_base ? p_base : m_root;
-  XMLElement* elem   = new XMLElement(parent);
+  XMLElement* elem   = alloc_new XMLElement(parent);
   elem->SetNamespace(namesp);
   elem->SetName(name);
   elem->SetType(p_type);

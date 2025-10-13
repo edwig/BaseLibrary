@@ -30,14 +30,6 @@
 #include "ConvertWideString.h"
 #include "gzip.h"
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
-
 unsigned long g_streaming_limit = STREAMING_LIMIT;
 unsigned long g_compress_limit  = COMPRESS_LIMIT;
 
@@ -80,7 +72,7 @@ FileBuffer::FileBuffer(FileBuffer& p_orig)
   // If it had a buffer, duplicate it
   if(m_binaryLength)
   {
-    m_buffer = new uchar[m_binaryLength + 2];
+    m_buffer = alloc_new uchar[m_binaryLength + 2];
     memcpy(m_buffer,p_orig.m_buffer,m_binaryLength);
     m_buffer[m_binaryLength    ] = 0;
     m_buffer[m_binaryLength + 1] = 0;
@@ -91,7 +83,7 @@ FileBuffer::FileBuffer(FileBuffer& p_orig)
   {
     BufPart dupli;
     dupli.m_length = part.m_length;
-    dupli.m_buffer = new uchar[dupli.m_length + 2];
+    dupli.m_buffer = alloc_new uchar[dupli.m_length + 2];
     memcpy(dupli.m_buffer,part.m_buffer,dupli.m_length);
     dupli.m_buffer[part.m_length    ] = 0;
     dupli.m_buffer[part.m_length + 1] = 0;
@@ -176,7 +168,7 @@ FileBuffer::SetBuffer(uchar* p_buffer,size_t p_length)
   if(p_buffer)
   {
     m_binaryLength = p_length;
-    m_buffer = new uchar[p_length + 2];
+    m_buffer = alloc_new uchar[p_length + 2];
     memcpy(m_buffer,p_buffer,p_length);
     m_buffer[p_length    ] = 0;
     m_buffer[p_length + 1] = 0;
@@ -189,7 +181,7 @@ void
 FileBuffer::AddBuffer(uchar* p_buffer,size_t p_length)
 {
   BufPart part;
-  part.m_buffer = new uchar[p_length + 2];
+  part.m_buffer = alloc_new uchar[p_length + 2];
   part.m_length = p_length;
 
   memcpy(part.m_buffer,p_buffer,p_length);
@@ -205,7 +197,7 @@ void
 FileBuffer::AddBufferCRLF(uchar* p_buffer,size_t p_length)
 {
   BufPart part;
-  part.m_buffer = new uchar[p_length + 3];
+  part.m_buffer = alloc_new uchar[p_length + 3];
   part.m_length = p_length;
 
   if(part.m_buffer)
@@ -259,7 +251,7 @@ FileBuffer::AllocateBuffer(size_t p_length)
   {
     if(m_binaryLength == 0)
     {
-      m_buffer = new uchar[p_length + 1];
+      m_buffer = alloc_new uchar[p_length + 1];
       m_binaryLength = p_length;
       m_buffer[0] = 0;
       return true;
@@ -308,7 +300,7 @@ FileBuffer::GetBufferCopy(uchar*& p_buffer,size_t& p_length) const
 {
   // Calculate length and getting a buffer
   p_length = const_cast<FileBuffer*>(this)->GetLength();
-  p_buffer = new uchar[p_length + 2];
+  p_buffer = alloc_new uchar[p_length + 2];
 
   // Optimize in one go
   if(m_parts.empty())
@@ -421,7 +413,7 @@ FileBuffer::ReadFile()
   {
     delete [] m_buffer;
   }
-  m_buffer = new uchar[m_binaryLength + 2];
+  m_buffer = alloc_new uchar[m_binaryLength + 2];
 
   // Read file from disk in one (1) go
   if(::ReadFile(m_file,m_buffer,(DWORD)m_binaryLength,&readBytes,NULL))
@@ -536,7 +528,7 @@ FileBuffer::operator=(FileBuffer& p_orig)
   // If it had a buffer, duplicate it
   if(m_binaryLength)
   {
-    m_buffer = new uchar[m_binaryLength + 2];
+    m_buffer = alloc_new uchar[m_binaryLength + 2];
     memcpy(m_buffer,p_orig.m_buffer,m_binaryLength);
     m_buffer[m_binaryLength    ] = 0;
     m_buffer[m_binaryLength + 1] = 0;
@@ -546,7 +538,7 @@ FileBuffer::operator=(FileBuffer& p_orig)
   {
     BufPart  dupli;
     dupli.m_length = part.m_length;
-    dupli.m_buffer = new uchar[dupli.m_length + 2];
+    dupli.m_buffer = alloc_new uchar[dupli.m_length + 2];
     memcpy(dupli.m_buffer,part.m_buffer,dupli.m_length);
     dupli.m_buffer[part.m_length    ] = 0;
     dupli.m_buffer[part.m_length + 1] = 0;
@@ -602,7 +594,7 @@ FileBuffer::ZipBuffer()
     m_binaryLength = out_data.size();
   
     delete [] m_buffer;
-    m_buffer = new uchar[m_binaryLength + 2];
+    m_buffer = alloc_new uchar[m_binaryLength + 2];
     for(size_t ind = 0;ind < m_binaryLength; ++ind)
     {
       (reinterpret_cast<uint8_t *>(m_buffer))[ind] = out_data[ind];
@@ -642,7 +634,7 @@ FileBuffer::UnZipBuffer()
     m_binaryLength = out_data.size();
 
     delete [] m_buffer;
-    m_buffer = new uchar[m_binaryLength + 2];
+    m_buffer = alloc_new uchar[m_binaryLength + 2];
     for(size_t ind = 0; ind < m_binaryLength; ++ind)
     {
       (reinterpret_cast<uint8_t *>(m_buffer))[ind] = out_data[ind];
@@ -688,7 +680,7 @@ FileBuffer::ChunkedEncoding(bool p_final)
     return false;
   }
   // Encode the buffer
-  uchar* buffer = new uchar[m_binaryLength + CHUNKED_OVERHEAD];
+  uchar* buffer = alloc_new uchar[m_binaryLength + CHUNKED_OVERHEAD];
   int pos = sprintf_s(reinterpret_cast<char*>(buffer),CHUNKED_OVERHEAD,"%X\r\n",(int)m_binaryLength);
   memcpy_s(buffer+pos,m_binaryLength,m_buffer,m_binaryLength);
   memcpy_s(buffer+pos+m_binaryLength,3,"\r\n\0",3);

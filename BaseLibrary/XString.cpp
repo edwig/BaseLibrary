@@ -61,7 +61,7 @@ SMX_String::SMX_String(const SMX_String& p_string)
 SMX_String::SMX_String(PCSTR p_string)
 {
   int len = MultiByteToWideChar(CP_ACP,0,p_string,(int)strlen(p_string),nullptr,0);
-  wchar_t* buffer = new wchar_t[len + 1];
+  wchar_t* buffer = alloc_new wchar_t[len + 1];
   MultiByteToWideChar(CP_ACP,0,p_string,(int)strlen(p_string),buffer,len);
   append(buffer);
   delete [] buffer;
@@ -131,7 +131,7 @@ SMX_String::AppendFormatV(LPCTSTR p_format,va_list p_list)
 {
   // Getting a buffer of the correct length
   int len = _vsctprintf(p_format,p_list) + 1;
-  TCHAR* buffer = new TCHAR[len];
+  TCHAR* buffer = alloc_new TCHAR[len];
   // Formatting the parameters
   _vstprintf_s(buffer,len,p_format,p_list);
   // Adding to the string
@@ -149,7 +149,7 @@ SMX_String::AppendFormatV(UINT p_strID,va_list p_list)
   {
     // Getting a buffer of the correct length
     int len = _vsctprintf(str.c_str(),p_list) + 1;
-    TCHAR* buffer = new TCHAR[len];
+    TCHAR* buffer = alloc_new TCHAR[len];
     // Formatting the parameters
     _vstprintf_s(buffer,len,str.c_str(),p_list);
     // Adding to the string
@@ -196,7 +196,7 @@ SMX_String::FormatV(LPCTSTR p_format,va_list p_list)
 {
   // Getting a buffer of the correct length
   int len = _vsctprintf(p_format,p_list) + 1;
-  TCHAR* buffer = new TCHAR[len];
+  TCHAR* buffer = alloc_new TCHAR[len];
   // Formatting the parameters
   _vstprintf_s(buffer,len,p_format,p_list);
   // Adding to the string
@@ -214,7 +214,7 @@ SMX_String::FormatV(UINT p_strID,va_list p_list)
   {
     // Getting a buffer of the correct length
     int len = _vsctprintf(str.c_str(),p_list) + 1;
-    TCHAR* buffer = new TCHAR[len];
+    TCHAR* buffer = alloc_new TCHAR[len];
     // Formatting the parameters
     _vstprintf_s(buffer,len,str.c_str(),p_list);
     // Adding to the string
@@ -325,7 +325,7 @@ SMX_String::GetEnvironmentVariable(LPCTSTR p_variable)
   }
   else
   {
-    TCHAR* pszBuffer = new TCHAR[length + 1];
+    TCHAR* pszBuffer = alloc_new TCHAR[length + 1];
     ::GetEnvironmentVariable(p_variable,(LPTSTR)pszBuffer,length);
     *this = pszBuffer;
     delete [] pszBuffer;
@@ -391,7 +391,7 @@ SMX_String::LoadString(HINSTANCE p_inst,UINT p_strID,WORD p_languageID)
   }
   int logicSize = image->nLength + 1;
   int  realSize = logicSize * sizeof(WCHAR);
-  WCHAR* temp = new WCHAR[logicSize + 1];
+  WCHAR* temp = alloc_new WCHAR[logicSize + 1];
   memcpy_s(temp,realSize,(void*)image->achString,realSize);
   ((char*)temp)[realSize - 1] = 0;
   ((char*)temp)[realSize - 2] = 0;

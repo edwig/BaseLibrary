@@ -35,7 +35,6 @@
 #include <windows.h>
 #include <tchar.h>
 
-
 #define BUFFERSIZE     1
 #define MEGABYTE       (1024 * 1024)
 #define OUTPUT_TIMES   2
@@ -52,7 +51,6 @@ void DeallocateBuffer()
   delete[] buffer;
   buffer = nullptr;
 }
-
 
 void ReadStandardInput()
 {

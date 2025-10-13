@@ -3,7 +3,9 @@
 // File: WinFile.cpp
 //
 // Everything :-) you can do with a Microsoft MS-Windows file (and faster!)
-// Author: W.E. Huisman
+// 
+// Created: 2014-2025 ir. W.E. Huisman
+// MIT License
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files(the "Software"), to deal
@@ -39,14 +41,6 @@
 #include <AclAPI.h>
 #include <filesystem>
 #include <io.h>
-
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -943,7 +937,7 @@ WinFile::TranslateInputBuffer(std::string& p_string)
     int   clength = 0;
     // Getting the needed buffer length (in code points)
     clength = MultiByteToWideChar(CODEPAGE_UTF8,0,p_string.c_str(),-1,NULL,NULL);
-    uchar* buffer = new uchar[clength * 2];
+    uchar* buffer = alloc_new uchar[clength * 2];
     // Doing the 'real' conversion
     clength = MultiByteToWideChar(CODEPAGE_UTF8,0,p_string.c_str(),-1,reinterpret_cast<LPWSTR>(buffer),clength);
 
@@ -977,7 +971,7 @@ WinFile::TranslateInputBuffer(std::string& p_string)
 
     // Getting the needed length for MBCS
     blength = ::WideCharToMultiByte(GetACP(),WC_COMPOSITECHECK,(LPCWSTR)p_string.c_str(),clength,NULL,NULL,NULL,NULL);
-    char* buffer = new char[blength + 1];
+    char* buffer = alloc_new char[blength + 1];
     // Doing the conversion from UTF-16 to MBCS
     blength = WideCharToMultiByte(GetACP(),WC_COMPOSITECHECK,(LPCWSTR)p_string.c_str(),clength,buffer,blength,NULL,NULL);
     buffer[blength - 1] = 0;
@@ -1144,7 +1138,7 @@ WinFile::TranslateOutputBuffer(const XString& p_string)
     // Getting the length to convert to UTF-16
     clength = MultiByteToWideChar(GetACP(),0,p_string.GetString(),-1,NULL,NULL);
     blength = clength * 2;
-    uchar* buffer = new uchar[blength + 2];
+    uchar* buffer = alloc_new uchar[blength + 2];
     // Real conversion to UTF-16
     clength = MultiByteToWideChar(GetACP(),0,p_string.GetString(),-1,reinterpret_cast<LPWSTR>(buffer),blength);
 
@@ -1163,7 +1157,7 @@ WinFile::TranslateOutputBuffer(const XString& p_string)
     // Getting the needed length
     length = MultiByteToWideChar(GetACP(),0,p_string.GetString(),-1,NULL,NULL);
     length *= 2;
-    uchar* buffer = new uchar[length + 1];
+    uchar* buffer = alloc_new uchar[length + 1];
     // Doing the 'real' conversion
     length = MultiByteToWideChar(GetACP(),0,p_string.GetString(),-1,reinterpret_cast<LPWSTR>(buffer),length);
     length *= 2;
@@ -3301,7 +3295,7 @@ WinFile::ExplodeString(const std::string& p_string,unsigned p_codepage)
   // Convert MBCD  -> UTF-16
   // Getting the needed buffer space (in codepoints! Not bytes!!)
   int length = MultiByteToWideChar(p_codepage,0,p_string.c_str(),-1,NULL,NULL);
-  uchar* buffer = new uchar[length * 2];
+  uchar* buffer = alloc_new uchar[length * 2];
   // Doing the 'real' conversion
   MultiByteToWideChar(p_codepage,0,p_string.c_str(),-1,reinterpret_cast<LPWSTR>(buffer),length);
   XString result;
@@ -3319,7 +3313,7 @@ WinFile::ImplodeString(const XString& p_string,unsigned p_codepage)
   int blength = 0;
   // Getting the length of the translation buffer first
   clength = ::WideCharToMultiByte(p_codepage,0,(LPCWSTR) p_string.GetString(),-1,NULL,0,NULL,NULL);
-  char* buffer = new char[clength + 1];
+  char* buffer = alloc_new char[clength + 1];
   blength = ::WideCharToMultiByte(p_codepage,0,(LPCWSTR) p_string.GetString(),clength,(LPSTR) buffer,clength,NULL,NULL);
   buffer[clength] = 0;
   if(blength > 0 && blength < clength)
@@ -3590,7 +3584,7 @@ WinFile::PageBuffer()
 {
   if(m_pageBuffer == nullptr)
   {
-    m_pageBuffer  = new uchar[(size_t)PAGESIZE + (size_t)1];
+    m_pageBuffer  = alloc_new uchar[(size_t)PAGESIZE + (size_t)1];
     m_pagePointer = m_pageBuffer;
     m_pageTop     = m_pageBuffer;  // Buffer is empty!
     m_pageBuffer[PAGESIZE] = 0;

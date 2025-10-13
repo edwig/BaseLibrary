@@ -124,7 +124,7 @@ public:
     url.Format(_T("http://localhost:1201/MarlinTest/CookieTest/"));
 
     // Test 1
-    HTTPMessage* msg = new HTTPMessage(HTTPCommand::http_put,url);
+    HTTPMessage* msg = alloc_new HTTPMessage(HTTPCommand::http_put,url);
 
     msg->SetCookie(_T("SESSIONCOOKIE"),_T("123456"),_T("meta"),false,true);
     errors += TestCookie(msg,_T("meta"),_T("123456"));

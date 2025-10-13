@@ -48,12 +48,6 @@
 _COM_SMARTPTR_TYPEDEF(IADsADSystemInfo,__uuidof(IADsADSystemInfo));
 _COM_SMARTPTR_TYPEDEF(IADs,__uuidof(IADs));
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 // General COM object on the stack
 class CoInit
 {
