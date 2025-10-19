@@ -54,6 +54,8 @@ public:
   XString(TCHAR p_char,int p_count = 1);
   // CTOR from other string
   XString(const XString& p_string);
+  // CTOR from other string
+  XString(const stdstring& p_string);
 #ifdef _UNICODE
 // CTOR form a wchar_t stream
   XString(wchar_t* p_string);

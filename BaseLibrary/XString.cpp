@@ -56,6 +56,12 @@ XString::XString(const XString& p_string)
   append(p_string.c_str());
 }
 
+// CTOR from other string
+XString::XString(const stdstring& p_string)
+{
+  append(p_string.c_str());
+}
+
 #ifdef _UNICODE
 
 // CTOR form a wchar_t stream

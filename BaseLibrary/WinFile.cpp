@@ -800,7 +800,6 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
 {
   std::string  result8;   // Reading  8 bits stream
   std::wstring result16;  // Reading 16 bits stream
-  bool unicodeSkip(false);
   bool crstate(false);
 
   // Reset the error
@@ -905,7 +904,8 @@ WinFile::TranslateInputBuffer(std::string& p_string8,std::wstring& p_string16)
 #else
   if(m_encoding == Encoding::UTF8)
   {
-    return DecodeStringFromTheWire(XString(p_string8));
+    XString input(p_string8);
+    return DecodeStringFromTheWire(input);
   }
   else if(m_encoding == Encoding::LE_UTF16 ||
           m_encoding == Encoding::BE_UTF16 )
@@ -913,7 +913,7 @@ WinFile::TranslateInputBuffer(std::string& p_string8,std::wstring& p_string16)
     XString output;
     XString charset = (m_encoding == Encoding::LE_UTF16) ? _T("utf-16") : _T("unicodeFFFE");
     bool foundBOM = false;
-    if(!TryConvertWideString((const BYTE*)p_string16.c_str(),p_string16.size(),charset,output,foundBOM))
+    if(!TryConvertWideString((const BYTE*)p_string16.c_str(),(int)p_string16.size(),charset,output,foundBOM))
     {
       output.Empty();
     }
