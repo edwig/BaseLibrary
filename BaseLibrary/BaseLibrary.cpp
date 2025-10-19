@@ -29,6 +29,11 @@
 
 void InitBaseLibrary()
 {
+// This is the default behaviour!
+//  CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+// _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG); 
+// See also: https://learn.microsoft.com/en-us/cpp/c-runtime-library/find-memory-leaks-using-the-crt-library?view=msvc-170
+//
 #ifdef _DEBUG
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif

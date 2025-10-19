@@ -42,6 +42,8 @@
 #include <filesystem>
 #include <io.h>
 
+#pragma comment(lib,"comdlg32.lib")
+
 //////////////////////////////////////////////////////////////////////////
 //
 // HERE IS THE MOST IMPORTANT MAGIC!!
@@ -611,7 +613,7 @@ WinFile::CreateTempFileName(const XString& p_pattern,const XString& p_extension 
     {
       m_filename = m_filename.Left(pos);
     }
-    if(p_extension[0] != '.')
+    if(p_extension.GetAt(0) != _T('.'))
     {
       m_filename += '.';
     }
@@ -796,9 +798,10 @@ WinFile::ForgetFile()
 bool
 WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
 {
-  std::string result;
+  std::string  result8;   // Reading  8 bits stream
+  std::wstring result16;  // Reading 16 bits stream
   bool unicodeSkip(false);
-  int  last(0);
+  bool crstate(false);
 
   // Reset the error
   m_error = 0;
@@ -817,115 +820,84 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
     return false;
   }
 
-  bool crstate = false;
 
   while(true)
   {
-    int ch(PageBufferRead());
+    int ch(PageBufferReadCharacter());
     if(ch == EOF || ch == 0)
     {
       m_error = ::GetLastError();
-      p_string = TranslateInputBuffer(result);
+      p_string = TranslateInputBuffer(result8,result16);
       return p_string.GetLength() ? true : false;
     }
-    result += (uchar)ch;
 
     // Do the CR/LF to "\n" translation
     if(m_openMode & FFlag::open_trans_text)
     {
-      if(ch == p_delim || ch == '\r')
+      if(ch == _T('\r'))
       {
-        unicodeSkip = (m_encoding == Encoding::LE_UTF16) ||
-                      (m_encoding == Encoding::BE_UTF16);
-      }
-      if(ch == '\r')
-      {
-        int ext;
         crstate = true;
-        switch(m_encoding)
+      }
+    }
+
+    // Delimiter (end-of-line) reached
+    if(ch == p_delim)
+    {
+      if(crstate)
+      {
+        // Remove last CR if present before LF
+        if(m_encoding == Encoding::LE_UTF16 ||
+           m_encoding == Encoding::BE_UTF16)
         {
-          case Encoding::LE_UTF16:  ext = PageBufferRead();
-                                    result += (uchar) ext;
-                                    if(ext)
-                                    {
-                                      crstate = false;
-                                    }
-                                    break;
-          case Encoding::BE_UTF16:  if(result[result.size() - 2])
-                                    {
-                                      crstate = false;
-                                    }
-                                    break;
-          case Encoding::UTF8:      last = 0; 
-                                    [[fallthrough]];
-          default:                  break;
-
+          result16.resize(result16.size() - 1);
         }
-        continue;
+        else
+        {
+          result8.resize(result8.size() - 1);
+        }
       }
-    }
-    if(ch == p_delim && m_encoding == Encoding::LE_UTF16)
-    {
-      // Read in trailing zero for a newline in this encoding
-      result += (uchar)(last = PageBufferRead());
-    }
-    if(crstate && ch == p_delim && !last)
-    {
-      if(unicodeSkip)
-      {
-        result[result.size() - 4] = result[result.size() - 2];
-        result[result.size() - 3] = result[result.size() - 1];
-      }
-      else
-      {
-        result[result.size() - 2] = (uchar)ch;
-      }
-      result.erase(result.size() - 1 - (unicodeSkip ? 1 : 0));
-      crstate = false;
-    }
-
-    // See if we are ready reading the string
-    if(ch == p_delim && !last)
-    {
       break;
     }
-    if(unicodeSkip)
+
+    // Add last character
+    if(m_encoding == Encoding::LE_UTF16 ||
+       m_encoding == Encoding::BE_UTF16)
     {
-      last = ch;
+      result16 += (wchar_t)ch;
+    }
+    else
+    {
+      result8 += (uchar)ch;
+    }
+
+    // Reset the CR-state if we had another character
+    if(ch != _T('\r'))
+    {
+      crstate = false;
     }
   }
-  p_string = TranslateInputBuffer(result);
+  p_string = TranslateInputBuffer(result8,result16);
   return true;
 }
 
 XString 
-WinFile::TranslateInputBuffer(std::string& p_string)
+WinFile::TranslateInputBuffer(std::string& p_string8,std::wstring& p_string16)
 {
-  if(p_string.empty())
+  // Do we  have input
+  if(p_string8.empty() && p_string16.empty())
   {
     return _T("");
   }
 #ifdef _UNICODE
   if(m_encoding == Encoding::UTF8)
   {
-    return ExplodeString(p_string,CODEPAGE_UTF8);
-  }
-  else if(m_encoding == Encoding::BE_UTF16)
-  {
-    BlefuscuToLilliput(p_string);
+    return ExplodeString(p_string8,CODEPAGE_UTF8);
   }
   if(m_encoding == Encoding::LE_UTF16||
      m_encoding == Encoding::BE_UTF16)
   {
     // We are already UTF-16
-    XString result;
-    int size = (int) p_string.size();
-    LPTSTR resbuf = result.GetBufferSetLength(size + 1);
-    memcpy(resbuf,p_string.c_str(),size);
-    size /= sizeof(TCHAR);
-    resbuf[size] = (TCHAR) 0;
-    result.ReleaseBufferSetLength(size);
-    return result;
+    return result16;
   }
   // Last resort, create XString for current codepage
   // Mostly MS-Windows 1252 in Western Europe
@@ -933,61 +905,29 @@ WinFile::TranslateInputBuffer(std::string& p_string)
 #else
   if(m_encoding == Encoding::UTF8)
   {
-    // Convert UTF-8 -> UTF-16 -> MBCS
-    int   clength = 0;
-    // Getting the needed buffer length (in code points)
-    clength = MultiByteToWideChar(CODEPAGE_UTF8,0,p_string.c_str(),-1,NULL,NULL);
-    uchar* buffer = alloc_new uchar[clength * 2];
-    // Doing the 'real' conversion
-    clength = MultiByteToWideChar(CODEPAGE_UTF8,0,p_string.c_str(),-1,reinterpret_cast<LPWSTR>(buffer),clength);
-
-    // Getting the needed length for MBCS
-    clength = ::WideCharToMultiByte(GetACP(),0,(LPCWSTR) buffer,-1,NULL,NULL,NULL,NULL);
-    XString result;
-    LPTSTR strbuf = result.GetBufferSetLength(clength);
-    // Doing the conversion to MBCS
-    clength = ::WideCharToMultiByte(GetACP(),0,(LPCWSTR) buffer,-1,reinterpret_cast<LPSTR>(strbuf),clength,NULL,NULL);
-    result.ReleaseBuffer();
-    delete[] buffer;
-    return result;
+    return DecodeStringFromTheWire(XString(p_string8));
   }
   else if(m_encoding == Encoding::LE_UTF16 ||
           m_encoding == Encoding::BE_UTF16 )
   {
-    if(m_encoding == Encoding::BE_UTF16)
+    XString output;
+    XString charset = (m_encoding == Encoding::LE_UTF16) ? _T("utf-16") : _T("unicodeFFFE");
+    bool foundBOM = false;
+    if(!TryConvertWideString((const BYTE*)p_string16.c_str(),p_string16.size(),charset,output,foundBOM))
     {
-      BlefuscuToLilliput(p_string);
+      output.Empty();
     }
-    // Implode to MBCS
-    XString result;
-    int clength = 0;
-    int blength = 0;
-    // Zero delimit the input string for sure!
-    p_string += '0';
-    p_string += '0';
-
-    // Size in UTF16 character code points
-    clength = (int)p_string.size() / 2;
-
-    // Getting the needed length for MBCS
-    blength = ::WideCharToMultiByte(GetACP(),WC_COMPOSITECHECK,(LPCWSTR)p_string.c_str(),clength,NULL,NULL,NULL,NULL);
-    char* buffer = alloc_new char[blength + 1];
-    // Doing the conversion from UTF-16 to MBCS
-    blength = WideCharToMultiByte(GetACP(),WC_COMPOSITECHECK,(LPCWSTR)p_string.c_str(),clength,buffer,blength,NULL,NULL);
-    buffer[blength - 1] = 0;
-    result = buffer;
-    delete[] buffer;
-    return result;
+    return output;
   }
   else if(m_encoding == Encoding::EN_ACP || m_encoding == (Encoding)GetACP())
   {
     // Simply the string in the current encoding
-    return XString(p_string.c_str());
+    return XString(p_string8);
   }
   else
   {
     // We got some strange encoding which we try to convert to MBCS
-    XString string(p_string.c_str());
+    XString string(p_string8);
     return DecodeStringFromTheWire(string,CodepageToCharset((int)m_encoding));
   }
 #endif
@@ -2360,7 +2300,7 @@ WinFile::GetNamePercentEncoded()
   // Watch out: strange code ahead!
   for(int ind = 0;ind < m_filename.GetLength(); ++ind)
   {
-    TCHAR ch = m_filename[ind];
+    TCHAR ch = (TCHAR) m_filename.GetAt(ind);
     if(ch == '?')
     {
       queryValue = true;
@@ -2708,7 +2648,10 @@ WinFile::SetFilenameByDialog(HWND    p_parent      // Parent window (if any)
   filter += _T("||");
   for(int index = 0; index < filter.GetLength(); ++index)
   {
-    if(filter[index] == _T('|')) filter.SetAt(index,0);
+    if(filter.GetAt(index) == _T('|')) 
+    {
+      filter.SetAt(index,0);
+    }
   }
 
   // Fill in the filename structure
@@ -2879,7 +2822,7 @@ WinFile::LegalDirectoryName(const XString& p_name,bool p_extensionAllowed /*= tr
     if(pos == 0 && name.GetLength() > (int)_tcslen(reserved[index]))
     {
       pos += (int)_tcslen(reserved[index]);
-      if(name[pos] == '.')
+      if(name.GetAt(pos) == _T('.'))
       {
         name.SetAt(pos,'_');
         break;
@@ -2951,8 +2894,8 @@ WinFile::StripFileProtocol(const XString& p_fileref)
   // Create a filename separator char name
   for(int index = 0; index < fileref.GetLength(); ++index)
   {
-    if(fileref[index] == '/') fileref.SetAt(index,'\\');
-    if(fileref[index] == '|') fileref.SetAt(index,':');
+    if(p_fileref.GetAt(index) == _T('/')) fileref.SetAt(index,_T('\\'));
+    if(p_fileref.GetAt(index) == _T('|')) fileref.SetAt(index,_T(':'));
   }
 
   // Resolve the '%' chars in the filename
@@ -2973,25 +2916,25 @@ WinFile::ResolveSpecialChars(XString& p_value)
     ++total;
     int num = 0;
     XString hexstring = p_value.Mid(pos+1,2);
-    hexstring.SetAt(0,(TCHAR)toupper(hexstring[0]));
-    hexstring.SetAt(1,(TCHAR)toupper(hexstring[1]));
+    hexstring.SetAt(0,(TCHAR)toupper(hexstring.GetAt(0)));
+    hexstring.SetAt(1,(TCHAR)toupper(hexstring.GetAt(1)));
 
-    if(isdigit(hexstring[0]))
+    if(isdigit(hexstring.GetAt(0)))
     {
-      num = hexstring[0] - '0';
+      num = hexstring.GetAt(0) - '0';
     }
     else
     {
-      num = hexstring[0] - 'A' + 10;
+      num = hexstring.GetAt(0) - 'A' + 10;
     }
     num *= 16;
-    if (isdigit(hexstring[1]))
+    if (isdigit(hexstring.GetAt(1)))
     {
-      num += hexstring[1] - '0';
+      num += hexstring.GetAt(1) - '0';
     }
     else
     {
-      num += hexstring[1] - 'A' + 10;
+      num += hexstring.GetAt(1) - 'A' + 10;
     }
     p_value.SetAt(pos,(char)num);
     p_value  = p_value.Left(pos+1);
@@ -3042,7 +2985,7 @@ WinFile::GetBaseDirectory(XString& p_path)
   XString result;
 
   // Strip of an extra path separator
-  while (p_path[0] == '\\')
+  while (p_path.GetAt(0) == _T('\\'))
   {
     p_path = p_path.Mid(1);
   }
@@ -3686,6 +3629,24 @@ WinFile::PageBufferRead()
   }
   return (int) *m_pagePointer++;
 }
+
+int
+WinFile::PageBufferReadCharacter()
+{
+  int ch = PageBufferRead();
+  int ex = 0;
+  switch (m_encoding)
+  {
+    case Encoding::LE_UTF16:  ex = PageBufferRead(); 
+                              ch += (ex << 8);
+                              break;
+    case Encoding::BE_UTF16:  ex = PageBufferRead(); 
+                              ch = (ch << 8) + ex;
+                              break;
+  }
+  return ch;
+}
+
 
 // Scan for a valid BYTE-ORDER-MARK: UTF-8 or UTF-16 Big Endian
 void

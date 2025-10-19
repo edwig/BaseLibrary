@@ -114,9 +114,10 @@ int main(const int argc,const char* argv[])
   }
 
   // Testing Memory leaks of various sorts
-  char* test = alloc_new char[2000];
-  std::string* teststring = alloc_new std::string(_T("testing"));
-  BYTE* block = (BYTE*)malloc(1000);
+  //   char* test = alloc_new char[2000];
+  //   std::string* teststring = alloc_new std::string(_T("testing"));
+  //   BYTE* block = (BYTE*)malloc(1000);
+
 
   _tprintf(_T("Total number of errors: %d\n"),errors);
   return errors;

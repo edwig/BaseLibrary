@@ -661,7 +661,7 @@ XMLRestriction::CheckBase64(const XString& p_value)
       case _T('+'): // Plus
                     continue;
       case _T('='): if(ind == len - 1 ||
-                      (ind == len - 2 && p_value[ind + 1] == '='))
+                      (ind == len - 2 && p_value.GetAt(ind + 1) == _T('=')))
                     {
                       return _T("");
                     }
