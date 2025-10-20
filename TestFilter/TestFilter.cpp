@@ -100,7 +100,7 @@ int main(const int argc,const TCHAR* argv[])
 
   AllocateBuffer();
 
-  ::MessageBox(NULL,_T("Type something to the standard console!"),_T("TESTING"),MB_OK);
+  // ::MessageBox(NULL,_T("Type something to the standard console!"),_T("TESTING"),MB_OK);
 
   ReadStandardInput();
   WriteStandardOutput(sendToError);

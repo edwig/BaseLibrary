@@ -366,18 +366,19 @@ public:
     Logger::WriteMessage(_T("TESTING THE MICROSOFT ENCYRPTION PROVIDER FOR ALL SORTS OF STRING"));
     Logger::WriteMessage(_T("================================================================="));
 
+    // Construct original string
+    XString total;
+    for(int index = 0; index < 1000; ++index)
+    {
+      total += (TCHAR)(_T('A') + index % 26);
+    }
+    Crypto crypting;
 
     for(int length = 1; length <= 1000; ++length)
     {
       // Construct original string
-      XString original;
-      for(int index = 0; index < length; ++index)
-      {
-        original += (TCHAR) (_T('A') + index % 26);
-      }
-
-      Crypto crypting;
-      XString encrypted = crypting.Encryption(original,password);
+      XString original  = total.Left(length);
+      XString encrypted = crypting.Encryption(original, password);
       XString decrypted = crypting.Decryption(encrypted,password);
 
       if(original != decrypted)
