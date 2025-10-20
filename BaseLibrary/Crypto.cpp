@@ -333,7 +333,7 @@ error_exit:
 
 #ifdef _UNICODE
 XString
-Crypto::Decryption(XString p_input,XString p_password)
+Crypto::Decryption(const XString& p_input,const XString& p_password)
 {
   XString decoded;
   int   lengthINP = 0;

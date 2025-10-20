@@ -39,7 +39,7 @@ LPCTSTR g_eventLogCategory = _T("Application");
 
 // Register our DLL. Return '1' if successful, otherwise '0'
 int
-RegisterMessagesDllForService(const XString p_serviceName,const XString& p_messageDLL,XString& p_error)
+RegisterMessagesDllForService(const XString& p_serviceName,const XString& p_messageDLL,XString& p_error)
 {
   p_error.Empty();
 
