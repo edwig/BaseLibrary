@@ -78,12 +78,12 @@ public:
     file2.Read(string1);
     file2.Read(string2);
     file2.Read(string3);
+    file2.Close();
 
     if(one.Compare(string1) || two.Compare(string2) || fin.Compare(string3))
     {
       Assert::Fail(L"ERROR while reading back UTF-8 file!");
     }
-    file2.Close();
 
     // Remove the file
     if(!file2.DeleteFile())

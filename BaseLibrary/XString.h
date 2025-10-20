@@ -170,8 +170,8 @@ public:
   // Set string from a COM BSTR
   BSTR        SetSysString(BSTR* p_string);
   // Leftmost string (not) in argument
-  XString     SpanExcluding(PCTSTR p_string);
-  XString     SpanIncluding(PCTSTR p_string);
+  XString     SpanExcluding(PCTSTR p_string) const;
+  XString     SpanIncluding(PCTSTR p_string) const;
   // Length of the string
  static int   StringLength (PCTSTR p_string);
   // Return tokenized strings

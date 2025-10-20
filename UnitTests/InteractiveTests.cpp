@@ -30,23 +30,30 @@
 #include "CppUnitTest.h"
 #include <ActiveDirectory.h>
 #include <WideMessageBox.h>
+#include <windows.h>
+
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace BaseLibraryUnitTests
 {
+
 TEST_CLASS(InteractiveTests)
 {
 public:
 
-  TEST_METHOD(TestWideMessageBox)
-  {
-    Logger::WriteMessage("Testing WideMessageBox");
+//   The current C++ Unit framework does not allow for the loading of 
+//   Version 6.0.0 of the common-control DLL (comctrl32.dll)
+//   Therefore the WideMessageBox can only be tested in a 'real' native EXE file.
 
-    int res = WideMessageBox(NULL,_T("This is a test with a very wide message box surpassing the standard MS-Window width"),_T("WIDE"),MB_OK|MB_SETFOREGROUND|MB_ICONASTERISK);
-
-    Assert::AreEqual(res,IDOK);
-  }
+//   TEST_METHOD(TestWideMessageBox)
+//   {
+//     Logger::WriteMessage("Testing WideMessageBox");
+// 
+//     int res = WideMessageBox(NULL,_T("This is a test with a very wide message box surpassing the standard MS-Window width"),_T("WIDE"),MB_OK|MB_SETFOREGROUND|MB_ICONASTERISK);
+// 
+//     Assert::AreEqual(res,IDOK);
+//   }
 
   TEST_METHOD(TestEmailAddress)
   {

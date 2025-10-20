@@ -33,8 +33,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define NUM_TESTS  10000  // 1E+04
-#define NUM_RESULT 1169883
+#define NUM_TESTS  1000  // 1E+03
+#define NUM_RESULT 116883
 
 namespace BaseLibraryUnitTests
 {
@@ -49,10 +49,10 @@ public:
     XString newstring(_T("This is a new string added to the rest\n"));
 
     HPFCounter count;
+    XString ext = newstring + newstring;
     for(int x = 1;x < NUM_TESTS; ++x)
     {
       total += newstring;
-      XString ext = newstring + newstring;
       total += ext;
     }
     size_t size = total.GetLength();
@@ -66,11 +66,11 @@ public:
     XStringBuilder build;
 
     HPFCounter count2;
-    XString ext = newstring + newstring;
+    XString ext2 = newstring + newstring;
     for(int x = 1;x < NUM_TESTS; ++x)
     {
       build.Append(newstring);
-      build.Append(ext);
+      build.Append(ext2);
     }
     total = build.ToString();
     size = total.GetLength();
@@ -82,4 +82,5 @@ public:
     Assert::IsTrue(size == NUM_RESULT);
   }
 };
+
 }

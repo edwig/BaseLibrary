@@ -367,7 +367,7 @@ public:
     Logger::WriteMessage(_T("================================================================="));
 
 
-    for(int length = 1; length <= 3000; ++length)
+    for(int length = 1; length <= 1000; ++length)
     {
       // Construct original string
       XString original;

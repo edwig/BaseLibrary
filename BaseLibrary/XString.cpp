@@ -650,7 +650,7 @@ XString::SetSysString(BSTR* p_string)
 
 // Leftmost string not in argument
 XString 
-XString::SpanExcluding(PCTSTR p_string)
+XString::SpanExcluding(LPCTSTR p_string) const
 {
   if(p_string == nullptr)
   {
@@ -661,7 +661,7 @@ XString::SpanExcluding(PCTSTR p_string)
 
 // Leftmost string in argument
 XString 
-XString::SpanIncluding(PCTSTR p_string)
+XString::SpanIncluding(LPCTSTR p_string) const
 {
   if(p_string == nullptr)
   {

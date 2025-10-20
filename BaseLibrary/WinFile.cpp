@@ -801,6 +801,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
   std::string  result8;   // Reading  8 bits stream
   std::wstring result16;  // Reading 16 bits stream
   bool crstate(false);
+  bool reading(true);
 
   // Reset the error
   m_error = 0;
@@ -820,7 +821,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
   }
 
 
-  while(true)
+  while(reading)
   {
     int ch(PageBufferReadCharacter());
     if(ch == EOF || ch == 0)
@@ -842,6 +843,7 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
     // Delimiter (end-of-line) reached
     if(ch == p_delim)
     {
+      reading = false;
       if(crstate)
       {
         // Remove last CR if present before LF
@@ -855,7 +857,6 @@ WinFile::Read(XString& p_string,uchar p_delim /*= '\n'*/)
           result8.resize(result8.size() - 1);
         }
       }
-      break;
     }
 
     // Add last character
@@ -896,11 +897,11 @@ WinFile::TranslateInputBuffer(std::string& p_string8,std::wstring& p_string16)
      m_encoding == Encoding::BE_UTF16)
   {
     // We are already UTF-16
-    return result16;
+    return p_string16;
   }
   // Last resort, create XString for current codepage
   // Mostly MS-Windows 1252 in Western Europe
-  return ExplodeString(p_string,GetACP());
+  return ExplodeString(p_string8,GetACP());
 #else
   if(m_encoding == Encoding::UTF8)
   {
@@ -2985,7 +2986,7 @@ WinFile::GetBaseDirectory(XString& p_path)
   XString result;
 
   // Strip of an extra path separator
-  while (p_path.GetAt(0) == _T('\\'))
+  while(!p_path.empty() && p_path.GetAt(0) == _T('\\'))
   {
     p_path = p_path.Mid(1);
   }
@@ -3635,14 +3636,17 @@ WinFile::PageBufferReadCharacter()
 {
   int ch = PageBufferRead();
   int ex = 0;
-  switch (m_encoding)
+  if(ch != EOF)
   {
-    case Encoding::LE_UTF16:  ex = PageBufferRead(); 
-                              ch += (ex << 8);
-                              break;
-    case Encoding::BE_UTF16:  ex = PageBufferRead(); 
-                              ch = (ch << 8) + ex;
-                              break;
+    switch (m_encoding)
+    {
+      case Encoding::LE_UTF16:  ex = PageBufferRead(); 
+                                ch += (ex << 8);
+                                break;
+      case Encoding::BE_UTF16:  ex = PageBufferRead(); 
+                                ch = (ch << 8) + ex;
+                                break;
+    }
   }
   return ch;
 }

@@ -588,7 +588,7 @@ namespace BaseLibraryUnitTests
                          _T("    </FunctionCall>\n")
                          _T("  </s:Body>\n")
                          _T("</s:Envelope>\n");
-      SOAPMessage msg(internal,false);
+      SOAPMessage msg((LPCTSTR)internal,false);
       XString action = msg.GetSoapAction();
       XString namesp = msg.GetNamespace();
 
