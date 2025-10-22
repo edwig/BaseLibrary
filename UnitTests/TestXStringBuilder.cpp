@@ -33,8 +33,8 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#define NUM_TESTS  1000  // 1E+03
-#define NUM_RESULT 116883
+#define NUM_TESTS  10000  // 1E+04
+#define NUM_RESULT 1169883
 
 namespace BaseLibraryUnitTests
 {
