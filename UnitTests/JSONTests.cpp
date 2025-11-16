@@ -241,11 +241,11 @@ public:
     SOAPMessage msg(namesp,action);
     msg.SetParameter(_T("First"),101);
     msg.SetParameter(_T("Second"),102);
-    XMLElement* elem = msg.AddElement(NULL,_T("Third"),(XmlDataType) XDT_String,_T(""));
+    XMLElement* elem = msg.AddElement(NULL,_T("Third"),_T(""));
     if(elem)
     {
-      msg.AddElement(elem,_T("Fortune"),XDT_Integer,_T("1000000"));
-      msg.AddElement(elem,_T("Glory"),XDT_String,_T("Indiana Jones"));
+      msg.AddElement(elem,_T("Fortune"),_T("1000000"));
+      msg.AddElement(elem,_T("Glory"),_T("Indiana Jones"));
     }
     JSONMessage json(&msg);
     XString str = json.GetJsonMessage();

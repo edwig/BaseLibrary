@@ -655,7 +655,7 @@ BSTR
 XString::SetSysString(BSTR* p_string)
 {
 #ifdef UNICODE
-  int nLen = _tcslen(*p_string);
+  int nLen = (int) _tcslen(*p_string);
   BOOL bSuccess = ::SysReAllocStringLen(p_string,NULL,nLen);
   if(bSuccess)
   {

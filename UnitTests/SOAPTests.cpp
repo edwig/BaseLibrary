@@ -117,8 +117,8 @@ namespace BaseLibraryUnitTests
       msg.SetParameter(_T("Five"), _T(""));
       
       XMLElement* param = msg.GetParameterObjectNode();
-      XMLElement* six   = msg.AddElement(param,_T("Six"), XDT_String,_T(""));
-      XMLElement* six2  = msg.AddElement(six,  _T("Six2"),XDT_String,_T("S2"));
+      XMLElement* six   = msg.AddElement(param,_T("Six"), _T(""));
+      XMLElement* six2  = msg.AddElement(six,  _T("Six2"),_T("S2"));
 
       msg.CleanUp();
 
@@ -159,13 +159,13 @@ namespace BaseLibraryUnitTests
       msg.SetParameter(_T("Five"), _T(""));
       
       XMLElement* param = msg.GetParameterObjectNode();
-      XMLElement* six   = msg.AddElement(param,_T("Six"),XDT_String,_T(""));
-      XMLElement* six2  = msg.AddElement(six, _T("Six2"),XDT_String,_T("S2"));
+      XMLElement* six   = msg.AddElement(param,_T("Six"),_T(""));
+      XMLElement* six2  = msg.AddElement(six, _T("Six2"),_T("S2"));
 
-      XMLElement* seven  = msg.AddElement(param, _T("Seven"), XDT_String,_T(""));
-      XMLElement* seven2 = msg.AddElement(seven, _T("Seven2"),XDT_String,_T(""));
-      XMLElement* seven3 = msg.AddElement(seven2,_T("Seven3"),XDT_String,_T(""));
-      XMLElement* seven4 = msg.AddElement(seven3,_T("Seven4"),XDT_String,_T(""));
+      XMLElement* seven  = msg.AddElement(param, _T("Seven"), _T(""));
+      XMLElement* seven2 = msg.AddElement(seven, _T("Seven2"),_T(""));
+      XMLElement* seven3 = msg.AddElement(seven2,_T("Seven3"),_T(""));
+      XMLElement* seven4 = msg.AddElement(seven3,_T("Seven4"),_T(""));
 
       msg.CleanUp();
       XString total = msg.GetSoapMessage();

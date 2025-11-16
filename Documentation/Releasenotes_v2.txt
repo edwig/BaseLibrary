@@ -26,3 +26,21 @@ Version 2.0.0 of 10-10-2025
    copy-on-write design filosophy.
 3) Place a call to "InitBaseLibrary()" in your application startup code.
    This initializes the settings for debugging memory leaks.
+
+Version 2.0.1 of 16-11-2025
+---------------------------
+1) Updated to Visual Studio 2026.
+2) Dropped the support for the 32-bit platform. The library is now only available
+   for 64-bit platforms.
+   The default test and support configuration is now the "UNICODE" build.
+3) Fixed some minor issues with the SOAPMessage classa witht the overload of the
+   AddParameter method, where the parameter "const LPTSTR" was changed to "LPCTSTR".
+   Without this change the new compiler chooses the 'bool' paramter overload instead of
+   the one with the string parameter.
+4) Set/AddParameter methods of the SOAPMessage now infer the XmlDataType from their
+   respective value parameters. Please change your code accordingly if you were using 
+   these methods. The error did only occur in the Release build configurations.
+5) The XmlDataType is now a true enum class. Also the parameters for the Set/Add methods
+   of the SOAPMessage class have been changed to use "XmlDataType::Type" instead of
+   just "XmlDataType". They are now placed AFTER the value parameter!!
+   Please change your code accordingly.
