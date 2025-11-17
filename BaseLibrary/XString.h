@@ -58,7 +58,7 @@ public:
   // CTOR from other string
   XString(const stdstring& p_string);
 #ifdef _UNICODE
-// CTOR form a wchar_t stream
+  // CTOR form a wchar_t stream
   XString(wchar_t* p_string);
   // CTOR from a ANSI string
   XString(PCSTR p_string);
