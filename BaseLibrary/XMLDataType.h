@@ -32,6 +32,7 @@ enum class XmlDataType
 {
   XDT_Unknown             = 0x00000000
  ,XDT_String              = 0x00000001
+ ,XDT_StringCDATA         = 0x00002001
  ,XDT_Integer             = 0x00000002
  ,XDT_Boolean             = 0x00000003
  ,XDT_Double              = 0x00000004
@@ -102,7 +103,9 @@ enum class XmlDataType
 #define WSDL_MaskOrder      0x00C00000
 #define WSDL_MaskField      0x003F0000
 
-// typedef unsigned XmlDataType;
+// Combining to XmlDataTypes
+
+#define XDT_Combine(a,b)   (XmlDataType)((static_cast<int>(a)) | (static_cast<int>(b)))
 
 // Conversion between XML datatype and string names
 XString     XmlDataTypeToString(XmlDataType p_type);
