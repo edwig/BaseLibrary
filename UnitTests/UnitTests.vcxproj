@@ -204,6 +204,7 @@
     <ClCompile Include="TestCrackURL_Unicode.cpp" />
     <ClCompile Include="TestCryptoBase64.cpp" />
     <ClCompile Include="TestEnvironment.cpp" />
+    <ClCompile Include="TestRotatingTree.cpp" />
     <ClCompile Include="TestToken.cpp" />
     <ClCompile Include="TestWinFile.cpp" />
     <ClCompile Include="TestXML.cpp" />

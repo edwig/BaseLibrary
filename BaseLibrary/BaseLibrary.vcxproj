@@ -308,6 +308,7 @@
     <ClInclude Include="ProcInfo.h" />
     <ClInclude Include="QueryReWriter.h" />
     <ClInclude Include="Redirect.h" />
+    <ClInclude Include="RotatingTree.h" />
     <ClInclude Include="Routing.h" />
     <ClInclude Include="RunRedirect.h" />
     <ClInclude Include="ServiceQuality.h" />
@@ -400,6 +401,7 @@
     <ClCompile Include="ProcInfo.cpp" />
     <ClCompile Include="QueryReWriter.cpp" />
     <ClCompile Include="Redirect.cpp" />
+    <ClCompile Include="RotatingTree.cpp" />
     <ClCompile Include="RunRedirect.cpp" />
     <ClCompile Include="ServiceQuality.cpp" />
     <ClCompile Include="ServiceReporting.cpp" />

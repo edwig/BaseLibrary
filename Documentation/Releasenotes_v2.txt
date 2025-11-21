@@ -44,3 +44,10 @@ Version 2.0.1 of 16-11-2025
    of the SOAPMessage class have been changed to use "XmlDataType::Type" instead of
    just "XmlDataType". They are now placed AFTER the value parameter!!
    Please change your code accordingly.
+
+Version 2.0.2 of xx-xx-2025
+---------------------------
+1) Added the RotatingTree class. This is a simple mapping index.
+   It stores an index, but not whole objects.
+   Outperforms STL std::map with a factor of 50%
+
