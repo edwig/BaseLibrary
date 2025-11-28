@@ -26,6 +26,10 @@ Version 2.0.0 of 10-10-2025
    copy-on-write design filosophy.
 3) Place a call to "InitBaseLibrary()" in your application startup code.
    This initializes the settings for debugging memory leaks.
+4) Added the "IsTextUnicodeUTF8" method to scan for UTF-8 texts in strings that have
+   not been marked as such. E.g. by a UTF8 BOM (Byte-Order-Mark)
+5) Corrections to various methods of XString
+
 
 Version 2.0.1 of 16-11-2025
 ---------------------------

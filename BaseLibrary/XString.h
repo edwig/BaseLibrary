@@ -303,11 +303,6 @@ inline LPCTSTR XString::GetString() const
   return c_str();
 }
 
-inline int XString::GetAt(int p_index) const
-{
-  return at(p_index);
-}
-
 inline unsigned  XString::GetAllocLength() const
 {
   return (unsigned)capacity();
