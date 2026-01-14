@@ -96,6 +96,12 @@ enum class XmlDataType
  ,WSDL_Sequence           = 0x00800000 // Exact sequence
 };
 
+constexpr XmlDataType operator|(const XmlDataType& left,const XmlDataType& right)
+{
+  return static_cast<XmlDataType>(static_cast<int>(left) | static_cast<int>(right));
+}
+
+
 #define XDT_Mask            0x0000ffff
 #define XDT_MaskTypes       0x00000fff
 

@@ -100,26 +100,27 @@ public:
   void            Reset();
 
   // GETTERS
-  XString         GetNamespace()    { return m_namespace;   };
-  XString         GetName()         { return m_name;        };
-  XmlDataType     GetType()         { return m_type;        };
-  XString         GetValue()        { return m_value;       };
-  XmlAttribMap&   GetAttributes()   { return m_attributes;  };
-  XmlElementMap&  GetChildren()     { return m_elements;    };
-  XMLElement*     GetParent()       { return m_parent;      };
-  XMLRestriction* GetRestriction()  { return m_restriction; };
+  XString         GetNamespace()    { return m_namespace;   }
+  XString         GetName()         { return m_name;        }
+  XmlDataType     GetType()         { return m_type;        }
+  XString         GetValue()        { return m_value;       }
+  XmlAttribMap&   GetAttributes()   { return m_attributes;  }
+  XmlElementMap&  GetChildren()     { return m_elements;    }
+  XMLElement*     GetParent()       { return m_parent;      }
+  XMLRestriction* GetRestriction()  { return m_restriction; }
 
   // TESTERS
   static bool     IsValidName(const XString& p_name);
   static XString  InvalidNameMessage(const XString& p_name);
 
   // SETTERS
-  void            SetParent(XMLElement* parent)              { m_parent    = parent;    };
-  void            SetNamespace(const XString& p_namesp)      { m_namespace = p_namesp;  };
+  void            SetParent(XMLElement* parent)              { m_parent      = parent;     }
+  void            SetNamespace(const XString& p_namesp)      { m_namespace   = p_namesp;   }
   void            SetName(const XString& p_name);
-  void            SetType(XmlDataType p_type)                { m_type      = p_type;    };
-  void            SetValue(const XString& p_value)           { m_value     = p_value;   };
-  void            SetRestriction(XMLRestriction* p_restrict) { m_restriction = p_restrict; };
+  void            SetType(XmlDataType p_type)                { m_type        = p_type;     }
+  void            SetValue(const XString& p_value)           { m_value       = p_value;    }
+  void            SetRestriction(XMLRestriction* p_restrict) { m_restriction = p_restrict; }
+  void            SetTypeAttribute(XmlDataType p_extra);
 
   // REFERENCE SYSTEM
   void            AddReference();

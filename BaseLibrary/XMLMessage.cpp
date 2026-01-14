@@ -152,6 +152,12 @@ XMLElement::SetName(const XString& p_name)
   m_name = p_name; 
 }
 
+void
+XMLElement::SetTypeAttribute(XmlDataType p_extra)
+{
+  m_type = m_type | p_extra;
+}
+
 #pragma endregion XMLElement
 
 #pragma region XMLMessage_XTOR
