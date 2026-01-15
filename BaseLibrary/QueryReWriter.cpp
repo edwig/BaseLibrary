@@ -344,7 +344,7 @@ QueryReWriter::ParseStatement(bool p_closingEscape /*= false*/)
     // Append schema
     if(m_nextTable)
     {
-      AppendSchema();
+      ProcessSchema();
     }
 
     // Find next table for appending a schema
@@ -489,7 +489,7 @@ QueryReWriter::PrintOuterJoin()
 
 // THIS IS WHY WE ARE HERE IN THIS CLASS!
 void
-QueryReWriter::AppendSchema()
+QueryReWriter::ProcessSchema()
 {
   SkipSpaceAndComment();
 
@@ -498,8 +498,11 @@ QueryReWriter::AppendSchema()
   if(ch == '.')
   {
     // There already was a schema name
-    m_output += m_tokenString;
-    m_output += '.';
+    if(!(m_options & (int)SROption::SRO_REMOVE_SCHEMA))
+    {
+      m_output += m_tokenString;
+      m_output += '.';
+    }
     m_token   = GetToken();
   }
   else

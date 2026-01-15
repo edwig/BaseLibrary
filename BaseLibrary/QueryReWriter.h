@@ -74,8 +74,9 @@ enum class SROption
   ,SRO_CONCAT_TO_ADD  = 0x0001   // ISO SQL || to MS-SQL + for two strings
   ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
   ,SRO_WARN_OUTER     = 0x0004   // Warn for Oracle (+) Outer joins
+  ,SRO_REMOVE_SCHEMA  = 0x0008   // Remove schema name
 
-  ,SRO_LAST_OPTION    = 0x0007
+  ,SRO_LAST_OPTION    = 0x000F
 };
 
 enum class OdbcEsc
@@ -142,7 +143,7 @@ private:
   void    PrintToken();
   void    PrintOuterJoin();
   Token   FindToken();
-  void    AppendSchema();
+  void    ProcessSchema();
 
   void    SkipSpaceAndComment();
   Token   CommentSQL();
