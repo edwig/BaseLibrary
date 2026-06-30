@@ -527,16 +527,22 @@ LogAnalysis::WriteEvent(HANDLE p_eventLog,LogType p_type,XString& p_buffer)
   lpszStrings[0] = p_buffer.GetString();
   lpszStrings[1] = nullptr;
 
-  WORD type = EVENTLOG_INFORMATION_TYPE;
+  WORD  evtype = EVENTLOG_INFORMATION_TYPE;
+  DWORD sctype = SVC_INFO;
   switch(p_type)
   {
-    case LogType::LOG_TRACE:type = EVENTLOG_INFORMATION_TYPE; break;
-    case LogType::LOG_INFO: type = EVENTLOG_INFORMATION_TYPE; break;
-    case LogType::LOG_ERROR:type = EVENTLOG_ERROR_TYPE;       break;
-    case LogType::LOG_WARN: type = EVENTLOG_WARNING_TYPE;     break;
+    case LogType::LOG_TRACE:evtype = EVENTLOG_INFORMATION_TYPE;
+                                     break;
+    case LogType::LOG_INFO: evtype = EVENTLOG_INFORMATION_TYPE;
+                                     break;
+    case LogType::LOG_ERROR:evtype = EVENTLOG_ERROR_TYPE;       
+                            sctype = SVC_ERROR;
+                            break;
+    case LogType::LOG_WARN: evtype = EVENTLOG_WARNING_TYPE;
+                            break;
   }
 
-  ReportEvent(p_eventLog,type,0,0,nullptr,1,0,lpszStrings,nullptr);
+  ReportEvent(p_eventLog,evtype,0,sctype,nullptr,1,0,lpszStrings,nullptr);
 }
 
 // Hexadecimal view of an object added to the logfile
