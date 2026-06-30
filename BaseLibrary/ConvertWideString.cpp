@@ -1158,6 +1158,10 @@ std::wstring ConstructBOMUTF16()
 XString
 LPCSTRToString(const LPCSTR p_string,bool p_utf8 /*= false*/)
 {
+  if(p_string == nullptr)
+  {
+    return XString();
+  }
   if(p_utf8)
   {
     return DecodeStringFromTheWire(p_string);
