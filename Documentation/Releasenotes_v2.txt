@@ -54,4 +54,6 @@ Version 2.0.2 of xx-xx-2025
 1) Added the RotatingTree class. This is a simple mapping index.
    It stores an index, but not whole objects.
    Outperforms STL std::map with a factor of 50%
+2) Added '@' Oracle database link to the query rewriter, in order to be able to rewrite 
+   the SQL as a link to a different schema, instead of a database link.
 

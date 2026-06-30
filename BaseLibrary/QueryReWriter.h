@@ -37,6 +37,7 @@ enum class Token
  ,TK_DQUOTE         // Double quote string
  ,TK_POINT          // .
  ,TK_COMMA          // ,
+ ,TK_ADD            // +
  ,TK_MINUS          // -
  ,TK_DIVIDE         // /
  ,TK_COMM_SQL       // --    Comments SQL wise
@@ -45,8 +46,8 @@ enum class Token
  ,TK_PAR_OPEN       // (
  ,TK_PAR_CLOSE      // )
  ,TK_PAR_OUTER      // (+)   Oracle outer join
- ,TK_PAR_ADD        // +
- ,TK_PAR_CONCAT     // ||    SQL String concatenation
+ ,TK_PAR_AMPER      // @     Oracle database link
+ ,TK_CONCAT         // ||    SQL String concatenation
  ,TK_SPACE          // ' '   Single space
  ,TK_TAB            // '\t'  Tabulate character
  ,TK_CR             // '\r'  Carriage return
@@ -75,8 +76,9 @@ enum class SROption
   ,SRO_ADD_TO_CONCAT  = 0x0002   // MS-SQL + to ISO SQL || for two strings
   ,SRO_WARN_OUTER     = 0x0004   // Warn for Oracle (+) Outer joins
   ,SRO_REMOVE_SCHEMA  = 0x0008   // Remove schema name
+  ,SRO_RESOLVE_DBLINK = 0x0010   // Oracle "table@link" => "schema.table"
 
-  ,SRO_LAST_OPTION    = 0x000F
+  ,SRO_LAST_OPTION    = 0x001F
 };
 
 enum class OdbcEsc
@@ -142,6 +144,7 @@ private:
   Token   GetToken();
   void    PrintToken();
   void    PrintOuterJoin();
+  void    PrintDatabaseLink();
   Token   FindToken();
   void    ProcessSchema();
 
@@ -165,6 +168,7 @@ private:
   int       m_position    { 0       };
   Token     m_token       { Token::TK_EOS };
   XString   m_tokenString;
+  XString   m_lastTokenString;
   int       m_level       { 0       };
   int       m_ungetch     { 0       };
   Token     m_inStatement { Token::TK_EOS };
