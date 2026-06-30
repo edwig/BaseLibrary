@@ -57,6 +57,7 @@ static const PTCHAR all_tokens[] =
   ,_T(")")
   ,_T("(+)")
   ,_T("+")
+  ,_T("@")
   ,_T("||")
   ,_T(" ")
   ,_T("\t")
@@ -452,6 +453,8 @@ QueryReWriter::PrintToken()
                               break;
     case Token::TK_PAR_OUTER: PrintOuterJoin();
                               break;
+    case Token::TK_PAR_AMPER: PrintDatabaseLink();
+                              break;
     case Token::TK_POINT:     [[fallthrough]];
     case Token::TK_COMMA:     [[fallthrough]];
     case Token::TK_MINUS:     [[fallthrough]];
@@ -492,6 +495,32 @@ QueryReWriter::PrintOuterJoin()
     m_output += _T("\n");
     m_output += _T("-- BEWARE: Oracle old style (+). Rewrite the SQL query with LEFT OUTER JOIN syntaxis!");
     m_output += _T("\n");
+  }
+}
+
+void
+QueryReWriter::PrintDatabaseLink()
+{
+  if(m_options & (int)SROption::SRO_RESOLVE_DBLINK)
+  {
+    // Save last tokenstring as table
+    XString last = m_lastTokenString;
+    Token token  = GetToken();
+    if(token == Token::TK_PLAIN)
+    {
+      m_output  = m_output.Left(m_output.GetLength() - last.GetLength());
+      m_output += m_tokenString + _T(".") + last;
+    }
+    else
+    {
+      m_output += _T("@");
+      PrintToken();
+    }
+  }
+  else
+  {
+    // Keep the current database link
+    m_output += _T("@");
   }
 }
 
@@ -561,6 +590,7 @@ QueryReWriter::SkipSpaceAndComment()
 Token
 QueryReWriter::GetToken()
 {
+  m_lastTokenString = m_tokenString;
   m_tokenString.Empty();
   int ch = 0;
 
@@ -580,6 +610,7 @@ QueryReWriter::GetToken()
       case '(':   return Parenthesis();
       case ')':   return Token::TK_PAR_CLOSE;
       case '+':   return Token::TK_PAR_ADD;
+      case '@':   return Token::TK_PAR_AMPER;
       case ' ':   return Token::TK_SPACE;
       case '\t':  return Token::TK_TAB;
       case '\r':  return Token::TK_CR;
