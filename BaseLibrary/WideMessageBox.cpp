@@ -81,7 +81,9 @@ _WMB_CalcTextSize(const XString& strText,WMBPoint& sizeText,HFONT font)
 static WMBPoint 
 _WMB_Pix2Dlu(int pixX, int pixY)
 {
-  WMBPoint baseXY(::GetDialogBaseUnits());
+  long base = ::GetDialogBaseUnits();
+
+  WMBPoint baseXY(LOWORD(base),HIWORD(base));
   WMBPoint dluXY(0,0);
   dluXY.cx = ::MulDiv(pixX, 4, baseXY.cx);
   dluXY.cy = ::MulDiv(pixY, 8, baseXY.cy);
@@ -184,6 +186,9 @@ WideMessageBox(HWND    p_hwnd
   // Parent message box to parent window
   config.hwndParent = p_hwnd;
 
+  // Create the possibility of using <A> markup
+  config.dwFlags = TDF_ENABLE_HYPERLINKS;
+
   // Title of the box
   CComBSTR title = CT2CW(p_title);
   config.pszWindowTitle = title;
@@ -274,6 +279,7 @@ WideMessageBox(HWND    p_hwnd
     OutputDebugString(text.GetString());
     return ::MessageBox(p_hwnd,p_message,p_title,p_buttons);
   }
+
   std::wstring mess = StringToWString(text);
   config.pszContent = mess.c_str();
 
