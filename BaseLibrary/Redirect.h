@@ -62,6 +62,7 @@ public:
   virtual void OnChildStdOutWrite(LPCTSTR lpszOutput)  = 0;
   virtual void OnChildStdErrWrite(LPCTSTR lpszOutput)  = 0;
   virtual void OnChildTerminate  ()                    = 0;
+  virtual void OnChildComplete   ()                    = 0;
 
   mutable int m_exitCode;
   mutable int m_eof_input;

@@ -71,6 +71,7 @@ public:
   virtual void OnChildStdOutWrite(LPCTSTR lpszOutput)  override; 
   virtual void OnChildStdErrWrite(LPCTSTR lpszOutput)  override;
   virtual void OnChildTerminate() override;
+  virtual void OnChildComplete()  override;
   bool IsReady();
   bool IsEOF();
   bool IsErrorEOF();

@@ -843,7 +843,7 @@ TryConvertWideString(const BYTE*    p_buffer
   }
 
   // Getting the length of the translation buffer first
-  iLength = ::WideCharToMultiByte(codePage,
+  iLength = ::WideCharToMultiByte(CP_ACP, // codePage,
                                   0, 
                                   (LPCWSTR)((DWORD_PTR)p_buffer + extra), 
                                   -1, // p_length, 

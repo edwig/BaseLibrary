@@ -117,6 +117,10 @@ void RunRedirect::OnChildTerminate()
   }
 }
 
+void RunRedirect::OnChildComplete()
+{
+}
+
 bool RunRedirect::IsReady()
 {
   AutoCritSec lock(&m_critical);

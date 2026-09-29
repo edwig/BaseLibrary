@@ -206,6 +206,7 @@ public:
   bool      SetFileTimeModified(SYSTEMTIME& p_modified);
   bool      SetFileTimeAccessed(SYSTEMTIME& p_accessed);
   void      SetEncoding(Encoding p_encoding);
+  void      SetDBCSMode(bool p_dbcs,Encoding p_expecting);
 
   // GETTERS
   bool      GetIsOpen() const;
@@ -240,6 +241,7 @@ public:
   bool      GetIsDirectory();
   Encoding  GetEncoding();
   bool      GetFoundBOM();
+  bool      GetDBCSMode();
 
   // FUNCTIONS
 
@@ -348,6 +350,7 @@ private:
   DWORD       m_openMode     { FFlag::no_mode   };  // How the file was opened
   Encoding    m_encoding     { Encoding::EN_ACP };  // Encoding found by BOM
   bool        m_foundBOM     { false };             // Found a BOM when opening file
+  bool        m_dbcsMode     { false };             // Old style Windows 3.11 DBCS mode
   // Page buffer cache
   uchar*      m_pageBuffer   { nullptr };           // PB: Text mode page buffer
   uchar*      m_pagePointer  { nullptr };           // PP: Pointer in the page buffer

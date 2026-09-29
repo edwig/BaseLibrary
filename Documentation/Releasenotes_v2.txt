@@ -49,11 +49,19 @@ Version 2.0.1 of 16-11-2025
    just "XmlDataType". They are now placed AFTER the value parameter!!
    Please change your code accordingly.
 
-Version 2.0.2 of xx-xx-2025
+Version 2.0.2 of 29-09-2026
 ---------------------------
 1) Added the RotatingTree class. This is a simple mapping index.
    It stores an index, but not whole objects.
    Outperforms STL std::map with a factor of 50%
 2) Added '@' Oracle database link to the query rewriter, in order to be able to rewrite 
    the SQL as a link to a different schema, instead of a database link.
-
+3) Added the DBCS mode to the WinFile class. This mode is used to read/write files that 
+   are encoded in a double-byte character set, without any Byte-Order-Mark (BOM) at the 
+   start of the file. You must explicitly set the Encoding type of the file beforehand.
+   This is handy for older applications before 1999 like the "HTML Help Workshop", and the
+   HHC compiler, that do not support UTF-8 encoded files, but only DBCS encoded files.
+4) Added an overridable "OnChildComplete" method to the Redirect and RunDirect classes.
+   This method is called when a child process has completed, and can be used to perform 
+   any necessary cleanup or logging.
+5) Small fix for reading UTF-16 strings from files in the WinFile class.

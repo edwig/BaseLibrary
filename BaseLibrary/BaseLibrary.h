@@ -62,7 +62,7 @@
 #include "bcd.h"
 
 // VERSION NUMBER OF THIS LIBRARY
-#define BASELIBRARY_VERSION 2.0.0
+#define BASELIBRARY_VERSION 2.0.2
 
 // Call once at the start of your application to activate memory leak detection!!
 void InitBaseLibrary();

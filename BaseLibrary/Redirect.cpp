@@ -904,15 +904,18 @@ Redirect::ProcessThread()
                               break;
     }
   }
+
   // Virtual function to notify derived class that child process is terminated.
   // Application must call TerminateChildProcess() but not direcly from this thread!
   OnChildTerminate();
-  
+
   // Wait till the output has drained
   while(m_hStdOutThread || m_hStdErrThread)
   {
     Sleep(DRAIN_STDOUT_INTERVAL);
   }
+
+  OnChildComplete();
 
   // We are ready running
   m_bRunThread = NULL;
